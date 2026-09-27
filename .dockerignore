@@ -1,0 +1,26 @@
+node_modules
+.next
+.git
+.github
+
+# project docs and planning artefacts, not needed in the image
+design
+docs
+odd
+README.md
+
+# tests and coverage
+coverage
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+vitest.config.ts
+vitest.setup.ts
+
+# env and local files
+.env
+.env.*
+!.env.example
+.DS_Store
+npm-debug.log*
