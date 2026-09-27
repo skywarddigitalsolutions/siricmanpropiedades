@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f4f0;font-family:Manrope,system-ui,sans-serif;color:#151a33;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1d2a6b;text-decoration:none}a:hover{color:#8a6a24}
+button,input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{height:0;width:0}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+<header style="background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #ebe8e0;position:sticky;top:0;z-index:30">
+  <div style="max-width:1240px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:16px;justify-content:space-between">
+    <div onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:none">
+      <div style="width:40px;height:40px;border-radius:10px;overflow:hidden;background:#1d2a6b;flex:none"><img src="assets/logo-siricman.jpg" alt="Siricman Propiedades" style="width:56px;margin:-1px 0 0 -6.7px;display:block"></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font:500 16px/1 'Bodoni Moda',serif;letter-spacing:.2em;color:#1d2a6b">SIRICMAN</span><span style="font:700 8.5px/1 Manrope;letter-spacing:.42em;color:#8a6a24">PROPIEDADES</span></div>
+    </div>
+    <nav style="display:{{ dFlex }};gap:2px;align-items:center">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+        <button onClick="{{ n.onClick }}" style="background:{{ n.bg }};border:0;border-radius:999px;padding:9px 14px;font:600 14px Manrope;color:{{ n.color }};cursor:pointer;white-space:nowrap" style-hover="background:#f0eee8">{{ n.label }}</button>
+      </sc-for>
+    </nav>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button onClick="{{ goTasar }}" style="display:{{ dFlex }};background:#1d2a6b;color:#fff;border:0;border-radius:999px;padding:11px 18px;font:700 14px Manrope;cursor:pointer;white-space:nowrap" style-hover="background:#131c4d">Tasá tu propiedad</button>
+      <button onClick="{{ openMenu }}" aria-label="Menú" style="display:{{ mFlex }};width:44px;height:44px;border-radius:999px;border:1px solid #e3dfd5;background:#fff;align-items:center;justify-content:center;cursor:pointer"><span style="width:20px;height:20px;background:#1d2a6b;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/menu.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/menu.svg) center/contain no-repeat"></span></button>
+    </div>
+  </div>
+</header>
+
+<sc-if value="{{ menuOpen }}">
+  <div style="position:fixed;inset:0;z-index:60;background:#fff;display:flex;flex-direction:column;padding:10px 16px 24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:18px">
+      <span style="font:500 16px/1 'Bodoni Moda',serif;letter-spacing:.2em;color:#1d2a6b">SIRICMAN</span>
+      <button onClick="{{ closeMenu }}" aria-label="Cerrar" style="width:44px;height:44px;border-radius:999px;border:1px solid #e3dfd5;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer"><span style="width:20px;height:20px;background:#1d2a6b;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/x.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/x.svg) center/contain no-repeat"></span></button>
+    </div>
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+      <button onClick="{{ n.onClick }}" style="display:flex;justify-content:space-between;align-items:center;background:none;border:0;border-bottom:1px solid #efece5;padding:18px 4px;font:700 22px Manrope;color:#151a33;cursor:pointer;text-align:left">{{ n.label }}<span style="width:20px;height:20px;background:#b9b3a4;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat"></span></button>
+    </sc-for>
+    <button onClick="{{ goTasar }}" style="margin-top:24px;background:#1d2a6b;color:#fff;border:0;border-radius:999px;padding:16px;font:700 16px Manrope;cursor:pointer">Tasá tu propiedad</button>
+    <span style="margin-top:auto;font-size:14px;color:#5f6378;line-height:1.6">Las Casas 4054, 1° B · Boedo<br>10:30 a 18:00 · con cita previa</span>
+  </div>
+</sc-if>
+
+<main style="flex:1">
+
+<!-- ============ INICIO ============ -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <section style="position:relative;background:#1d2a6b;overflow:hidden">
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#27357a 0 14px,#223071 14px 28px)"></div>
+    <span style="position:absolute;top:14px;right:16px;font:500 11px ui-monospace,Menlo,monospace;color:#8e97cc">foto de fondo · ciudad / fachada</span>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(19,28,77,.25) 0%,rgba(19,28,77,.85) 100%)"></div>
+    <div style="position:relative;max-width:1080px;margin:0 auto;padding:clamp(56px,10vw,120px) 16px clamp(28px,5vw,64px);display:flex;flex-direction:column;gap:22px;align-items:center;text-align:center">
+      <h1 style="margin:0;font:800 clamp(34px,6vw,60px)/1.05 Manrope;color:#fff;letter-spacing:-.02em;text-wrap:balance">Encontrá tu próxima propiedad en CABA</h1>
+      <p style="margin:0;font-size:clamp(16px,2vw,19px);line-height:1.5;color:#dfe3f5;max-width:560px">Venta y alquiler con asesoramiento personal, de principio a fin.</p>
+      <div style="width:100%;margin-top:10px;display:flex;flex-direction:column;align-items:center">
+        <div style="display:flex;gap:6px;background:rgba(255,255,255,.14);padding:5px;border-radius:999px;backdrop-filter:blur(6px)">
+          <sc-for list="{{ heroOps }}" as="o" hint-placeholder-count="3">
+            <button onClick="{{ o.onClick }}" style="border:0;border-radius:999px;padding:10px 20px;font:700 14px Manrope;cursor:pointer;background:{{ o.bg }};color:{{ o.color }}">{{ o.label }}</button>
+          </sc-for>
+        </div>
+        <div style="width:100%;margin-top:12px;background:#fff;border-radius:24px;padding:10px;box-shadow:0 24px 60px rgba(8,12,40,.35);display:flex;flex-wrap:wrap;gap:8px;text-align:left">
+          <label style="flex:1 1 200px;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:16px;background:#f5f4f0">
+            <span style="width:20px;height:20px;flex:none;background:#8a6a24;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/map-pin.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/map-pin.svg) center/contain no-repeat"></span>
+            <span style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0"><span style="font:700 11px Manrope;letter-spacing:.08em;color:#5f6378">BARRIO</span>
+            <select value="{{ hBarrio }}" onChange="{{ onHBarrio }}" style="border:0;padding:0;font:600 15px Manrope;background:transparent;color:#151a33;outline:none;width:100%"><option>Todos los barrios</option><option>Almagro</option><option>Belgrano</option><option>Boedo</option><option>Caballito</option><option>Microcentro</option><option>Palermo</option><option>Saavedra</option><option>Villa Urquiza</option></select></span></label>
+          <label style="flex:1 1 200px;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:16px;background:#f5f4f0">
+            <span style="width:20px;height:20px;flex:none;background:#8a6a24;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/house.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/house.svg) center/contain no-repeat"></span>
+            <span style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0"><span style="font:700 11px Manrope;letter-spacing:.08em;color:#5f6378">TIPO</span>
+            <select value="{{ hType }}" onChange="{{ onHType }}" style="border:0;padding:0;font:600 15px Manrope;background:transparent;color:#151a33;outline:none;width:100%"><option>Todos</option><option>Departamento</option><option>Casa</option><option>PH</option><option>Terreno</option><option>Local</option><option>Oficina</option><option>Cochera</option></select></span></label>
+          <label style="flex:1 1 140px;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:16px;background:#f5f4f0">
+            <span style="width:20px;height:20px;flex:none;background:#8a6a24;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/bed-double.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/bed-double.svg) center/contain no-repeat"></span>
+            <span style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0"><span style="font:700 11px Manrope;letter-spacing:.08em;color:#5f6378">AMBIENTES</span>
+            <select value="{{ hAmb }}" onChange="{{ onHAmb }}" style="border:0;padding:0;font:600 15px Manrope;background:transparent;color:#151a33;outline:none;width:100%"><option value="0">Indistinto</option><option value="1">1 amb.</option><option value="2">2 amb.</option><option value="3">3 amb.</option><option value="4">4 amb.</option><option value="5">5+ amb.</option></select></span></label>
+          <button onClick="{{ doSearch }}" style="flex:1 1 140px;min-height:58px;border:0;border-radius:16px;background:#1d2a6b;color:#fff;font:700 16px Manrope;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px" style-hover="background:#131c4d"><span style="width:18px;height:18px;background:#fff;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/search.svg) center/contain no-repeat"></span>Buscar</button>
+        </div>
+        <button onClick="{{ goCode }}" style="margin-top:14px;background:none;border:0;color:#dfe3f5;font:600 14px Manrope;cursor:pointer;text-decoration:underline;text-underline-offset:3px">¿Tenés un código? Buscá por SP-000</button>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1240px;margin:0 auto;padding:28px 0 0">
+    <div style="display:flex;gap:10px;overflow-x:auto;padding:4px 16px 8px;scroll-snap-type:x mandatory">
+      <sc-for list="{{ typeChips }}" as="t" hint-placeholder-count="7">
+        <button onClick="{{ t.onClick }}" style="flex:none;scroll-snap-align:start;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e6e2d8;border-radius:999px;padding:11px 18px;font:600 14px Manrope;color:#151a33;cursor:pointer;white-space:nowrap" style-hover="border-color:#1d2a6b">{{ t.label }}<span style="font-size:12px;color:#8b8e9c">{{ t.count }}</span></button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1240px;margin:0 auto;padding:36px 0 20px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:0 16px 18px">
+      <h2 style="margin:0;font:800 clamp(24px,3vw,32px)/1.15 Manrope;letter-spacing:-.01em;color:#151a33">Destacadas</h2>
+      <button onClick="{{ goListAll }}" style="background:none;border:0;color:#1d2a6b;font:700 14px Manrope;cursor:pointer;display:flex;align-items:center;gap:6px;padding:0">Ver todas<span style="width:16px;height:16px;background:#1d2a6b;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/arrow-right.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/arrow-right.svg) center/contain no-repeat"></span></button>
+    </div>
+    <div style="display:flex;gap:16px;overflow-x:auto;padding:4px 16px 20px;scroll-snap-type:x mandatory">
+      <sc-for list="{{ featured }}" as="p" hint-placeholder-count="3">
+        <article onClick="{{ p.onClick }}" style="flex:0 0 min(82vw,360px);scroll-snap-align:start;background:#fff;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(20,25,60,.05),0 10px 30px rgba(20,25,60,.07);display:flex;flex-direction:column;transition:transform .2s" style-hover="transform:translateY(-3px)">
+          <div style="aspect-ratio:4/3;position:relative;background:repeating-linear-gradient(135deg,#ebe7dc 0 12px,#e3ded1 12px 24px);display:flex;align-items:center;justify-content:center;font:500 11px ui-monospace,Menlo,monospace;color:#7a7461">foto · {{ p.code }}
+            <div style="position:absolute;top:12px;left:12px;display:flex;gap:6px"><span style="background:#fff;color:#1d2a6b;font:700 12px Manrope;padding:6px 11px;border-radius:999px">{{ p.op }}</span><sc-if value="{{ p.hasTag }}"><span style="background:#c6a052;color:#131c4d;font:700 12px Manrope;padding:6px 11px;border-radius:999px">{{ p.tag }}</span></sc-if></div>
+          </div>
+          <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px">
+            <span style="font:800 21px Manrope;color:#1d2a6b;letter-spacing:-.01em">{{ p.priceLabel }}</span>
+            <span style="font:600 15px/1.35 Manrope;color:#151a33">{{ p.title }}</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#5f6378"><span style="width:14px;height:14px;background:#8a6a24;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/map-pin.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/map-pin.svg) center/contain no-repeat"></span>{{ p.barrio }}, CABA</span>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;padding-top:10px;margin-top:2px;border-top:1px solid #f0ede6"><sc-for list="{{ p.specs }}" as="s" hint-placeholder-count="3"><span style="display:flex;align-items:center;gap:6px;font:600 13px Manrope;color:#3a3e55"><span style="width:16px;height:16px;background:#8b8e9c;-webkit-mask:url({{ s.icon }}) center/contain no-repeat;mask:url({{ s.icon }}) center/contain no-repeat"></span>{{ s.t }}</span></sc-for></div>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1240px;margin:0 auto;padding:24px 16px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px">
+      <sc-for list="{{ services }}" as="s" hint-placeholder-count="4">
+        <button onClick="{{ s.onClick }}" style="background:#fff;border:0;border-radius:20px;padding:22px;display:flex;gap:16px;align-items:flex-start;text-align:left;cursor:pointer;box-shadow:0 1px 2px rgba(20,25,60,.05)" style-hover="box-shadow:0 10px 30px rgba(20,25,60,.08)">
+          <span style="width:44px;height:44px;border-radius:14px;background:#f3ecdb;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:22px;height:22px;background:#8a6a24;-webkit-mask:url({{ s.icon }}) center/contain no-repeat;mask:url({{ s.icon }}) center/contain no-repeat"></span></span>
+          <span style="display:flex;flex-direction:column;gap:4px"><span style="font:700 16px Manrope;color:#151a33">{{ s.title }}</span><span style="font-size:14px;line-height:1.5;color:#5f6378">{{ s.text }}</span></span>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1240px;margin:0 auto;padding:24px 16px">
+    <div style="background:#fff;border-radius:28px;overflow:hidden;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))">
+      <div style="min-height:280px;background:repeating-linear-gradient(135deg,#ebe7dc 0 12px,#e3ded1 12px 24px);display:flex;align-items:center;justify-content:center;font:500 11px ui-monospace,Menlo,monospace;color:#7a7461">retrato · Gabriel Siricman</div>
+      <div style="padding:clamp(24px,4vw,48px);display:flex;flex-direction:column;gap:18px;justify-content:center">
+        <span style="font:700 12px Manrope;letter-spacing:.16em;color:#8a6a24">ATENCIÓN PERSONAL</span>
+        <p style="margin:0;font:700 clamp(21px,2.4vw,28px)/1.35 Manrope;color:#151a33;letter-spacing:-.01em;text-wrap:pretty">“Quiero que cada cliente se sienta cuidado y asesorado de principio a fin. Por eso me encargo personalmente de cada operación.”</p>
+        <div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 15px Manrope">Gabriel Siricman</span><span style="font-size:13px;color:#5f6378">Martillero Público y Corredor Inmobiliario</span></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><span style="background:#f5f4f0;border-radius:999px;padding:8px 14px;font:600 13px Manrope">+11 años en CABA</span><span style="background:#f5f4f0;border-radius:999px;padding:8px 14px;font:600 13px Manrope">Un solo interlocutor</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1240px;margin:0 auto;padding:24px 16px 56px">
+    <div style="background:#131c4d;border-radius:28px;color:#fff;padding:clamp(28px,5vw,56px);display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap;position:relative;overflow:hidden">
+      <div style="position:absolute;right:-90px;top:-90px;width:300px;height:300px;border:1px solid rgba(198,160,82,.35);border-radius:50%"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:560px;position:relative">
+        <h2 style="margin:0;font:800 clamp(24px,3.2vw,36px)/1.15 Manrope;letter-spacing:-.01em">¿Querés vender o alquilar?</h2>
+        <p style="margin:0;font-size:16px;line-height:1.55;color:#d7dbef">Pedí una tasación profesional y te armamos la estrategia de publicación.</p>
+      </div>
+      <button onClick="{{ goTasar }}" style="position:relative;border:0;border-radius:999px;background:#c6a052;color:#131c4d;padding:15px 26px;font:800 15px Manrope;cursor:pointer" style-hover="background:#d4b268">Solicitar tasación</button>
+    </div>
+  </section>
+</sc-if>
+
+<!-- ============ RESULTADOS ============ -->
+<sc-if value="{{ isList }}">
+  <div style="position:sticky;top:61px;z-index:20;background:#f5f4f0;border-bottom:1px solid #ebe8e0">
+    <div style="max-width:1240px;margin:0 auto;padding:12px 0 10px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:8px;padding:0 16px;align-items:center">
+        <div style="display:flex;background:#fff;border:1px solid #e3dfd5;border-radius:999px;padding:4px;flex:none">
+          <sc-for list="{{ opSeg }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.onClick }}" style="border:0;border-radius:999px;padding:8px 13px;font:700 13px Manrope;cursor:pointer;background:{{ o.bg }};color:{{ o.color }}">{{ o.label }}</button></sc-for>
+        </div>
+        <label style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e3dfd5;border-radius:999px;padding:0 14px;height:44px">
+          <span style="width:16px;height:16px;flex:none;background:#8b8e9c;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/map-pin.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/map-pin.svg) center/contain no-repeat"></span>
+          <select value="{{ fBarrio }}" onChange="{{ onBarrio }}" style="border:0;background:transparent;font:600 14px Manrope;color:#151a33;outline:none;width:100%;min-width:0"><option>Todos los barrios</option><option>Almagro</option><option>Belgrano</option><option>Boedo</option><option>Caballito</option><option>Microcentro</option><option>Palermo</option><option>Saavedra</option><option>Villa Urquiza</option></select></label>
+      </div>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding:0 16px">
+        <button onClick="{{ openSheet }}" style="flex:none;display:flex;align-items:center;gap:8px;border:0;border-radius:999px;background:#1d2a6b;color:#fff;padding:9px 15px;font:700 13px Manrope;cursor:pointer"><span style="width:15px;height:15px;background:#fff;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/sliders-horizontal.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/sliders-horizontal.svg) center/contain no-repeat"></span>{{ filtersLabel }}</button>
+        <sc-for list="{{ quick }}" as="c" hint-placeholder-count="6">
+          <button onClick="{{ c.onClick }}" style="flex:none;border:1px solid {{ c.border }};border-radius:999px;background:{{ c.bg }};color:{{ c.color }};padding:8px 14px;font:600 13px Manrope;cursor:pointer;white-space:nowrap">{{ c.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <section style="max-width:1240px;margin:0 auto;padding:18px 16px 96px;display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <h1 style="margin:0;font:800 20px Manrope;letter-spacing:-.01em">{{ resultCount }} {{ listTitle }}</h1>
+      <select value="{{ sort }}" onChange="{{ onSort }}" style="border:1px solid #e3dfd5;border-radius:999px;padding:9px 14px;font:600 13px Manrope;background:#fff;color:#151a33"><option>Más recientes</option><option>Menor precio</option><option>Mayor precio</option></select>
+    </div>
+    <sc-if value="{{ noResults }}">
+      <div style="background:#fff;border-radius:24px;padding:40px 24px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center"><span style="font:800 20px Manrope">Sin resultados con esos filtros</span><span style="color:#5f6378;font-size:15px">Contanos qué buscás y te avisamos cuando ingrese algo similar.</span><button onClick="{{ clearFilters }}" style="border:1px solid #1d2a6b;background:#fff;color:#1d2a6b;border-radius:999px;padding:11px 20px;font:700 14px Manrope;cursor:pointer">Limpiar filtros</button></div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px">
+      <sc-for list="{{ results }}" as="p" hint-placeholder-count="6">
+        <article onClick="{{ p.onClick }}" style="background:#fff;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(20,25,60,.05),0 10px 30px rgba(20,25,60,.06);display:flex;flex-direction:column;transition:transform .2s" style-hover="transform:translateY(-3px)">
+          <div style="aspect-ratio:16/11;position:relative;background:repeating-linear-gradient(135deg,#ebe7dc 0 12px,#e3ded1 12px 24px);display:flex;align-items:center;justify-content:center;font:500 11px ui-monospace,Menlo,monospace;color:#7a7461;opacity:{{ p.imgOpacity }}">foto · {{ p.code }}
+            <div style="position:absolute;top:12px;left:12px;display:flex;gap:6px"><span style="background:#fff;color:#1d2a6b;font:700 12px Manrope;padding:6px 11px;border-radius:999px">{{ p.op }}</span><sc-if value="{{ p.hasTag }}"><span style="background:#c6a052;color:#131c4d;font:700 12px Manrope;padding:6px 11px;border-radius:999px">{{ p.tag }}</span></sc-if></div>
+            <span style="position:absolute;bottom:12px;right:12px;display:flex;align-items:center;gap:5px;background:rgba(19,28,77,.8);color:#fff;font:700 12px Manrope;padding:5px 10px;border-radius:999px"><span style="width:13px;height:13px;background:#fff;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/camera.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/camera.svg) center/contain no-repeat"></span>{{ p.photos }}</span>
+          </div>
+          <sc-if value="{{ p.hasStatus }}"><div style="background:{{ p.statusBg }};color:#fff;font:700 12px Manrope;letter-spacing:.08em;text-transform:uppercase;padding:7px 18px">{{ p.status }}</div></sc-if>
+          <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:7px;flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:800 21px Manrope;color:#1d2a6b;letter-spacing:-.01em">{{ p.priceLabel }}</span><span style="font:600 11px ui-monospace,Menlo,monospace;color:#8b8e9c">{{ p.code }}</span></div>
+            <sc-if value="{{ p.hasExp }}"><span style="font-size:12px;color:#5f6378;margin-top:-4px">{{ p.expLabel }}</span></sc-if>
+            <span style="font:600 15px/1.35 Manrope;color:#151a33">{{ p.title }}</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#5f6378"><span style="width:14px;height:14px;background:#8a6a24;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/map-pin.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/map-pin.svg) center/contain no-repeat"></span>{{ p.type }} · {{ p.barrio }}</span>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;padding-top:10px;margin-top:auto;border-top:1px solid #f0ede6"><sc-for list="{{ p.specs }}" as="s" hint-placeholder-count="3"><span style="display:flex;align-items:center;gap:6px;font:600 13px Manrope;color:#3a3e55"><span style="width:16px;height:16px;background:#8b8e9c;-webkit-mask:url({{ s.icon }}) center/contain no-repeat;mask:url({{ s.icon }}) center/contain no-repeat"></span>{{ s.t }}</span></sc-for></div>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <sc-if value="{{ sheetOpen }}">
+    <div onClick="{{ closeSheet }}" style="position:fixed;inset:0;z-index:70;background:rgba(15,19,45,.45)"></div>
+    <div style="position:fixed;z-index:71;left:{{ sh.left }};right:0;bottom:0;top:{{ sh.top }};width:{{ sh.width }};max-height:{{ sh.maxH }};border-radius:{{ sh.radius }};background:#fff;display:flex;flex-direction:column;box-shadow:0 -10px 40px rgba(0,0,0,.18)">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #efece5">
+        <span style="font:800 18px Manrope">Filtros</span>
+        <button onClick="{{ closeSheet }}" aria-label="Cerrar" style="width:40px;height:40px;border-radius:999px;border:0;background:#f5f4f0;display:flex;align-items:center;justify-content:center;cursor:pointer"><span style="width:18px;height:18px;background:#151a33;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/x.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/x.svg) center/contain no-repeat"></span></button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:10px"><span style="font:700 14px Manrope">Tipo de propiedad</span>
+          <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ sTypes }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onClick }}" style="border:1px solid {{ c.border }};border-radius:999px;background:{{ c.bg }};color:{{ c.color }};padding:9px 14px;font:600 14px Manrope;cursor:pointer">{{ c.label }}</button></sc-for></div></div>
+        <div style="display:flex;flex-direction:column;gap:10px"><span style="font:700 14px Manrope">Precio</span>
+          <div style="display:flex;gap:8px">
+            <div style="display:flex;background:#f5f4f0;border-radius:999px;padding:4px;flex:none"><sc-for list="{{ curSeg }}" as="c" hint-placeholder-count="2"><button onClick="{{ c.onClick }}" style="border:0;border-radius:999px;padding:8px 12px;font:700 13px Manrope;cursor:pointer;background:{{ c.bg }};color:{{ c.color }}">{{ c.label }}</button></sc-for></div>
+            <input value="{{ pmin }}" onChange="{{ onPmin }}" inputMode="numeric" placeholder="Desde" style="min-width:0;flex:1;border:1px solid #e3dfd5;border-radius:12px;padding:10px 12px;font:600 14px Manrope">
+            <input value="{{ pmax }}" onChange="{{ onPmax }}" inputMode="numeric" placeholder="Hasta" style="min-width:0;flex:1;border:1px solid #e3dfd5;border-radius:12px;padding:10px 12px;font:600 14px Manrope">
+          </div></div>
+        <sc-for list="{{ pillGroups }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:10px"><span style="font:700 14px Manrope">{{ g.label }}</span>
+            <div style="display:flex;gap:8px"><sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="5"><button onClick="{{ o.onClick }}" style="flex:1;height:44px;border:1px solid {{ o.border }};border-radius:999px;background:{{ o.bg }};color:{{ o.color }};font:700 14px Manrope;cursor:pointer">{{ o.label }}</button></sc-for></div></div>
+        </sc-for>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <label style="display:flex;flex-direction:column;gap:8px;font:700 14px Manrope">Superficie<select style="border:1px solid #e3dfd5;border-radius:12px;padding:11px;font:600 14px Manrope;background:#fff"><option>Indistinto</option><option>+40 m²</option><option>+70 m²</option><option>+100 m²</option></select></label>
+          <label style="display:flex;flex-direction:column;gap:8px;font:700 14px Manrope">Antigüedad<select style="border:1px solid #e3dfd5;border-radius:12px;padding:11px;font:600 14px Manrope;background:#fff"><option>Indistinto</option><option>A estrenar</option><option>Hasta 10 años</option><option>Hasta 30 años</option></select></label>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="3">
+            <button onClick="{{ t.onClick }}" style="display:flex;justify-content:space-between;align-items:center;background:none;border:0;border-bottom:1px solid #efece5;padding:14px 0;font:600 15px Manrope;color:#151a33;cursor:pointer">{{ t.label }}<span style="width:46px;height:28px;border-radius:14px;background:{{ t.bg }};position:relative;flex:none;transition:background .15s"><span style="position:absolute;top:3px;left:{{ t.left }};width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .15s"></span></span></button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;padding:14px 20px 20px;border-top:1px solid #efece5">
+        <button onClick="{{ clearFilters }}" style="flex:none;border:0;background:none;color:#151a33;font:700 14px Manrope;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0 10px">Limpiar</button>
+        <button onClick="{{ closeSheet }}" style="flex:1;border:0;border-radius:999px;background:#1d2a6b;color:#fff;padding:15px;font:800 15px Manrope;cursor:pointer">Ver {{ resultCount }} propiedades</button>
+      </div>
+    </div>
+  </sc-if>
+</sc-if>
+
+<!-- ============ FICHA ============ -->
+<sc-if value="{{ isDetail }}">
+  <section style="max-width:1240px;margin:0 auto;padding:0 0 110px">
+    <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center"><button onClick="{{ goBack }}" style="display:flex;align-items:center;gap:6px;background:none;border:0;padding:0;color:#1d2a6b;font:700 14px Manrope;cursor:pointer"><span style="width:18px;height:18px;background:#1d2a6b;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-left.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-left.svg) center/contain no-repeat"></span>Resultados</button><span style="font:600 12px ui-monospace,Menlo,monospace;color:#5f6378;background:#fff;border-radius:999px;padding:5px 10px">Cód. {{ d.code }}</span></div>
+    <div style="position:relative;padding:0 {{ galPad }}">
+      <div ref="{{ galRef }}" onScroll="{{ onGalScroll }}" style="display:flex;overflow-x:auto;scroll-snap-type:x mandatory;border-radius:{{ galRadius }}">
+        <sc-for list="{{ slides }}" as="sl" hint-placeholder-count="1">
+          <div style="flex:0 0 100%;scroll-snap-align:start;aspect-ratio:{{ galRatio }};background:repeating-linear-gradient(135deg,#ebe7dc 0 12px,#e3ded1 12px 24px);display:flex;align-items:center;justify-content:center;font:500 12px ui-monospace,Menlo,monospace;color:#7a7461">foto {{ sl.n }}</div>
+        </sc-for>
+      </div>
+      <div style="position:absolute;left:calc({{ galPad }} + 12px);top:12px;display:flex;gap:6px"><span style="background:#fff;color:#1d2a6b;font:700 12px Manrope;padding:6px 11px;border-radius:999px">{{ d.op }}</span><sc-if value="{{ d.hasTag }}"><span style="background:#c6a052;color:#131c4d;font:700 12px Manrope;padding:6px 11px;border-radius:999px">{{ d.tag }}</span></sc-if></div>
+      <span style="position:absolute;right:calc({{ galPad }} + 12px);bottom:12px;background:rgba(19,28,77,.8);color:#fff;font:700 12px Manrope;padding:6px 11px;border-radius:999px">{{ photoN }} / {{ d.photos }}</span>
+      <sc-if value="{{ wide }}">
+        <button onClick="{{ prevPhoto }}" aria-label="Anterior" style="position:absolute;left:calc({{ galPad }} + 14px);top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:999px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.12)"><span style="width:20px;height:20px;background:#1d2a6b;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-left.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-left.svg) center/contain no-repeat"></span></button>
+        <button onClick="{{ nextPhoto }}" aria-label="Siguiente" style="position:absolute;right:calc({{ galPad }} + 14px);top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:999px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.12)"><span style="width:20px;height:20px;background:#1d2a6b;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/chevron-right.svg) center/contain no-repeat"></span></button>
+      </sc-if>
+    </div>
+
+    <div style="padding:20px 16px 0;display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+      <div style="flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:22px">
+        <sc-if value="{{ d.hasStatus }}"><div style="background:#fff;border-radius:16px;padding:14px 16px;font-size:14px;line-height:1.5;border:1px solid {{ d.statusBg }}"><b style="color:{{ d.statusBg }}">{{ d.status }}.</b> Esta propiedad ya no está disponible. Escribinos y te mostramos opciones similares.</div></sc-if>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span style="font:800 clamp(26px,3.4vw,34px) Manrope;color:#1d2a6b;letter-spacing:-.01em">{{ d.priceLabel }}</span>
+          <sc-if value="{{ d.hasExp }}"><span style="font-size:14px;color:#5f6378">{{ d.expLabel }}</span></sc-if>
+          <h1 style="margin:6px 0 0;font:700 clamp(20px,2.4vw,26px)/1.3 Manrope;color:#151a33;text-wrap:pretty">{{ d.title }}</h1>
+          <span style="display:flex;align-items:center;gap:6px;font-size:14px;color:#5f6378"><span style="width:15px;height:15px;background:#8a6a24;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/map-pin.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/map-pin.svg) center/contain no-repeat"></span>{{ d.locLabel }}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">
+          <sc-for list="{{ d.facts }}" as="f" hint-placeholder-count="8">
+            <div style="background:#fff;border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center"><span style="width:36px;height:36px;border-radius:12px;background:#f3ecdb;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:18px;height:18px;background:#8a6a24;-webkit-mask:url({{ f.icon }}) center/contain no-repeat;mask:url({{ f.icon }}) center/contain no-repeat"></span></span><span style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font:600 12px Manrope;color:#5f6378">{{ f.k }}</span><span style="font:800 15px Manrope;color:#151a33">{{ f.v }}</span></span></div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ d.condChips }}" as="c" hint-placeholder-count="3"><span style="display:flex;align-items:center;gap:6px;background:#e9f3ec;color:#1f6b3e;border-radius:999px;padding:8px 13px;font:700 13px Manrope"><span style="width:14px;height:14px;background:#1f6b3e;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/check.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/check.svg) center/contain no-repeat"></span>{{ c }}</span></sc-for></div>
+        <div style="background:#fff;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:10px"><h2 style="margin:0;font:800 17px Manrope">Descripción</h2><p style="margin:0;font-size:15px;line-height:1.7;color:#3a3e55;text-wrap:pretty">{{ d.desc }}</p></div>
+        <div style="background:#fff;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font:800 17px Manrope">Servicios</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ d.servicios }}" as="s" hint-placeholder-count="4"><span style="background:#f5f4f0;border-radius:999px;padding:8px 13px;font:600 13px Manrope">{{ s }}</span></sc-for></div></div>
+        <div style="background:#131c4d;border-radius:20px;min-height:180px;display:flex;align-items:center;justify-content:center;gap:12px;color:#fff;font:700 15px Manrope;cursor:pointer"><span style="width:52px;height:52px;border-radius:999px;background:#c6a052;display:flex;align-items:center;justify-content:center"><span style="width:22px;height:22px;background:#131c4d;-webkit-mask:url(https://unpkg.com/lucide-static@0.460.0/icons/play.svg) center/contain no-repeat;mask:url(https://unpkg.com/lucide-static@0.460.0/icons/play.svg) center/contain no-repeat"></span></span>Video del recorrido</div>
+        <div style="display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font:800 17px Manrope">Ubicación</h2>
+          <div style="position:relative;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:repeating-linear-gradient(0deg,#e6e2d8 0 1px,transparent 1px 36px),repeating-linear-gradient(90deg,#e6e2d8 0 1px,transparent 1px 36px),#efece4;display:flex;align-items:center;justify-content:center">
+            <sc-if value="{{ d.exact }}"><span style="width:22px;height:22px;border-radius:50%;background:#1d2a6b;border:5px solid #c6a052;box-shadow:0 4px 12px rgba(0,0,0,.2)"></span></sc-if>
+            <sc-if value="{{ d.approx }}"><span style="width:160px;height:160px;border-radius:50%;background:rgba(29,42,107,.14);border:1.5px solid #1d2a6b"></span></sc-if>
+            <span style="position:absolute;left:12px;bottom:12px;background:#fff;border-radius:999px;padding:8px 13px;font:600 13px Manrope">{{ d.mapNote }}</span>
+          </div></div>
+      </div>
+
+      <aside id="consulta" style="flex:1 1 320px;max-width:100%;position:{{ stickyPos }};top:84px;background:#fff;border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(20,25,60,.07)">
+        <sc-if value="{{ sent }}"><div style="display:flex;flex-direction:column;gap:8px;padding:8px 0"><span style="font:800 20px Manrope;color:#1d2a6b">¡Gracias por tu consulta!</span><span style="font-size:14px;line-height:1.55;color:#5f6378">Te respondo personalmente a la brevedad.</span></div></sc-if>
+        <sc-if value="{{ notSent }}">
+          <span style="font:800 17px Manrope">Consultá por esta propiedad</span>
+          <input placeholder="Nombre y apellido" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope">
+          <input placeholder="Teléfono" inputMode="tel" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope">
+          <input placeholder="Email" inputMode="email" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope">
+          <textarea rows="3" defaultValue="{{ d.msg }}" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px/1.45 Manrope;resize:vertical"></textarea>
+          <div style="display:flex;gap:10px">
+            <a href="{{ d.wa }}" target="_blank" aria-label="Consultar por WhatsApp" style="width:52px;height:52px;border-radius:999px;background:#25d366;display:flex;align-items:center;justify-content:center;flex:none" style-hover="background:#1fbd5a"><img src="https://cdn.simpleicons.org/whatsapp/ffffff" alt="" style="width:26px;height:26px"></a>
+            <button onClick="{{ send }}" style="flex:1;border:0;border-radius:999px;background:#1d2a6b;color:#fff;font:800 15px Manrope;cursor:pointer" style-hover="background:#131c4d">Enviar consulta</button>
+          </div>
+        </sc-if>
+      </aside>
+    </div>
+  </section>
+
+  <sc-if value="{{ narrow }}">
+    <div style="position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid #ebe8e0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;align-items:center;box-shadow:0 -6px 20px rgba(20,25,60,.06)">
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font:800 17px Manrope;color:#1d2a6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.priceLabel }}</span><span style="font-size:12px;color:#5f6378">Cód. {{ d.code }}</span></div>
+      <a href="{{ d.wa }}" target="_blank" aria-label="Consultar por WhatsApp" style="width:50px;height:50px;border-radius:999px;background:#25d366;display:flex;align-items:center;justify-content:center;flex:none"><img src="https://cdn.simpleicons.org/whatsapp/ffffff" alt="" style="width:26px;height:26px"></a>
+      <a href="#consulta" style="height:50px;border-radius:999px;background:#1d2a6b;color:#fff;font:800 15px Manrope;display:flex;align-items:center;padding:0 22px;flex:none" style-hover="color:#fff">Consultar</a>
+    </div>
+  </sc-if>
+</sc-if>
+
+<!-- ============ TASACIONES ============ -->
+<sc-if value="{{ isTasar }}">
+  <section style="max-width:1080px;margin:0 auto;padding:28px 16px 80px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:column;gap:10px"><span style="font:700 12px Manrope;letter-spacing:.16em;color:#8a6a24">VENDÉ O ALQUILÁ CON NOSOTROS</span><h1 style="margin:0;font:800 clamp(28px,4vw,44px)/1.1 Manrope;letter-spacing:-.02em;text-wrap:balance">Tasamos tu propiedad y te acompañamos hasta la firma</h1></div>
+    <div style="display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+        <div style="flex:1 0 240px;background:#fff;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:8px"><span style="width:32px;height:32px;border-radius:999px;background:#1d2a6b;color:#fff;font:800 14px Manrope;display:flex;align-items:center;justify-content:center">{{ s.n }}</span><span style="font:800 15px Manrope">{{ s.t }}</span><span style="font-size:14px;line-height:1.5;color:#5f6378">{{ s.d }}</span></div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border-radius:24px;padding:clamp(18px,3vw,32px);display:flex;flex-direction:column;gap:14px">
+      <sc-if value="{{ tasSent }}"><div style="display:flex;flex-direction:column;gap:8px;padding:20px 0"><span style="font:800 24px Manrope;color:#1d2a6b">Recibimos tu solicitud</span><span style="font-size:15px;color:#5f6378">Te contactamos para coordinar la visita.</span></div></sc-if>
+      <sc-if value="{{ tasNotSent }}">
+        <div style="display:flex;background:#f5f4f0;border-radius:999px;padding:4px;align-self:flex-start"><sc-for list="{{ tasOps }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.onClick }}" style="border:0;border-radius:999px;padding:9px 18px;font:700 14px Manrope;cursor:pointer;background:{{ o.bg }};color:{{ o.color }}">{{ o.label }}</button></sc-for></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+          <select style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope;background:#fff"><option>Tipo de propiedad</option><option>Departamento</option><option>Casa</option><option>PH</option><option>Terreno</option><option>Local</option><option>Oficina</option><option>Cochera</option></select>
+          <input placeholder="Dirección y barrio" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope">
+          <input placeholder="Ambientes" inputMode="numeric" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope">
+          <input placeholder="Superficie aprox. (m²)" inputMode="numeric" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope">
+          <input placeholder="Nombre y apellido" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope">
+          <input placeholder="Teléfono" inputMode="tel" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope">
+        </div>
+        <textarea rows="3" placeholder="Comentarios (opcional)" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope;resize:vertical"></textarea>
+        <button onClick="{{ sendTas }}" style="border:0;border-radius:999px;background:#1d2a6b;color:#fff;padding:16px;font:800 15px Manrope;cursor:pointer" style-hover="background:#131c4d">Solicitar tasación</button>
+      </sc-if>
+    </div>
+  </section>
+</sc-if>
+
+<!-- ============ NOSOTROS ============ -->
+<sc-if value="{{ isNosotros }}">
+  <section style="max-width:1080px;margin:0 auto;padding:28px 16px 80px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:20px;align-items:center">
+      <div style="display:flex;flex-direction:column;gap:14px"><span style="font:700 12px Manrope;letter-spacing:.16em;color:#8a6a24">NOSOTROS</span><h1 style="margin:0;font:800 clamp(28px,4vw,44px)/1.1 Manrope;letter-spacing:-.02em;text-wrap:balance">Once años cuidando propiedades y a las personas que viven en ellas</h1><p style="margin:0;font-size:16px;line-height:1.7;color:#3a3e55">Siricman Propiedades nace de más de una década administrando consorcios en la Ciudad de Buenos Aires. Hoy acompañamos operaciones de compra, venta y alquiler con la misma cercanía.</p></div>
+      <div style="background:#1d2a6b;border-radius:28px;overflow:hidden;display:flex;align-items:center;justify-content:center;aspect-ratio:1;max-height:420px"><div style="width:72%;aspect-ratio:1;overflow:hidden"><img src="assets/logo-siricman.jpg" alt="Logo Siricman Propiedades" style="width:133.9%;margin:-2% 0 0 -16%;display:block"></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px">
+      <div style="background:#fff;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:10px"><span style="font:700 12px Manrope;letter-spacing:.16em;color:#8a6a24">MISIÓN</span><p style="margin:0;font-size:16px;line-height:1.6;color:#151a33">Brindar soluciones inmobiliarias y de administración de consorcios con un servicio cercano, transparente y personalizado, acompañando a cada cliente con la experiencia y la confianza de más de 11 años.</p></div>
+      <div style="background:#fff;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:10px"><span style="font:700 12px Manrope;letter-spacing:.16em;color:#8a6a24">VISIÓN</span><p style="margin:0;font-size:16px;line-height:1.6;color:#151a33">Ser una inmobiliaria referente por la calidad humana y profesional de nuestro servicio, construyendo relaciones duraderas y respuestas claras, ágiles y confiables.</p></div>
+    </div>
+    <h2 style="margin:16px 0 0;font:800 24px Manrope">Nuestros valores</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:10px">
+      <sc-for list="{{ valores }}" as="v" hint-placeholder-count="7"><div style="background:#fff;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:6px"><span style="font:800 15px Manrope;color:#1d2a6b">{{ v.t }}</span><span style="font-size:14px;line-height:1.5;color:#5f6378">{{ v.d }}</span></div></sc-for>
+    </div>
+    <h2 style="margin:16px 0 0;font:800 24px Manrope">Equipo</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px">
+      <sc-for list="{{ team }}" as="m" hint-placeholder-count="3"><div style="background:#fff;border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:10px"><div style="aspect-ratio:1;border-radius:14px;background:repeating-linear-gradient(135deg,#ebe7dc 0 12px,#e3ded1 12px 24px);display:flex;align-items:center;justify-content:center;font:500 11px ui-monospace,Menlo,monospace;color:#7a7461">retrato</div><span style="font:800 15px Manrope;padding:0 4px">{{ m.n }}</span><span style="font-size:13px;color:#5f6378;padding:0 4px 4px;margin-top:-6px">{{ m.r }}</span></div></sc-for>
+    </div>
+  </section>
+</sc-if>
+
+<!-- ============ CONTACTO ============ -->
+<sc-if value="{{ isContacto }}">
+  <section style="max-width:1080px;margin:0 auto;padding:28px 16px 80px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-direction:column;gap:10px"><span style="font:700 12px Manrope;letter-spacing:.16em;color:#8a6a24">CONTACTO</span><h1 style="margin:0;font:800 clamp(28px,4vw,44px)/1.1 Manrope;letter-spacing:-.02em">Hablemos de tu próxima operación</h1></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px">
+      <sc-for list="{{ contactRows }}" as="c" hint-placeholder-count="4">
+        <a href="{{ c.href }}" target="_blank" style="background:#fff;border-radius:20px;padding:18px;display:flex;gap:14px;align-items:center;color:#151a33"><span style="width:44px;height:44px;border-radius:14px;background:{{ c.tile }};display:flex;align-items:center;justify-content:center;flex:none"><span style="width:20px;height:20px;background:{{ c.ink }};-webkit-mask:url({{ c.icon }}) center/contain no-repeat;mask:url({{ c.icon }}) center/contain no-repeat"></span></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font:600 12px Manrope;color:#5f6378">{{ c.k }}</span><span style="font:700 15px Manrope;overflow-wrap:anywhere">{{ c.v }}</span></span></a>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:12px">
+      <div style="background:#fff;border-radius:24px;padding:clamp(18px,3vw,28px);display:flex;flex-direction:column;gap:10px">
+        <sc-if value="{{ sent }}"><div style="padding:20px 0;display:flex;flex-direction:column;gap:8px"><span style="font:800 22px Manrope;color:#1d2a6b">¡Mensaje enviado!</span><span style="color:#5f6378">Te respondemos a la brevedad.</span></div></sc-if>
+        <sc-if value="{{ notSent }}">
+          <span style="font:800 17px Manrope">Envianos un mensaje</span>
+          <input placeholder="Nombre y apellido" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope">
+          <input placeholder="Teléfono o email" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope">
+          <select style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope;background:#fff"><option>Quiero comprar</option><option>Quiero alquilar</option><option>Quiero vender o tasar</option><option>Administración de consorcios</option><option>Otro</option></select>
+          <textarea rows="4" placeholder="Tu mensaje" style="border:1px solid #e3dfd5;border-radius:12px;padding:13px;font:500 15px Manrope;resize:vertical"></textarea>
+          <button onClick="{{ send }}" style="border:0;border-radius:999px;background:#1d2a6b;color:#fff;padding:16px;font:800 15px Manrope;cursor:pointer">Enviar</button>
+        </sc-if>
+      </div>
+      <div style="position:relative;min-height:300px;border-radius:24px;overflow:hidden;background:repeating-linear-gradient(0deg,#e6e2d8 0 1px,transparent 1px 36px),repeating-linear-gradient(90deg,#e6e2d8 0 1px,transparent 1px 36px),#efece4;display:flex;align-items:center;justify-content:center"><span style="width:22px;height:22px;border-radius:50%;background:#1d2a6b;border:5px solid #c6a052"></span><span style="position:absolute;left:12px;bottom:12px;background:#fff;border-radius:999px;padding:8px 13px;font:600 13px Manrope">Las Casas 4054, 1° B · Boedo</span></div>
+    </div>
+  </section>
+</sc-if>
+
+</main>
+
+<footer style="background:#131c4d;color:#cfd3e8;border-radius:28px 28px 0 0">
+  <div style="max-width:1240px;margin:0 auto;padding:40px 16px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:28px">
+    <div style="display:flex;align-items:center;gap:12px"><div style="width:52px;height:52px;border-radius:12px;overflow:hidden;background:#1d2a6b;flex:none"><img src="assets/logo-siricman.jpg" alt="" style="width:72.8px;margin:-1.3px 0 0 -8.7px;display:block"></div><div style="display:flex;flex-direction:column;gap:5px"><span style="font:500 17px/1 'Bodoni Moda',serif;letter-spacing:.2em;color:#fff">SIRICMAN</span><span style="font:700 9px/1 Manrope;letter-spacing:.42em;color:#c6a052">PROPIEDADES</span></div></div>
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.5"><span>Las Casas 4054, 1° B · Boedo, CABA</span><span>10:30 a 18:00 · con cita previa</span><span>11 3896-7363 · @gabrielsiricman</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:14px"><span>Gabriel Siricman · Martillero Público y Corredor Inmobiliario</span><span style="color:#9ea4c8">Mat. CUCICBA N° [a completar]</span></div>
+  </div>
+  <div style="max-width:1240px;margin:0 auto;padding:16px 16px 28px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;color:#9ea4c8"><span>© 2026 Siricman Propiedades</span><span>Términos y condiciones · Privacidad</span></div>
+</footer>
+
+<sc-if value="{{ showWaFloat }}" hint-placeholder-val="{{ true }}">
+  <a href="{{ waLink }}" target="_blank" aria-label="Escribinos por WhatsApp" style="position:fixed;right:16px;bottom:20px;z-index:45;width:58px;height:58px;border-radius:999px;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 28px rgba(0,0,0,.25)" style-hover="background:#1fbd5a"><img src="https://cdn.simpleicons.org/whatsapp/ffffff" alt="" style="width:30px;height:30px"></a>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;whatsappFlotante&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const WA='5491138967363';
+const IC=n=>`https://unpkg.com/lucide-static@0.460.0/icons/${n}.svg`;
+const P=[
+ {code:'SP-101',op:'Venta',type:'Departamento',title:'Luminoso 3 ambientes con balcón al frente',barrio:'Palermo',address:'Gorriti 4800',exact:true,cur:'USD',price:185000,exp:145000,amb:3,dorm:2,ban:1,coch:false,cub:72,tot:78,age:12,credito:true,mascotas:true,inmediata:true,serv:['Agua corriente','Gas natural','Cloacas','Luz','Internet'],tag:'Nueva',status:'',feat:true,photos:9},
+ {code:'SP-102',op:'Alquiler',type:'Departamento',title:'2 ambientes a estrenar, cerca del subte A',barrio:'Caballito',address:'Rosario 600',exact:false,cur:'ARS',price:650000,exp:95000,amb:2,dorm:1,ban:1,coch:false,cub:44,tot:48,age:0,credito:false,mascotas:true,inmediata:true,serv:['Agua corriente','Gas natural','Luz','Internet'],tag:'',status:'',feat:true,photos:7},
+ {code:'SP-103',op:'Venta',type:'PH',title:'PH de 4 ambientes con terraza propia',barrio:'Boedo',address:'Carlos Calvo 3900',exact:false,cur:'USD',price:139000,exp:0,amb:4,dorm:3,ban:2,coch:false,cub:95,tot:130,age:45,credito:true,mascotas:true,inmediata:false,serv:['Agua corriente','Gas natural','Cloacas','Luz'],tag:'Oportunidad',status:'',feat:true,photos:10},
+ {code:'SP-104',op:'Venta',type:'Casa',title:'Casa de 5 ambientes con jardín y cochera',barrio:'Villa Urquiza',address:'Bauness 2200',exact:true,cur:'USD',price:320000,exp:0,amb:5,dorm:3,ban:3,coch:true,cub:180,tot:240,age:30,credito:true,mascotas:true,inmediata:false,serv:['Agua corriente','Gas natural','Cloacas','Luz','Internet'],tag:'',status:'',feat:true,photos:10},
+ {code:'SP-105',op:'Alquiler',type:'Local',title:'Local a la calle sobre avenida, 8 m de frente',barrio:'Almagro',address:'Av. Rivadavia 4000',exact:true,cur:'ARS',price:1200000,exp:60000,amb:1,dorm:0,ban:1,coch:false,cub:110,tot:110,age:40,credito:false,mascotas:false,inmediata:true,serv:['Agua corriente','Luz','Internet'],tag:'',status:'',feat:false,photos:6},
+ {code:'SP-106',op:'Venta',type:'Departamento',title:'Semipiso de 4 ambientes con dependencia',barrio:'Belgrano',address:'Av. Cabildo 1900',exact:false,cur:'USD',price:245000,exp:210000,amb:4,dorm:3,ban:2,coch:true,cub:110,tot:118,age:20,credito:true,mascotas:false,inmediata:false,serv:['Agua corriente','Gas natural','Cloacas','Luz','Internet'],tag:'',status:'Reservada',feat:false,photos:8},
+ {code:'SP-107',op:'Venta',type:'Cochera',title:'Cochera fija cubierta en edificio con seguridad',barrio:'Palermo',address:'Soler 4500',exact:false,cur:'USD',price:28000,exp:18000,amb:0,dorm:0,ban:0,coch:true,cub:12,tot:12,age:15,credito:false,mascotas:false,inmediata:true,serv:['Luz'],tag:'',status:'Vendida',feat:false,photos:6},
+ {code:'SP-108',op:'Alquiler',type:'Oficina',title:'Oficina de 3 despachos con sala de reuniones',barrio:'Microcentro',address:'Tucumán 500',exact:true,cur:'ARS',price:900000,exp:120000,amb:4,dorm:0,ban:1,coch:false,cub:85,tot:85,age:35,credito:false,mascotas:false,inmediata:true,serv:['Agua corriente','Luz','Internet'],tag:'',status:'Alquilada',feat:false,photos:7},
+ {code:'SP-109',op:'Venta',type:'Terreno',title:'Lote de 8,66 x 30 m apto multifamiliar',barrio:'Saavedra',address:'Pinto 4300',exact:false,cur:'USD',price:210000,exp:0,amb:0,dorm:0,ban:0,coch:false,cub:0,tot:260,age:0,credito:false,mascotas:false,inmediata:true,serv:['Agua corriente','Gas natural','Cloacas','Luz'],tag:'',status:'',feat:false,photos:6}
+];
+const TIPOS=['Departamento','Casa','PH','Terreno','Local','Oficina','Cochera'];
+const DESC='Excelente unidad en una de las mejores cuadras del barrio, a pocos metros de transporte, comercios y espacios verdes. Ambientes amplios y muy luminosos, pisos de madera, cocina integrada con buena guarda y balcón al frente. Edificio con muy buen mantenimiento. Ideal para vivienda o inversión.';
+const fmt=n=>n.toLocaleString('es-AR');
+const NAVY='#1d2a6b',INK='#151a33';
+const STC={Reservada:'#8a6a24',Vendida:'#9b2c2c',Alquilada:'#3d4f7c'};
+const BLANK={op:'Todas',type:'Todos',barrio:'Todos los barrios',amb:0,dorm:0,ban:0,coch:false,credito:false,mascotas:false,fcur:'USD',pmin:'',pmax:''};
+
+class Component extends DCLogic {
+  constructor(p){super(p);
+    let q={};try{q=Object.fromEntries(new URLSearchParams(location.search))}catch(e){}
+    this.state={page:q.page||'home',...BLANK,op:q.op||'Todas',sort:'Más recientes',sel:q.sel||'SP-101',photo:0,hOp:'Todas',hType:'Todos',hBarrio:'Todos los barrios',hAmb:'0',sent:false,tasSent:false,tasOp:'Vender',
+      sheet:q.sheet==='1',menu:q.menu==='1',wide:typeof window!=='undefined'&&window.innerWidth>=960};
+    this.gal=React.createRef();
+  }
+  componentDidMount(){this._r=()=>this.setState({wide:window.innerWidth>=960});this._r();window.addEventListener('resize',this._r);}
+  componentWillUnmount(){window.removeEventListener('resize',this._r);}
+  go(page,extra={}){this.setState({page,photo:0,sent:false,tasSent:false,menu:false,sheet:false,...extra});try{window.scrollTo(0,0)}catch(e){}}
+  card(p){
+    const priceLabel=(p.cur==='USD'?'USD ':'$ ')+fmt(p.price)+(p.op==='Alquiler'?' /mes':'');
+    const specs=[];
+    if(p.tot)specs.push({icon:IC('ruler'),t:p.tot+' m²'});
+    if(p.amb&&p.type!=='Local')specs.push({icon:IC('layout-grid'),t:p.amb+' amb.'});
+    if(p.dorm)specs.push({icon:IC('bed-double'),t:p.dorm});
+    if(p.ban)specs.push({icon:IC('bath'),t:p.ban});
+    if(p.coch&&p.type!=='Cochera')specs.push({icon:IC('car'),t:'1'});
+    return {...p,priceLabel,specs,hasTag:!!p.tag,hasStatus:!!p.status,statusBg:STC[p.status]||NAVY,hasExp:p.exp>0,expLabel:'+ $ '+fmt(p.exp)+' expensas',
+      imgOpacity:p.status&&p.status!=='Reservada'?.55:1,onClick:()=>this.go('detail',{sel:p.code})};
+  }
+  filter(s){
+    const num=v=>+String(v).replace(/\D/g,'')||0;
+    return P.filter(p=>(s.op==='Todas'||p.op===s.op)&&(s.type==='Todos'||p.type===s.type)&&(s.barrio==='Todos los barrios'||p.barrio===s.barrio)
+      &&(!s.amb||(s.amb===5?p.amb>=5:p.amb===s.amb))&&(!s.dorm||p.dorm>=s.dorm)&&(!s.ban||p.ban>=s.ban)&&(!s.coch||p.coch)&&(!s.credito||p.credito)&&(!s.mascotas||p.mascotas)
+      &&(!(s.pmin||s.pmax)||(p.cur===s.fcur&&(!s.pmin||p.price>=num(s.pmin))&&(!s.pmax||p.price<=num(s.pmax)))));
+  }
+  renderVals(){
+    const s=this.state,pg=s.page,wide=s.wide;
+    const navDefs=[['Comprar','list','Venta'],['Alquilar','list','Alquiler'],['Tasaciones','tasar'],['Nosotros','nosotros'],['Contacto','contacto']];
+    const nav=navDefs.map(([label,page,op])=>{const a=pg===page&&(!op||s.op===op);return {label,bg:a?'#f0eee8':'transparent',color:a?NAVY:'#3a3e55',onClick:()=>this.go(page,op?{...BLANK,op}:{})};});
+    let res=this.filter(s);
+    const usd=p=>p.cur==='USD'?p.price:p.price/1200;
+    if(s.sort==='Menor precio')res=[...res].sort((a,b)=>usd(a)-usd(b));
+    if(s.sort==='Mayor precio')res=[...res].sort((a,b)=>usd(b)-usd(a));
+    res=[...res.filter(p=>!p.status||p.status==='Reservada'),...res.filter(p=>p.status&&p.status!=='Reservada')];
+    const pill=(on,fn,label)=>({label,onClick:fn,bg:on?NAVY:'#fff',color:on?'#fff':INK,border:on?NAVY:'#e3dfd5'});
+    const nActive=[s.type!=='Todos',s.amb,s.dorm,s.ban,s.coch,s.credito,s.mascotas,s.pmin||s.pmax].filter(Boolean).length;
+    const raw=P.find(p=>p.code===s.sel)||P[0];
+    const d=this.card(raw);
+    d.facts=[{icon:IC('ruler'),k:'Sup. total',v:raw.tot+' m²'},{icon:IC('square'),k:'Sup. cubierta',v:raw.cub?raw.cub+' m²':'—'},{icon:IC('layout-grid'),k:'Ambientes',v:raw.amb||'—'},{icon:IC('bed-double'),k:'Dormitorios',v:raw.dorm||'—'},
+      {icon:IC('bath'),k:'Baños',v:raw.ban||'—'},{icon:IC('car'),k:'Cochera',v:raw.coch?'Sí':'No'},{icon:IC('calendar'),k:'Antigüedad',v:raw.age===0?'A estrenar':raw.age+' años'},{icon:IC('receipt'),k:'Expensas',v:raw.exp?'$ '+fmt(raw.exp):'No tiene'}];
+    d.condChips=[raw.credito&&'Apto crédito',raw.mascotas&&'Acepta mascotas',raw.inmediata&&'Disponibilidad inmediata'].filter(Boolean);
+    d.servicios=raw.serv;d.desc=DESC;d.approx=!raw.exact;
+    d.locLabel=raw.exact?raw.address+' · '+raw.barrio+', CABA':raw.barrio+', CABA · zona aproximada';
+    d.mapNote=raw.exact?raw.address+', '+raw.barrio:'Zona aproximada · '+raw.barrio;
+    d.msg=`Hola, me interesa la propiedad ${raw.code} (${raw.title}). ¿Podemos coordinar una visita?`;
+    d.wa=`https://wa.me/${WA}?text=${encodeURIComponent(d.msg)}`;
+    const photo=Math.min(s.photo,raw.photos-1);
+    const scrollTo=i=>{const el=this.gal.current;if(el)el.scrollTo({left:i*el.clientWidth,behavior:'smooth'});};
+    const typeCount=t=>P.filter(p=>p.type===t&&!p.status).length;
+    return {
+      wide,narrow:!wide,dFlex:wide?'flex':'none',mFlex:wide?'none':'flex',stickyPos:wide?'sticky':'static',
+      nav,menuOpen:s.menu,openMenu:()=>this.setState({menu:true}),closeMenu:()=>this.setState({menu:false}),
+      isHome:pg==='home',isList:pg==='list',isDetail:pg==='detail',isTasar:pg==='tasar',isNosotros:pg==='nosotros',isContacto:pg==='contacto',
+      showWaFloat:(this.props.whatsappFlotante??true)&&!(pg==='detail'&&!wide)&&!s.sheet,
+      waLink:`https://wa.me/${WA}?text=${encodeURIComponent('Hola Gabriel, te escribo desde la web.')}`,
+      goHome:()=>this.go('home'),goTasar:()=>this.go('tasar'),goListAll:()=>this.go('list',{...BLANK}),goBack:()=>this.go('list'),
+      goCode:()=>this.go('list',{...BLANK}),
+      heroOps:[['Todas','Todas'],['Comprar','Venta'],['Alquilar','Alquiler']].map(([l,v])=>({label:l,bg:s.hOp===v?'#fff':'transparent',color:s.hOp===v?NAVY:'#fff',onClick:()=>this.setState({hOp:v})})),
+      hType:s.hType,hBarrio:s.hBarrio,hAmb:s.hAmb,
+      onHType:e=>this.setState({hType:e.target.value}),onHBarrio:e=>this.setState({hBarrio:e.target.value}),onHAmb:e=>this.setState({hAmb:e.target.value}),
+      doSearch:()=>this.go('list',{...BLANK,op:s.hOp,type:s.hType,barrio:s.hBarrio,amb:+s.hAmb}),
+      typeChips:TIPOS.map(t=>({label:t==='PH'?'PH':t+(t==='Local'?'es':'s'),count:typeCount(t),onClick:()=>this.go('list',{...BLANK,type:t})})),
+      featured:P.filter(p=>p.feat).map(p=>this.card(p)),
+      services:[
+        {icon:IC('key-round'),title:'Comprar',text:'Te acompañamos en la búsqueda, la negociación y la escritura.',onClick:()=>this.go('list',{...BLANK,op:'Venta'})},
+        {icon:IC('house'),title:'Alquilar',text:'Contratos claros y gestión ordenada, para inquilinos y propietarios.',onClick:()=>this.go('list',{...BLANK,op:'Alquiler'})},
+        {icon:IC('chart-line'),title:'Vender o tasar',text:'Tasación profesional y estrategia de publicación.',onClick:()=>this.go('tasar')},
+        {icon:IC('building-2'),title:'Consorcios',text:'Más de 11 años administrando edificios en CABA.',onClick:()=>this.go('contacto')}],
+      opSeg:[['Todas','Todas'],['Venta','Venta'],['Alquiler','Alquiler']].map(([l,v])=>({label:l,bg:s.op===v?NAVY:'transparent',color:s.op===v?'#fff':INK,onClick:()=>this.setState({op:v})})),
+      fBarrio:s.barrio,onBarrio:e=>this.setState({barrio:e.target.value}),
+      filtersLabel:nActive?`Filtros · ${nActive}`:'Filtros',
+      openSheet:()=>this.setState({sheet:true}),closeSheet:()=>this.setState({sheet:false}),sheetOpen:s.sheet,
+      sh:wide?{left:'auto',top:'0',width:'440px',maxH:'none',radius:'24px 0 0 24px'}:{left:'0',top:'auto',width:'auto',maxH:'88vh',radius:'24px 24px 0 0'},
+      quick:[
+        ...['Departamento','Casa','PH'].map(t=>pill(s.type===t,()=>this.setState({type:s.type===t?'Todos':t}),t)),
+        pill(s.amb===2,()=>this.setState({amb:s.amb===2?0:2}),'2 amb.'),pill(s.amb===3,()=>this.setState({amb:s.amb===3?0:3}),'3 amb.'),
+        pill(s.credito,()=>this.setState({credito:!s.credito}),'Apto crédito'),pill(s.mascotas,()=>this.setState({mascotas:!s.mascotas}),'Mascotas'),pill(s.coch,()=>this.setState({coch:!s.coch}),'Cochera')],
+      sTypes:['Todos',...TIPOS].map(t=>pill(s.type===t,()=>this.setState({type:t}),t)),
+      curSeg:['USD','$'].map(c=>{const v=c==='$'?'ARS':'USD';return {label:c,bg:s.fcur===v?NAVY:'transparent',color:s.fcur===v?'#fff':INK,onClick:()=>this.setState({fcur:v})};}),
+      pmin:s.pmin,pmax:s.pmax,onPmin:e=>this.setState({pmin:e.target.value}),onPmax:e=>this.setState({pmax:e.target.value}),
+      pillGroups:[
+        {label:'Ambientes',opts:[1,2,3,4,5].map(n=>pill(s.amb===n,()=>this.setState({amb:s.amb===n?0:n}),n===5?'5+':String(n)))},
+        {label:'Dormitorios',opts:[1,2,3,4].map(n=>pill(s.dorm===n,()=>this.setState({dorm:s.dorm===n?0:n}),n+'+'))},
+        {label:'Baños',opts:[1,2,3].map(n=>pill(s.ban===n,()=>this.setState({ban:s.ban===n?0:n}),n+'+'))}],
+      toggles:[['coch','Con cochera'],['credito','Apto crédito'],['mascotas','Acepta mascotas']].map(([k,l])=>({label:l,bg:s[k]?NAVY:'#d9d4c8',left:s[k]?'21px':'3px',onClick:()=>this.setState({[k]:!s[k]})})),
+      clearFilters:()=>this.setState({...BLANK,op:s.op}),
+      sort:s.sort,onSort:e=>this.setState({sort:e.target.value}),
+      listTitle:(res.length===1?'propiedad':'propiedades')+(s.op==='Venta'?' en venta':s.op==='Alquiler'?' en alquiler':''),
+      results:res.map(p=>this.card(p)),resultCount:res.length,noResults:res.length===0,
+      d,photoN:photo+1,galRef:this.gal,slides:Array.from({length:raw.photos},(_,i)=>({n:i+1})),
+      galPad:wide?'16px':'0px',galRadius:wide?'24px':'0px',galRatio:wide?'16/7':'4/3',
+      onGalScroll:e=>{const el=e.currentTarget;const i=Math.round(el.scrollLeft/el.clientWidth);if(i!==this.state.photo)this.setState({photo:i});},
+      prevPhoto:()=>scrollTo(Math.max(0,photo-1)),nextPhoto:()=>scrollTo(Math.min(raw.photos-1,photo+1)),
+      sent:s.sent,notSent:!s.sent,send:()=>this.setState({sent:true}),
+      tasSent:s.tasSent,tasNotSent:!s.tasSent,sendTas:()=>this.setState({tasSent:true}),
+      tasOps:['Vender','Alquilar'].map(v=>({label:v,bg:s.tasOp===v?NAVY:'transparent',color:s.tasOp===v?'#fff':INK,onClick:()=>this.setState({tasOp:v})})),
+      steps:[{n:'1',t:'Contanos de tu propiedad',d:'Completá el formulario o escribinos por WhatsApp.'},{n:'2',t:'Visita y análisis',d:'Comparamos con operaciones reales de la zona.'},{n:'3',t:'Informe y estrategia',d:'Valor sugerido, fotos y plan de difusión.'}],
+      valores:[{t:'Confianza',d:'Honestidad, claridad y responsabilidad en cada operación.'},{t:'Profesionalismo',d:'Experiencia y conocimiento al servicio de cada cliente.'},{t:'Atención personalizada',d:'Cada persona, propiedad y necesidad es diferente.'},{t:'Compromiso',d:'Acompañamos cada proceso de principio a fin.'},{t:'Transparencia',d:'Comunicamos de forma simple, directa y clara.'},{t:'Cercanía humana',d:'Relaciones construidas con respeto, escucha y amistad.'},{t:'Responsabilidad',d:'Seriedad, organización y vocación de servicio.'}],
+      team:[{n:'Gabriel Siricman',r:'Martillero Público y Corredor Inmobiliario'},{n:'[Nombre]',r:'Administración de consorcios'},{n:'[Nombre]',r:'Atención al cliente'}],
+      contactRows:[
+        {icon:'https://cdn.simpleicons.org/whatsapp',tile:'#e3f8ea',ink:'#1a9e4b',k:'WhatsApp',v:'11 3896-7363',href:`https://wa.me/${WA}`},
+        {icon:IC('mail'),tile:'#eef0f8',ink:NAVY,k:'Email',v:'consultas@siricmanpropiedades.com.ar',href:'mailto:consultas@siricmanpropiedades.com.ar'},
+        {icon:IC('instagram'),tile:'#f3ecdb',ink:'#8a6a24',k:'Instagram',v:'@gabrielsiricman',href:'https://instagram.com/'},
+        {icon:IC('clock'),tile:'#f5f4f0',ink:INK,k:'Horario (con cita previa)',v:'10:30 a 18:00',href:'#'}]
+    };
+  }
+}
+</script>
+</body>
+</html>
