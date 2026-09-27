@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Bodoni_Moda, Manrope } from "next/font/google";
 import Header from "@/components/layout/Header/Header";
+import Footer from "@/components/layout/Footer/Footer";
+import WhatsAppButton from "@/components/layout/WhatsAppButton/WhatsAppButton";
 import "./globals.css";
 
 const bodoniModa = Bodoni_Moda({
@@ -28,6 +30,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <Header />
         {children}
+        <Footer />
+        <WhatsAppButton />
       </body>
     </html>
   );
