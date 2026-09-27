@@ -6,7 +6,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 |---|---------|------|--------|--------|
 | 0 | Server setup: VPS hardening + DNS | infra | — | ✅ Done |
 | 1 | Front base: Next.js scaffold, design tokens, fonts, layout (header, footer, mobile menu, floating WhatsApp) | front | ODD | ✅ Done |
-| 2 | Early deploy: Dockerfiles, production compose, Caddy (HTTPS) | both | ODD | ⬜ |
+| 2 | Early deploy: Dockerfiles, production compose, Caddy (HTTPS) | both | ODD | ✅ Done |
 | 3 | Properties domain (back): entity, migrations, admin CRUD, public listing with filters | back | SDD | ⬜ |
 | 4 | Images: upload, WebP conversion, ordering/cover, storage | back | SDD | ⬜ |
 | 5 | Admin session: login + MFA from Next, token strategy | both | SDD | ⬜ |
