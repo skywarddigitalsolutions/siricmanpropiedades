@@ -7,7 +7,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 0 | Server setup: VPS hardening + DNS | infra | — | ✅ Done |
 | 1 | Front base: Next.js scaffold, design tokens, fonts, layout (header, footer, mobile menu, floating WhatsApp) | front | ODD | ✅ Done |
 | 2 | Early deploy: Dockerfiles, production compose, Caddy (HTTPS) | both | ODD | ✅ Done |
-| 3 | Properties domain (back): entity, migrations, admin CRUD, public listing with filters | back | SDD | ⬜ |
+| 3 | Properties domain (back): entity, migrations, admin CRUD, public listing with filters | back | SDD | ✅ Done |
 | 4 | Images: upload, WebP conversion, ordering/cover, storage | back | SDD | ⬜ |
 | 5 | Admin session: login + MFA from Next, token strategy | both | SDD | ⬜ |
 | 6 | Admin panel: property list and editor | front | ODD | ⬜ |
@@ -20,9 +20,12 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 
 Resolve each one when its feature starts.
 
-- [ ] Price sorting across USD/ARS (design mock uses a fixed 1200 rate) — feature 3
-- [ ] Neighborhoods: fixed CABA list or open? — feature 3
+- [x] Price sorting across USD/ARS — feature 3: no conversion; sort and price range apply within one currency (price sort/range without `currency` returns 400)
+- [x] Neighborhoods — feature 3: the 48 official CABA barrios seeded by migration; admin/manager can add new ones
 - [ ] Image storage: local disk vs Cloudflare R2 — feature 4
 - [ ] Admin token strategy: httpOnly cookie via Next (BFF) vs bearer in browser; refresh token — feature 5
+- [ ] Public catalog: expose a `featured` filter? — feature 7
+- [ ] API rate limit (global throttler, 20 req/min per IP) vs server-side fetching of the public catalog — before features 6/7
+- [ ] Restrict deal status `sold` to sale and `rented` to rent operations? — feature 6
 - [ ] Map provider: Google Maps vs OpenStreetMap — feature 9
 - [ ] Email notification on new leads? — feature 8
