@@ -77,15 +77,26 @@ describe("getCurrentUser", () => {
     expect(store.get(SESSION_COOKIE)?.value).toBe("jwt-token");
   });
 
-  it("clears the session cookie and redirects to /admin/login?reason=expired on a 401 from /auth/me", async () => {
+  it("redirects to /admin/login?reason=expired on a 401 from /auth/me, WITHOUT writing any cookie itself", async () => {
+    // Regression test for a defect found during the Phase 5 manual
+    // end-to-end walkthrough (real `next start` + real back): calling
+    // `cookies().set()` from here throws "Cookies can only be modified in a
+    // Server Action or Route Handler" at runtime, because `getCurrentUser`
+    // is invoked from the `(panel)` Server Components, not a Server Action —
+    // a constraint this fake store does not itself enforce, which is exactly
+    // why the manual harness (not this mock) caught it. Per ADR-3, the proxy
+    // clears the cookie once the browser lands on `/admin/login?reason=...`;
+    // this function must only redirect, never call `store.set`.
+    const setSpy = vi.spyOn(store, "set");
     getMe.mockRejectedValue(new ApiError(401, "Invalid or expired token"));
 
     await expectRedirect(getCurrentUser(), "/admin/login?reason=expired");
 
-    expect(store.get(SESSION_COOKIE)?.value).toBeFalsy();
+    expect(setSpy).not.toHaveBeenCalled();
   });
 
-  it("revokes the token, clears the cookie, and redirects to /admin/login?reason=forbidden when the role is no longer allowed", async () => {
+  it("revokes the token and redirects to /admin/login?reason=forbidden when the role is no longer allowed, WITHOUT writing any cookie itself", async () => {
+    const setSpy = vi.spyOn(store, "set");
     getMe.mockResolvedValue({
       id: "u2",
       userName: "carla",
@@ -97,10 +108,11 @@ describe("getCurrentUser", () => {
     await expectRedirect(getCurrentUser(), "/admin/login?reason=forbidden");
 
     expect(logout).toHaveBeenCalledWith("jwt-token");
-    expect(store.get(SESSION_COOKIE)?.value).toBeFalsy();
+    expect(setSpy).not.toHaveBeenCalled();
   });
 
-  it("swallows a failed best-effort logout and still redirects to /admin/login?reason=forbidden", async () => {
+  it("swallows a failed best-effort logout and still redirects to /admin/login?reason=forbidden, WITHOUT writing any cookie itself", async () => {
+    const setSpy = vi.spyOn(store, "set");
     getMe.mockResolvedValue({
       id: "u3",
       userName: "denied",
@@ -111,7 +123,7 @@ describe("getCurrentUser", () => {
 
     await expectRedirect(getCurrentUser(), "/admin/login?reason=forbidden");
 
-    expect(store.get(SESSION_COOKIE)?.value).toBeFalsy();
+    expect(setSpy).not.toHaveBeenCalled();
   });
 
   it("rethrows an ApiError(0) network failure instead of redirecting, for the error.tsx boundary", async () => {

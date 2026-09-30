@@ -5,7 +5,7 @@ import { getMe, logout } from "@/lib/api/auth";
 import type { SessionUser } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
 import { canAccessPanel } from "./roles";
-import { clearAllSessionCookies, getSessionCookie } from "./cookies";
+import { getSessionCookie } from "./cookies";
 
 /**
  * Reads the session cookie, redirecting to `/admin/login` when it is absent.
@@ -31,12 +31,28 @@ export async function getSessionToken(): Promise<string> {
  * runtime guarantee, not exercised by this project's Vitest harness (see the
  * note at the bottom of `dal.test.ts`).
  *
- * - `401` (missing, expired, revoked, or otherwise invalid token) → clear
- *   the session cookie, redirect to `/admin/login?reason=expired`
- *   (Requirement: Server-Side Session Validation).
- * - A role that no longer passes the panel gate → best-effort logout, clear
- *   the cookie, redirect to `/admin/login?reason=forbidden` (Requirement:
- *   Role Gate for Admin Panel Access — "Role revoked mid-session").
+ * This function runs from Server Components (the `(panel)` layout and page),
+ * never from a Server Action or Route Handler, so it deliberately does NOT
+ * call `cookies().set()` itself — `next/headers`'s `cookies()` throws
+ * "Cookies can only be modified in a Server Action or Route Handler" outside
+ * that context (confirmed against the real Next 16 runtime during the
+ * Phase 5 manual walkthrough; the unit tests' cookie-store fake did not
+ * enforce this constraint, which is why this was only caught there). Per
+ * ADR-3's own rationale, the proxy is the single place that clears a stale
+ * cookie after a Server Component detects a rejected session: it expires all
+ * three cookies whenever `/admin/login` is requested with a `reason` query
+ * param (ADR-3 rule 1). Redirecting here with `?reason=expired|forbidden` is
+ * therefore sufficient — the browser's next request lands on `/admin/login`
+ * with that reason, and the proxy clears the cookies there.
+ *
+ * - `401` (missing, expired, revoked, or otherwise invalid token) → redirect
+ *   to `/admin/login?reason=expired`, letting the proxy clear the session
+ *   cookie (Requirement: Server-Side Session Validation).
+ * - A role that no longer passes the panel gate → best-effort logout (an API
+ *   call, not a cookie write, so it is safe here), then redirect to
+ *   `/admin/login?reason=forbidden` for the proxy to clear the cookie
+ *   (Requirement: Role Gate for Admin Panel Access — "Role revoked
+ *   mid-session").
  * - `ApiError(0)` or another non-401 failure → rethrown, for the `error.tsx`
  *   boundary to render an "unavailable" message; never swallowed here.
  */
@@ -48,7 +64,6 @@ export const getCurrentUser = cache(async (): Promise<SessionUser> => {
     user = await getMe(token);
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
-      await clearAllSessionCookies();
       redirect("/admin/login?reason=expired");
     }
     throw error;
@@ -60,7 +75,6 @@ export const getCurrentUser = cache(async (): Promise<SessionUser> => {
     } catch {
       // Best-effort revocation (ADR-6 precedent): the token still expires on its own.
     }
-    await clearAllSessionCookies();
     redirect("/admin/login?reason=forbidden");
   }
 
