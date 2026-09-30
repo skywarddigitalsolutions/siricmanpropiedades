@@ -120,11 +120,13 @@ export async function enableMfaAction(
 
 /**
  * `/admin/mfa/setup` confirmation step. Calls `POST /api/auth/mfa/confirm`
- * with the `setupToken` cookie and the submitted TOTP code. On success,
- * clears the `setupToken` cookie (enrollment is complete) and returns the
- * one-time backup codes; per `design.md`, no session cookie is ever set
- * from this flow — the user must complete a normal MFA-verified login
- * afterward.
+ * with the `setupToken` cookie and the submitted TOTP code. On success it
+ * returns the one-time backup codes and does NOT touch any cookie: modifying
+ * a cookie in a Server Action makes Next re-render `/admin/mfa/setup`, whose
+ * guard would then redirect before the codes are shown. The `setupToken`
+ * cookie is cleared by `finishEnrollmentAction` once the user acknowledges
+ * the codes. Per `design.md`, no session cookie is ever set from this flow —
+ * the user must complete a normal MFA-verified login afterward.
  */
 export async function confirmMfaAction(
   code: string,
@@ -133,7 +135,6 @@ export async function confirmMfaAction(
 
   try {
     const response = await confirmMfa(token, code);
-    await clearSetupPendingCookie();
     return { step: "codes", backupCodes: response.backupCodes };
   } catch (error) {
     const failure = classifyEnrollmentError(error, "Invalid code", "invalid-code");
@@ -143,4 +144,15 @@ export async function confirmMfaAction(
     }
     return { step: "scan", error: failure.code };
   }
+}
+
+/**
+ * Final enrollment step: runs after the user acknowledges the backup codes.
+ * Enrollment is already complete on the back, so the leftover `setupToken`
+ * is useless (`enable` would answer 400 "MFA is already enabled"); it is
+ * cleared here and the user is sent to a normal MFA-verified login.
+ */
+export async function finishEnrollmentAction(): Promise<void> {
+  await clearSetupPendingCookie();
+  redirect("/admin/login");
 }

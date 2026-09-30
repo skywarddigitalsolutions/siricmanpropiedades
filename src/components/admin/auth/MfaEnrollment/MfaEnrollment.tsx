@@ -15,6 +15,7 @@ import styles from "./MfaEnrollment.module.css";
 type MfaEnrollmentProps = {
   enableMfaAction: (password: string) => Promise<EnableMfaState>;
   confirmMfaAction: (code: string) => Promise<ConfirmMfaState>;
+  finishEnrollmentAction: () => Promise<void>;
 };
 
 type WizardState = {
@@ -46,6 +47,7 @@ const INITIAL_STATE: WizardState = { step: "password" };
 export default function MfaEnrollment({
   enableMfaAction,
   confirmMfaAction,
+  finishEnrollmentAction,
 }: MfaEnrollmentProps) {
   const [state, setState] = useState<WizardState>(INITIAL_STATE);
 
@@ -74,7 +76,12 @@ export default function MfaEnrollment({
   }
 
   if (state.step === "codes" && state.backupCodes) {
-    return <BackupCodes codes={state.backupCodes} />;
+    return (
+      <BackupCodes
+        codes={state.backupCodes}
+        onFinish={finishEnrollmentAction}
+      />
+    );
   }
 
   if (state.step === "scan" && state.qrSvgDataUri && state.secret) {

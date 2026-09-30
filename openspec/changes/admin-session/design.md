@@ -263,6 +263,8 @@ LogoutButton form ─▶ logoutAction ─▶ POST /api/auth/logout (Bearer; erro
    ─▶ "Los guardé" ─▶ link /admin/login ─▶ normal login ─▶ mfaRequired ─▶ verify
 ```
 
+> **Post-apply correction:** `confirmMfaAction` must not modify cookies (a cookie write in a Server Action re-renders the route and the setup guard would redirect before the backup codes show). The `setupToken` cookie is cleared by a separate `finishEnrollmentAction`, submitted from the backup-codes screen after the user acknowledges the codes.
+
 ## File Changes
 
 ### Slice 1 — back (`back-siricmanpropiedades`)
