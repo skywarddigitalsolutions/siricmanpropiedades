@@ -1,0 +1,13 @@
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: var(--color-bg);
+}
+
+.message {
+  font: 500 15px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}

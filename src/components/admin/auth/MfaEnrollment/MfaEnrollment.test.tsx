@@ -18,12 +18,14 @@ const BACKUP_CODES = Array.from({ length: 10 }, (_, i) => `code-${i}`);
 async function advanceToScanStep(
   enableMfaAction: (password: string) => Promise<EnableMfaState>,
   confirmMfaAction: (code: string) => Promise<ConfirmMfaState>,
+  finishEnrollmentAction: () => Promise<void> = vi.fn(),
 ) {
   const user = userEvent.setup();
   render(
     <MfaEnrollment
       enableMfaAction={enableMfaAction}
       confirmMfaAction={confirmMfaAction}
+      finishEnrollmentAction={finishEnrollmentAction}
     />,
   );
 
@@ -42,6 +44,7 @@ describe("MfaEnrollment", () => {
       <MfaEnrollment
         enableMfaAction={enableMfaAction}
         confirmMfaAction={confirmMfaAction}
+        finishEnrollmentAction={vi.fn()}
       />,
     );
 
@@ -62,6 +65,7 @@ describe("MfaEnrollment", () => {
       <MfaEnrollment
         enableMfaAction={enableMfaAction}
         confirmMfaAction={confirmMfaAction}
+        finishEnrollmentAction={vi.fn()}
       />,
     );
 
@@ -122,7 +126,7 @@ describe("MfaEnrollment", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows the 10 backup codes on a correct confirmation code, gated by the acknowledgement checkbox", async () => {
+  it("shows the 10 backup codes on a correct confirmation code and finishes only after acknowledgement", async () => {
     const enableMfaAction = vi
       .fn<(password: string) => Promise<EnableMfaState>>()
       .mockResolvedValue({
@@ -133,8 +137,13 @@ describe("MfaEnrollment", () => {
     const confirmMfaAction = vi
       .fn<(code: string) => Promise<ConfirmMfaState>>()
       .mockResolvedValue({ step: "codes", backupCodes: BACKUP_CODES });
+    const finishEnrollmentAction = vi.fn<() => Promise<void>>();
 
-    const user = await advanceToScanStep(enableMfaAction, confirmMfaAction);
+    const user = await advanceToScanStep(
+      enableMfaAction,
+      confirmMfaAction,
+      finishEnrollmentAction,
+    );
 
     await user.type(
       screen.getByLabelText("Código de confirmación"),
@@ -143,14 +152,14 @@ describe("MfaEnrollment", () => {
     await user.click(screen.getByRole("button", { name: "Confirmar" }));
 
     expect(await screen.findAllByRole("listitem")).toHaveLength(10);
-    expect(
-      screen.queryByRole("link", { name: /iniciar sesión/i }),
-    ).not.toBeInTheDocument();
+    const continueButton = screen.getByRole("button", {
+      name: /iniciar sesión/i,
+    });
+    expect(continueButton).toBeDisabled();
 
     await user.click(screen.getByRole("checkbox", { name: /los guardé/i }));
+    await user.click(continueButton);
 
-    expect(
-      screen.getByRole("link", { name: /iniciar sesión/i }),
-    ).toHaveAttribute("href", "/admin/login");
+    expect(finishEnrollmentAction).toHaveBeenCalledTimes(1);
   });
 });

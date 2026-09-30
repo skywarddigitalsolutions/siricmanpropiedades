@@ -34,7 +34,11 @@ const { renderQrDataUri } = vi.hoisted(() => ({
 vi.mock("@/lib/mfa/qr", () => ({ renderQrDataUri }));
 
 import { ApiError } from "@/lib/api/client";
-import { confirmMfaAction, enableMfaAction } from "./actions";
+import {
+  confirmMfaAction,
+  enableMfaAction,
+  finishEnrollmentAction,
+} from "./actions";
 
 // Exact messages thrown by AuthService.resolveUserFromToken/verifyToken
 // (back-siricmanpropiedades src/auth/auth.service.ts) whenever the
@@ -160,11 +164,14 @@ describe("confirmMfaAction", () => {
     expect(confirmMfa).not.toHaveBeenCalled();
   });
 
-  it("returns the backup codes and clears the setupToken cookie on a correct code", async () => {
+  it("returns the backup codes without touching any cookie on a correct code", async () => {
+    // Modifying a cookie here would make Next re-render /admin/mfa/setup
+    // after the action, whose guard would redirect before the codes render.
     store.set(SETUP_PENDING_COOKIE, "setup-token-1");
     confirmMfa.mockResolvedValue({
       backupCodes: Array.from({ length: 10 }, (_, i) => `code-${i}`),
     });
+    const setSpy = vi.spyOn(store, "set");
 
     const result = await confirmMfaAction("123456");
 
@@ -173,7 +180,8 @@ describe("confirmMfaAction", () => {
       step: "codes",
       backupCodes: Array.from({ length: 10 }, (_, i) => `code-${i}`),
     });
-    expect(store.get(SETUP_PENDING_COOKIE)?.value).toBeFalsy();
+    expect(setSpy).not.toHaveBeenCalled();
+    expect(store.get(SETUP_PENDING_COOKIE)?.value).toBe("setup-token-1");
     expect(store.get(SESSION_COOKIE)?.value).toBeFalsy();
   });
 
@@ -229,5 +237,30 @@ describe("confirmMfaAction", () => {
 
     expect(result).toEqual({ step: "scan", error: "throttled" });
     expect(store.get(SETUP_PENDING_COOKIE)?.value).toBe("setup-token-1");
+  });
+});
+
+describe("finishEnrollmentAction", () => {
+  let store: ReturnType<typeof createCookieStore>;
+
+  beforeEach(() => {
+    vi.stubEnv("NODE_ENV", "production");
+    store = createCookieStore();
+    cookies.mockResolvedValue(store);
+  });
+
+  it("clears the setupToken cookie and redirects to /admin/login", async () => {
+    store.set(SETUP_PENDING_COOKIE, "setup-token-1");
+
+    await expectRedirect(finishEnrollmentAction(), "/admin/login");
+
+    expect(store.get(SETUP_PENDING_COOKIE)?.value).toBeFalsy();
+    expect(store.get(SESSION_COOKIE)?.value).toBeFalsy();
+  });
+
+  it("still redirects to /admin/login when the setupToken cookie is already gone", async () => {
+    await expectRedirect(finishEnrollmentAction(), "/admin/login");
+
+    expect(store.get(SETUP_PENDING_COOKIE)?.value).toBeFalsy();
   });
 });
