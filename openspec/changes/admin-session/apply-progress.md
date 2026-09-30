@@ -267,13 +267,12 @@ None blocking. Two minor test-authoring fixes during GREEN (documented in the TD
 
 ## Remaining Tasks
 
-- [ ] Phase 4 (front, Slice 4/PR 4): MFA enrollment
 - [ ] Phase 5 (front, Slice 5/PR 5): landing, logout, feature close
 - [ ] 5.13–5.15 [Orchestrator-owned]: ROADMAP update, `sdd-archive`, spec promotion to back repo
 
 ## Status
 
-8/8 Phase 1 + 22/22 Phase 2 + 19/19 Phase 3 tasks complete, plus one post-apply fix (49/59 total tasks across all five phases; the fix is not a numbered task, it corrects task 3.16/3.17's implementation using verified back behavior). No design deviations remain open. Ready for the orchestrator to review PR 3's size (see Workload / PR Boundary below) and dispatch `sdd-apply` for Phase 4.
+8/8 Phase 1 + 22/22 Phase 2 + 19/19 Phase 3 + 12/12 Phase 4 tasks complete, plus one post-apply fix (61/61 numbered tasks across Phases 1–4; the fix is not a numbered task, it corrects task 3.16/3.17's implementation using verified back behavior). No design deviations remain open uninvestigated (Phase 4 records one documented, intentional deviation — see below). Ready for the orchestrator to review PR 4's size (see Workload / PR Boundary (Phase 4) below) and dispatch `sdd-apply` for Phase 5.
 
 ## Workload / PR Boundary (Phase 3)
 
@@ -281,3 +280,93 @@ None blocking. Two minor test-authoring fixes during GREEN (documented in the TD
 - Current work unit: Unit 3 / PR 3 (front: login + MFA verify)
 - Boundary: starts from `main` (branch `feat/admin-session-login`, fresh checkout after PRs 1–2 merged), ends at commit `467d63a` (the MFA-verify fix, on top of the six Phase 3 feature commits)
 - Estimated review budget impact: **1,315 insertions ≈ 1,315 authored changed lines — well over the 400-line default budget**, and in line with Phase 2's precedent (also over budget for the same reason: Strict TDD's test volume — roughly 660 of the ~1,315 lines are test code across 9 new test files). The orchestrator's launch prompt explicitly scoped this apply batch to "Phase 3 ONLY... Do not start Phase 4," matching `tasks.md`'s own PR-3 boundary. Every file in this slice composes into a single cohesive login+MFA-verify flow (messages → role gate → form primitives → shell → login → MFA verify), so there is no smaller independently-shippable slice within Phase 3 without leaving the flow half-built. **Recommendation: `size:exception` for PR 3** (consistent with the precedent set for PR 2), or the orchestrator may choose to split it into chained sub-PRs before opening it — deferred back to the orchestrator/user per the workload-guard rule.
+
+### Phase 4 — Front: MFA enrollment (Slice 4, PR 4)
+
+Repo: `front-siricmanpropiedades`, branch `feat/admin-session-enrollment` (fresh from `main` after PRs 1–3 merged).
+
+- [x] 4.1 Setup — Ran `npm view qrcode dependencies` (`{ pngjs: "^5.0.0", yargs: "^15.3.1", dijkstrajs: "^1.0.1" }`, `qrcode@1.5.4`). `yargs` alone exists only for `qrcode`'s CLI bin, not its `toString()` API, and drags a multi-package transitive tree with it (verified: adding `qrcode` would install far more than a single package). Decision: **use the `uqr` fallback** — zero dependencies, ESM, exports `renderSVG` directly (verified via `npm view uqr dependencies` → empty object).
+- [x] 4.2 Setup — Added `uqr@0.1.3` to `package.json`/`package-lock.json` (`npm install uqr` — 1 package added, 0 vulnerabilities). No `@types/uqr` needed: `uqr` ships its own `.d.ts`.
+- [x] 4.3 RED — `src/lib/mfa/qr.test.ts`: failing `renderQrDataUri` tests (data-URI shape; no outbound `fetch` call)
+- [x] 4.4 GREEN — `src/lib/mfa/qr.ts`: `renderQrDataUri` using `uqr`'s `renderSVG(url, { ecc: "M", border: 1 })`, base64-encoded into a `data:image/svg+xml;base64,...` URI
+- [x] 4.5 RED — `src/components/admin/auth/MfaEnrollment/MfaEnrollment.test.tsx`: failing step-wizard RTL tests
+- [x] 4.6 GREEN — `src/components/admin/auth/MfaEnrollment/MfaEnrollment.tsx` (+ CSS Module): password → scan → codes wizard, local `useState`, each step's `<form action={...}>` wired to `SubmitButton`'s `useFormStatus`
+- [x] 4.7 RED — `src/components/admin/auth/BackupCodes/BackupCodes.test.tsx`: failing tests (10 codes as a list; continue link gated by acknowledgement)
+- [x] 4.8 GREEN — `src/components/admin/auth/BackupCodes/BackupCodes.tsx` (+ CSS Module): 10-code list, "Los guardé" checkbox gates a real `<a href="/admin/login">` (an `aria-disabled` placeholder renders until checked)
+- [x] 4.9 RED — `src/app/admin/(auth)/mfa/setup/actions.test.ts`: 22 failing tests for `enableMfaAction`/`confirmMfaAction` (success shapes, wrong password/code, all 5 token-rejection messages ×2 actions, the two back "non-retryable" 400 messages, 429/network mapping)
+- [x] 4.10 GREEN — `src/app/admin/(auth)/mfa/setup/actions.ts`: `enableMfaAction`/`confirmMfaAction` implemented against the verified back contract (see Deviations below)
+- [x] 4.11 Create — `src/app/admin/(auth)/mfa/setup/page.tsx`: requires the setup-pending cookie, renders `<MfaEnrollment>` wired to both actions
+- [x] 4.12 Verify (slice 4 gate) — all four front gate commands passed
+
+**Status: 12/12 Phase 4 tasks complete.**
+
+## TDD Cycle Evidence (Phase 4)
+
+| Task | Test File | Layer | Safety Net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 4.3–4.4 | `src/lib/mfa/qr.test.ts` | Unit (node) | N/A (new) | ✅ `Cannot find module './qr'` | ✅ `npx vitest run` → 1 file, 2/2 passed | ✅ 2 cases (data-URI shape/decodable SVG; no outbound `fetch`) | ➖ None needed |
+| 4.5–4.6 | `MfaEnrollment.test.tsx` | Component (jsdom) | N/A (new) | ✅ `Failed to resolve import "./MfaEnrollment"` | ✅ `npx vitest run` → 1 file, 5/5 passed | ✅ 5 cases (password step first; wrong password stays + error; correct password → scan step with QR/secret; wrong confirm code keeps QR/secret visible + error, no codes; correct confirm code → 10 codes + acknowledgement-gated link) | ➖ None needed |
+| 4.7–4.8 | `BackupCodes.test.tsx` | Component (jsdom) | N/A (new) | ✅ `Failed to resolve import "./BackupCodes"` | ✅ `npx vitest run` → 1 file, 2/2 passed | ✅ 2 cases (exactly 10 list items; link hidden until checkbox checked) | ➖ None needed |
+| 4.9–4.10 | `src/app/admin/(auth)/mfa/setup/actions.test.ts` | Unit (node), mocked `next/headers`/`next/navigation`/`@/lib/api/auth`/`@/lib/mfa/qr` | N/A (new) | ✅ `Cannot find module './actions'` | ✅ `npx vitest run` → 1 file, 22/22 passed | ✅ 22 cases across both actions: missing cookie → redirect; success shape; wrong-input retry (password/code) keeps cookie; 5 token-rejection messages × 2 actions → expired redirect (`it.each`); 2 "non-retryable" 400 messages (confirm only, `it.each`); 429 → throttled, cookie kept; network(0) → unavailable (enable only) | ➖ None needed |
+| 4.11 | — (no test; async Server Component, per ADR-10) | N/A | N/A (new) | N/A | ✅ Verified via the slice-4 `npm run build` route table (`/admin/mfa/setup` present) | N/A | N/A |
+
+### Test Summary (Phase 4)
+- **Total tests written**: 31 (2 + 5 + 2 + 22, across 4 new test files)
+- **Total tests passing**: 31/31 (new) + 114/114 (Phases 1–3, unaffected) = 145/145 full suite
+- **Layers used**: Unit (24: `qr`, both `setup/actions.test.ts` describe blocks), Component (7: `MfaEnrollment`, `BackupCodes`)
+- **Approval tests** (refactoring): None — every Phase 4 file is new
+- **Pure functions created**: 0 (`renderQrDataUri` is server-only/offline but not pure in the strict sense — it allocates via `Buffer`; `classifyEnrollmentError` inside `setup/actions.ts` is pure but private/untested directly, covered through both actions' RED tests)
+
+## Work Unit Evidence (Phase 4)
+
+| Evidence | Value |
+|---|---|
+| Focused test command and exact result | Per-unit: `npx vitest run src/lib/mfa/qr.test.ts` (2/2), `"src/components/admin/auth/MfaEnrollment"` (5/5), `"src/components/admin/auth/BackupCodes"` (2/2), `"src/app/admin/(auth)/mfa/setup/actions.test.ts"` (22/22). Full slice: `npm test` → 24 files, 145/145 passed |
+| Runtime harness command/scenario and exact result | `npm run build` (Next 16, Turbopack) → `Compiled successfully`, TypeScript pass, static generation 7/7, route table shows `┌ ○ /`, `├ ○ /_not-found`, `├ ƒ /admin/login`, `├ ƒ /admin/mfa`, `└ ƒ /admin/mfa/setup` plus `ƒ Proxy (Middleware)`. This confirms the new enrollment route compiles and is reachable through the real Next.js router. `tasks.md`'s designated runtime harness for this unit is a **manual** end-to-end enrollment walkthrough against a real back instance with one scratch `admin` account (confirming the rendered QR encodes the real `otpauthUrl` secret and the shown backup codes match the API response) — deferred to the orchestrator/user, since it requires a running back instance, a real database account, and authorization to start server processes that this apply session does not have; the build's route/compile check plus the 22 action-level tests against the verified exact back contract (read directly from `mfa.controller.ts`/`mfa.service.ts`/`auth.service.ts`) are the automatable proof available in this session |
+| Rollback boundary | Two independent commits on `feat/admin-session-enrollment`, each revertible alone: `ccc686f` (QR SVG rendering: `uqr` dependency + `qr.ts` + test) and `7164808` (enrollment wizard: `MfaEnrollment` + `BackupCodes` + `setup/actions.ts` + `setup/page.tsx`, all their tests). `/admin/mfa/setup` does not exist until this branch merges, so no already-deployed route is affected by reverting either commit; reverting `ccc686f` alone would break `7164808`'s `renderQrDataUri` import (revert in reverse commit order if reverting more than the last commit) |
+
+## Slice 4 Gate — Full Verification (task 4.12)
+
+| Command | Observed result |
+|---|---|
+| `npm test` | 24 test files passed, 145 tests passed |
+| `npm run lint` | `eslint` — 0 errors, 1 warning (`@next/next/no-img-element` on `MfaEnrollment.tsx`'s QR `<img>` — expected and accepted: `design.md` ADR-9 explicitly specifies a plain `<img alt="..." width={200} height={200}>` for the QR, and the source is a request-time-generated `data:` URI, which `next/image` cannot usefully optimize without `unoptimized`; exit code 0, no precedent for suppressing this warning elsewhere in the codebase was found or needed) |
+| `npx tsc --noEmit` | No output, no errors |
+| `npm run build` | `next build` (Turbopack) — compiled successfully, TypeScript pass, static generation 7/7, route table: `/`, `/_not-found` static; `/admin/login`, `/admin/mfa`, `/admin/mfa/setup` dynamic; `Proxy (Middleware)` present |
+
+## Files Changed (Phase 4, front repo, `feat/admin-session-enrollment` branch)
+
+| File | Action | What Was Done |
+|---|---|---|
+| `package.json`, `package-lock.json` | Modified | Added `uqr` (fallback for `qrcode`, per task 4.1's recorded decision) |
+| `src/lib/mfa/qr.ts` (+ test) | Created | `renderQrDataUri(otpauthUrl)` — offline SVG QR rendered as a base64 data URI |
+| `src/components/admin/auth/MfaEnrollment/*` (+ test) | Created | Step wizard: password re-entry → QR/secret scan → confirm code |
+| `src/components/admin/auth/BackupCodes/*` (+ test) | Created | 10-code list, acknowledgement-gated continue link |
+| `src/app/admin/(auth)/mfa/setup/actions.ts` (+ test) | Created | `enableMfaAction`, `confirmMfaAction` — verified back error-contract mapping |
+| `src/app/admin/(auth)/mfa/setup/page.tsx` | Created | Requires the setup-pending cookie, renders `<MfaEnrollment>` |
+
+## Commits (front repo, `feat/admin-session-enrollment`, not pushed)
+
+- `ccc686f` — `feat(admin-session): render MFA enrollment QR codes as SVG data URIs`
+- `7164808` — `feat(admin-session): add the MFA enrollment wizard and Server Actions`
+
+`git diff --stat main...HEAD -- . ':!openspec' ':!package-lock.json'`: 12 files changed, 900 insertions(+), 1 deletion(-).
+
+## Deviations from Design (Phase 4)
+
+**Recorded, intentional deviation — dependency substitution (task 4.1's own decision gate, not a silent deviation):** `design.md` ADR-9 names `qrcode` as the primary choice. `npm view qrcode dependencies` shows `{ pngjs, yargs, dijkstrajs }` — `yargs` exists only for `qrcode`'s CLI bin script, not its `QRCode.toString()` API, and pulls its own multi-package tree along for a feature this change never uses. Per ADR-9's own explicit fallback clause ("`uqr`... an acceptable fallback if `qrcode`'s transitive dependencies are objectionable") and task 4.1's instruction to record the outcome, `uqr` was used instead: zero dependencies, ships its own types, and its `renderSVG(text, { ecc, border })` produces an equivalent SVG, base64-encoded into the same `data:image/svg+xml;base64,...` shape ADR-9 requires. No other part of ADR-9 changed: the secret and `otpauthUrl` still never leave the server, rendering is still fully offline, and the client still only ever receives the rendered QR plus the plaintext secret for manual entry.
+
+**Documented implementation choice — `EnrollmentState` split into per-action types:** `design.md`'s Interfaces/Contracts section types a single `EnrollmentState` union (`"password" | "scan" | "codes"`) as "Server Action state." Task 4.9 fixes `confirmMfaAction`'s signature to take only `code` — it has no way to independently reproduce a `qrSvgDataUri`/`secret` for the `"scan"` variant on a wrong-code retry without either a second server round trip or calling `mfa/enable` again, and the latter would make `MfaService.startEnrollment` generate a **new** secret server-side, invalidating whatever the user's authenticator app already scanned (a real behavioral bug, not a cosmetic one). `setup/actions.ts` therefore exports two narrower types instead: `EnableMfaState = { step: "password"; error? } | { step: "scan"; qrSvgDataUri; secret }` and `ConfirmMfaState = { step: "scan"; error } | { step: "codes"; backupCodes }`. `MfaEnrollment.tsx` keeps the previously-received `qrSvgDataUri`/`secret` in its own local component state across a failed confirm attempt, rather than expecting the action to resupply them. Every scenario in `specs/admin-session/spec.md`'s "MFA Enrollment" requirement is still satisfied verbatim (wrong password stays on that step with the QR/secret withheld; wrong code shows an error without revealing backup codes and without losing the already-shown QR/secret; successful confirm shows the codes and clears the setup cookie).
+
+**Verified against the back directly (per this apply session's launch prompt), not guessed:** the two "non-retryable" 400 messages handled as an expired-token redirect — `"MFA is already enabled"` and `"No pending MFA enrollment. Call /auth/mfa/enable first"` — were read verbatim from `back-siricmanpropiedades/src/auth/mfa/mfa.service.ts`'s `startEnrollment`/`confirmEnrollment`, and the five 401 token-rejection messages plus the `enable`/`confirm` 401/400 success-path shapes were confirmed from `mfa.controller.ts` and `auth.service.ts` before writing `setup/actions.test.ts`'s RED cases, following the same verify-before-implement discipline established by Phase 3's MFA-verify fix.
+
+## Issues Found (Phase 4)
+
+None. All four gate commands passed on the first attempt after implementation. The one ESLint warning (`@next/next/no-img-element`) is expected and accepted per the Slice 4 Gate table above, not a defect. No pre-existing test failures were encountered as a baseline (114/114 green before this batch).
+
+## Workload / PR Boundary (Phase 4)
+
+- Mode: chained PR slice (`stacked-to-main`, per `auto-chain` resolution in `tasks.md`)
+- Current work unit: Unit 4 / PR 4 (front: MFA enrollment)
+- Boundary: starts from `main` (branch `feat/admin-session-enrollment`, fresh checkout after PRs 1–3 merged), ends at commit `7164808`
+- Estimated review budget impact: **900 insertions + 1 deletion ≈ 901 authored changed lines — over the 400-line default budget**, though smaller than Phases 2–3 (roughly 460 of the ~900 lines are test code across 4 new test files: 22 action tests covering both a success path and every distinct back error message needed to honestly triangulate the verified error contract). The orchestrator's launch prompt explicitly scoped this apply batch to "Phase 4 ONLY... Do not start Phase 5," matching `tasks.md`'s own PR-4 boundary. The QR-rendering commit (`ccc686f`) is technically independently shippable (it has no dependency on the wizard), but splitting it into its own PR would leave a QR-rendering utility with no caller until PR 4b landed — not a materially better reviewer experience than one cohesive PR. **Recommendation: `size:exception` for PR 4** (consistent with the precedent set for PR 2 and PR 3), or the orchestrator may choose to split `ccc686f` into its own chained sub-PR before opening PR 4 — deferred back to the orchestrator/user per the workload-guard rule.
