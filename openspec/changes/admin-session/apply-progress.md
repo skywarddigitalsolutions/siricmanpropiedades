@@ -137,13 +137,147 @@ None. All four Phase 1 gate commands and all four Phase 2 gate commands passed o
 - Boundary: starts from `main` (branch `feat/admin-session-foundation`, already checked out with Phase 1's docs commit on it), ends at commit `da8023d`
 - Estimated review budget impact: **1,238 insertions + 10 deletions ≈ 1,248 authored changed lines — well over the 400-line default budget**, and higher than `tasks.md`'s own slice-2 forecast (proposal's slice plan estimated ~300–380 for this slice; the actual count is driven by Strict TDD's test volume: roughly 780 of the ~1,180 non-README/non-config lines are test code across 6 new test files, none of which can be cut without violating the Strict TDD Mode contract or the "budget is not code-golf" rule in `work-unit-commits/SKILL.md`). This was implemented as one cohesive unit because: (a) the orchestrator's launch prompt explicitly scoped this apply batch to "Phase 2 ONLY... Do not start Phase 3," matching `tasks.md`'s own PR-2 boundary exactly; (b) every file in this slice is a load-bearing dependency of the others (`client.ts` depends on `client-ip.ts`; `cookies.ts`/`auth.ts` depend on the transport client; `proxy.ts` depends on `cookie-names.ts`; the route-group move is required before Phase 3 can add `src/app/admin/**`) — there is no smaller independently-shippable slice within Phase 2 without leaving the transport or session layer half-built. **Recommendation: `size:exception` for PR 2**, or the orchestrator may choose to further split PR 2 into two chained sub-PRs (e.g. "transport" vs. "session + proxy + route-group move") before opening it — that decision is deferred back to the orchestrator/user per the workload-guard rule, since splitting further was not part of the assigned scope for this batch and doing so unasked would risk breaking the seven already-committed, already-verified work units.
 
+### Phase 3 — Front: login + MFA verify (Slice 3, PR 3)
+
+Repo: `front-siricmanpropiedades`, branch `feat/admin-session-login` (fresh from `main` after PRs 1–2 merged).
+
+- [x] 3.1 RED / 3.2 GREEN — `src/components/admin/auth/messages.ts` + test: `AuthErrorCode`/`SessionNotice` → neutral-Spanish message mapping (ADR-8's table)
+- [x] 3.3 RED / 3.4 GREEN — `src/lib/session/complete-session.ts` + test: `completeSession` (shared role gate for login + MFA verify)
+- [x] 3.5 RED / 3.6 GREEN — `src/components/admin/forms/{SubmitButton,FormAlert,TextField}` + tests: shared accessible form primitives
+- [x] 3.7 Create — `src/components/admin/auth/AuthCard/AuthCard.tsx` (no test, presentational) + `src/app/admin/(auth)/layout.tsx`
+- [x] 3.8 Create — `src/app/admin/layout.tsx` (noindex metadata, admin shell)
+- [x] 3.9 RED / 3.10 GREEN — `src/components/admin/auth/LoginForm/LoginForm.tsx` + test
+- [x] 3.11 RED / 3.12 GREEN — `src/app/admin/(auth)/login/actions.ts` + test: `loginAction`
+- [x] 3.13 Create — `src/app/admin/(auth)/login/page.tsx`
+- [x] 3.14 RED / 3.15 GREEN — `src/components/admin/auth/MfaVerifyForm/MfaVerifyForm.tsx` + test
+- [x] 3.16 RED / 3.17 GREEN — `src/app/admin/(auth)/mfa/actions.ts` + test: `verifyMfaAction`
+- [x] 3.18 Create — `src/app/admin/(auth)/mfa/page.tsx`
+- [x] 3.19 Verify (slice 3 gate) — all four front gate commands passed
+
+**Status: 19/19 Phase 3 tasks complete.**
+
+## TDD Cycle Evidence (Phase 3)
+
+| Task | Test File | Layer | Safety Net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 3.1–3.2 | `src/components/admin/auth/messages.test.ts` | Unit, pure | N/A (new) | ✅ `Failed to resolve import "./messages"` | ✅ `npx vitest run` → 1 file, 9/9 passed | ✅ 9 cases (7 error codes + 2 session notices, `it.each`) | ➖ None needed |
+| 3.3–3.4 | `src/lib/session/complete-session.test.ts` | Unit (node), mocked `next/headers` + `@/lib/api/auth` | N/A (new) | ✅ `Cannot find module './complete-session'` | ✅ `npx vitest run` → 1 file, 3/3 passed | ✅ 3 cases (role gate passes; role gate fails + logout succeeds; role gate fails + logout throws, swallowed) | ➖ None needed |
+| 3.5–3.6 | `SubmitButton.test.tsx`, `FormAlert.test.tsx`, `TextField.test.tsx` | Component (jsdom) | N/A (new) | ✅ 3× `Failed to resolve import` | ✅ `npx vitest run` → 3 files, 6/6 passed (1 fix: `FormAlert` test switched from `getByRole("alert", {name})` to `toHaveTextContent`, since jsdom's accessible-name computation for `role="alert"` did not pick up text content) | ✅ SubmitButton: idle + pending states; TextField: with/without error | ➖ None needed |
+| 3.7–3.8 | — (no test; presentational/layout, matches design.md's Testing Strategy table) | N/A | N/A (new) | N/A | ✅ Verified via the slice-3 `npm run build` route table | N/A | N/A |
+| 3.9–3.10 | `LoginForm.test.tsx` | Component (jsdom) | N/A (new) | ✅ `Failed to resolve import "./LoginForm"` | ✅ `npx vitest run` → 1 file, 4/4 passed (1 fix: the "never echoes password" case needed the username field filled too, since native `required` validation blocked submission) | ✅ labeled fields + autocomplete; mapped error alert; pending disables submit; password-leak regression guard | ➖ None needed |
+| 3.11–3.12 | `actions.test.ts` (login) | Unit (node), mocked `next/headers`/`next/navigation`/`@/lib/api/auth` (partial: only `login`/`logout` replaced, real `isMfaRequired`/`isMfaSetupRequired` kept via `importOriginal`) | N/A (new) | ✅ `Cannot find module './actions'` | ✅ `npx vitest run` → 1 file, 9/9 passed | ✅ 9 cases: full session admin/manager; full session user (no-access); mfaRequired; mfaSetupRequired; 401/400/429 error mapping (`it.each`); ApiError(0); empty fields | ➖ None needed |
+| 3.14–3.15 | `MfaVerifyForm.test.tsx` | Component (jsdom) | N/A (new) | ✅ `Failed to resolve import "./MfaVerifyForm"` | ✅ `npx vitest run` → 1 file, 5/5 passed | ✅ autocomplete hint; 6-digit TOTP; 10-char backup code; mapped error alert; pending disables submit | ➖ None needed |
+| 3.16–3.17 | `actions.test.ts` (mfa) | Unit (node), same mocking pattern as login actions | N/A (new) | ✅ `Cannot find module './actions'` | ✅ `npx vitest run` → 1 file, 5/5 passed | ✅ 5 cases: missing cookie → redirect; correct code → session + redirect; wrong code (401) → keep cookie; other rejection → clear + redirect; role gate denies a user-role account | ➖ None needed |
+| 3.18 | — (no test; async Server Component, per ADR-10) | N/A | N/A (new) | N/A | ✅ Verified via the slice-3 `npm run build` route table (`/admin/mfa` present) | N/A | N/A |
+
+### Test Summary (Phase 3)
+- **Total tests written**: 41 (9 + 3 + 6 + 4 + 9 + 5 + 5, across 9 new test files)
+- **Total tests passing**: 41/41 (new) + 68/68 (Phase 1–2, unaffected) = 109/109 full suite
+- **Layers used**: Unit (26: messages, complete-session, both actions.test.ts), Component (15: SubmitButton, FormAlert, TextField, LoginForm, MfaVerifyForm)
+- **Approval tests** (refactoring): None — every Phase 3 file is new, no existing behavior was refactored
+- **Pure functions created**: 2 (`getAuthErrorMessage`, `getSessionNoticeMessage`)
+
+## Work Unit Evidence (Phase 3)
+
+| Evidence | Value |
+|---|---|
+| Focused test command and exact result | Per-unit: `npx vitest run src/components/admin/auth/messages.test.ts` (9/9), `src/lib/session/complete-session.test.ts` (3/3), `src/components/admin/forms` (6/6 across 3 files), `src/components/admin/auth/LoginForm` (4/4), `"src/app/admin/(auth)/login/actions.test.ts"` (9/9), `src/components/admin/auth/MfaVerifyForm` (5/5), `"src/app/admin/(auth)/mfa/actions.test.ts"` (5/5). Full slice: `npm test` → 20 files, 109/109 passed |
+| Runtime harness command/scenario and exact result | `npm run build` (Next 16, Turbopack) → `Compiled successfully`, TypeScript pass, static generation 6/6, route table shows `┌ ○ /`, `├ ○ /_not-found`, `├ ƒ /admin/login`, `└ ƒ /admin/mfa` plus `ƒ Proxy (Middleware)`. This confirms both new routes compile and are reachable through the real Next.js router. The tasks.md-designated runtime harness for this unit is a **manual** walkthrough against a real back `POST /auth/login`/`POST /auth/mfa/verify` (one scratch account per role) — deferred to the orchestrator/user since it requires a running back instance and real accounts, which this apply session does not have authorization or infrastructure to start; the build's route/compile check is the automatable proof available in this session |
+| Rollback boundary | Six independent commits on `feat/admin-session-login`, each revertible alone: message mapping, session-completion role gate, shared form primitives, admin shell + auth card layout, login form/page/action, MFA verify form/page/action. `/admin` itself does not exist yet (Phase 5), so no already-deployed route is affected by reverting any subset; reverting the role-gate or form-primitives commits would break the login/MFA commits that depend on them (revert in reverse commit order if reverting more than the last commit) |
+
+## Slice 3 Gate — Full Verification (task 3.19)
+
+| Command | Observed result |
+|---|---|
+| `npm test` | 20 test files passed, 109 tests passed |
+| `npm run lint` | `eslint` — no output, no errors |
+| `npx tsc --noEmit` | No output, no errors (required one `npx next typegen` refresh first: a stale `.next/dev/types/validator.ts` left over from an earlier local `next dev` run in this working tree did not yet know about the new `/admin/login`/`/admin/mfa` routes; this is a generated-artifact freshness issue, not a source defect — the same regeneration also happens as part of `npm run build`) |
+| `npm run build` | `next build` (Turbopack) — compiled successfully, TypeScript pass, static generation 6/6, route table: `/`, `/_not-found` static; `/admin/login`, `/admin/mfa` dynamic; `Proxy (Middleware)` present |
+
+## Files Changed (Phase 3, front repo, `feat/admin-session-login` branch)
+
+| File | Action | What Was Done |
+|---|---|---|
+| `src/components/admin/auth/messages.ts` (+ test) | Created | `AuthErrorCode`/`SessionNotice` → neutral-Spanish message mapping |
+| `src/lib/session/complete-session.ts` (+ test) | Created | `completeSession` — shared role gate for login + MFA verify |
+| `src/components/admin/forms/SubmitButton/*` (+ test) | Created | `useFormStatus`-driven pending/disabled/`aria-busy` button |
+| `src/components/admin/forms/FormAlert/*` (+ test) | Created | `role="alert"` error/notice text |
+| `src/components/admin/forms/TextField/*` (+ test) | Created | Labeled input wiring `aria-invalid`/`aria-describedby` |
+| `src/components/admin/auth/AuthCard/*` | Created | Presentational centered-card shell (no test) |
+| `src/app/admin/(auth)/layout.tsx` | Created | Wraps auth screens in `AuthCard` |
+| `src/app/admin/layout.tsx` (+ `layout.module.css`) | Created | `robots: noindex`, admin shell background |
+| `src/components/admin/auth/LoginForm/*` (+ test) | Created | `useActionState`-driven login form; password never echoed from state |
+| `src/app/admin/(auth)/login/actions.ts` (+ test) | Created | `loginAction` — branches on the three `LoginResponse` shapes |
+| `src/app/admin/(auth)/login/page.tsx` | Created | Reads `searchParams.reason`, renders `<LoginForm>` with a notice |
+| `src/components/admin/auth/MfaVerifyForm/*` (+ test) | Created | Free-text 6–10 char code field, TOTP or backup code |
+| `src/app/admin/(auth)/mfa/actions.ts` (+ test) | Created, later fixed (`467d63a`) | `verifyMfaAction` — a `401` with message exactly `"Invalid code"` keeps the pending cookie; any other rejection clears the cookie and redirects to `/admin/login?reason=expired` |
+| `src/app/admin/(auth)/mfa/page.tsx` | Created | Requires the mfa-pending cookie, renders `<MfaVerifyForm>` |
+
+## Commits (front repo, `feat/admin-session-login`, not pushed)
+
+- `6cf9d7c` — `feat(admin-session): add auth error and session-notice message mapping`
+- `c77453c` — `feat(admin-session): add the shared session-completion role gate`
+- `6121586` — `feat(admin-session): add shared accessible form primitives`
+- `364c027` — `feat(admin-session): add the admin route shell and auth card layout`
+- `de967cd` — `feat(admin-session): add the login screen, form, and Server Action`
+- `c0aed96` — `feat(admin-session): add the MFA verification screen and Server Action`
+- `467d63a` — `fix(admin-session): distinguish wrong MFA code from an invalid MFA token`
+
+`git diff --stat main...HEAD -- . ':!openspec' ':!package-lock.json'`: 30 files changed, 1,315 insertions(+). (`main` already contains Phases 1–2, merged via PRs 1–2 before this branch was cut, so this diff is Phase 3 plus this fix.)
+
+## Deviations from Design (Phase 3)
+
+**RESOLVED** — the discrepancy below (originally flagged for `sdd-verify` after the initial Phase 3 apply) has been verified against the actual back endpoint and fixed:
+
+ADR-8's mapping table states "verify/confirm 401 or 400 → invalid-code" as a single bucket. Task 3.16 and `specs/admin-session/spec.md`'s "MFA Verification" requirement describe two *different* outcomes for a rejected verify call: a wrong code (cookie kept, inline error) versus an expired/invalid/consumed `mfaToken` (cookie cleared, hard redirect to `/admin/login`). The initial Phase 3 apply guessed a status-code split (`401` → wrong code, anything else → token rejected) without back visibility.
+
+Reading `back-siricmanpropiedades/src/auth/mfa/mfa.controller.ts` and `src/auth/auth.service.ts` directly shows the real contract: **`POST /api/auth/mfa/verify` returns `401` for both cases**, distinguished only by the exception *message*:
+- `MfaController.verify` (`mfa.controller.ts:142`) throws `UnauthorizedException('Invalid code')` for a wrong TOTP/backup code, **before** the mfaToken is revoked — the token stays valid for a retry.
+- `AuthService.resolveUserFromToken`/`verifyToken` (`auth.service.ts`) throw `UnauthorizedException` with one of `'Invalid or expired token'`, `'This token cannot be used for this operation'`, `'Token has been revoked'`, `'Token not valid'`, or `'User is not active'` when the mfaToken itself is rejected, before the code is even checked.
+
+`verifyMfaAction` now distinguishes on the exact message, not just the status: **`401` with message exactly `"Invalid code"` → `invalid-code` (mfaToken cookie kept for retry)**; **any other `401` message, or any other status (`400`/`429`/`0`/5xx) → clear the cookie and redirect to `/admin/login?reason=expired`** (reusing the same notice the design already uses for an expired `setupToken`, task 4.9). `ApiError` already exposed the backend's `message` via the inherited `Error.message` (set from `client.ts`'s `extractErrorMessage`, which reads the NestJS exception filter's `body.message`) — no change to `ApiError` was needed, confirmed by the new RED tests passing once the action read `error.message`.
+
+Fixed in commit `467d63a` — `fix(admin-session): distinguish wrong MFA code from an invalid MFA token`.
+
+### Fix work unit: RED → GREEN evidence
+
+| Evidence | Value |
+|---|---|
+| RED (observed) | Updated `src/app/admin/(auth)/mfa/actions.test.ts` (7 new/changed cases: the wrong-code test now uses the exact backend message `"Invalid code"`; a new `it.each` over the 5 token-rejection messages plus 1 non-401 case asserts `redirect("/admin/login?reason=expired")`) → `npx vitest run "src/app/admin/(auth)/mfa/actions.test.ts"` → 6/10 failed (the 5 token-rejection cases resolved to `{ error: "invalid-code" }` instead of rejecting with a redirect, and the non-401 case redirected to `/admin/login` instead of `/admin/login?reason=expired`) |
+| GREEN (observed) | Updated `src/app/admin/(auth)/mfa/actions.ts` to match on `error.status === 401 && error.message === "Invalid code"` (previously `error.status === 401` alone) and to redirect to `/admin/login?reason=expired` (previously `/admin/login`) for every other rejection → `npx vitest run "src/app/admin/(auth)/mfa/actions.test.ts"` → 10/10 passed |
+| Full slice test command and exact result | `npm test` → 20 files, 114/114 passed (109 before the fix + 5 net new) |
+| Runtime harness command/scenario and exact result | `npm run build` (Turbopack) → compiled successfully, TypeScript pass, static generation 6/6, same route table as before (`/admin/login`, `/admin/mfa` dynamic, `Proxy (Middleware)` present) — this fix changes only Server Action branching logic, not routes, so the route table is unchanged. No live back to test the real message strings against was available in this session (out of scope); the message strings were taken directly from reading `back-siricmanpropiedades/src/auth/mfa/mfa.controller.ts` and `src/auth/auth.service.ts` verbatim, not inferred |
+| Rollback boundary | One commit, `467d63a`, on top of the six Phase 3 commits; revertible alone without affecting anything else (it only touches `mfa/actions.ts` and its test) |
+| ApiError message exposure | Confirmed, not extended: `ApiError extends Error` and `client.ts`'s `extractErrorMessage` already passes the NestJS exception filter's `body.message` into `super(message)`, so `error.message` was already accessible. No change to `src/lib/api/client.ts` was needed |
+
+Gate re-run after the fix (same four commands as task 3.19):
+
+| Command | Observed result |
+|---|---|
+| `npm test` | 20 test files passed, 114 tests passed |
+| `npm run lint` | `eslint` — no output, no errors |
+| `npx tsc --noEmit` | No output, no errors (no `next typegen` refresh needed this time — no routes changed) |
+| `npm run build` | `next build` (Turbopack) — compiled successfully, TypeScript pass, static generation 6/6, same route table |
+
+Everything else in Phase 3 matches `design.md` ADR-6/ADR-7/ADR-8/ADR-10 as written. `LayoutProps<T>`/`PageProps<T>` typed-route helpers (used by the pre-existing root `layout.tsx`) were deliberately **not** used for the new `/admin/**` layouts and pages; plain hand-written prop types were used instead, because Next's generated `.next/types/routes.d.ts` is only refreshed by `next build`/`next dev`/`next typegen`, and the mandated gate order (`tsc` before `build`) would otherwise fail on stale route unions the first time a new route is added. This is a typing-mechanism choice, not a behavioral deviation.
+
+## Issues Found (Phase 3)
+
+None blocking. Two minor test-authoring fixes during GREEN (documented in the TDD Cycle Evidence table above): `FormAlert`'s accessible-name assertion needed to switch to `toHaveTextContent`, and `LoginForm`'s password-echo test needed the username field filled to pass native HTML5 validation. Both are test-only fixes, no production code was affected. `npx tsc --noEmit` needed a `next typegen` refresh due to a stale local `.next/dev/types/validator.ts` (see the Slice 3 Gate table); this is a local generated-artifact freshness issue, not a code defect, and resolves itself on any environment where `.next/dev` does not already exist (it is gitignored). One genuine deviation was found and fixed after the fact (see "Deviations from Design" above): the initial `verifyMfaAction` guessed a status-code-only split for wrong-code vs. invalid-token; reading the actual back controller/service showed both cases return `401`, distinguished only by message, and the implementation was corrected in commit `467d63a`.
+
 ## Remaining Tasks
 
-- [ ] Phase 3 (front, Slice 3/PR 3): login + MFA verify
 - [ ] Phase 4 (front, Slice 4/PR 4): MFA enrollment
 - [ ] Phase 5 (front, Slice 5/PR 5): landing, logout, feature close
 - [ ] 5.13–5.15 [Orchestrator-owned]: ROADMAP update, `sdd-archive`, spec promotion to back repo
 
 ## Status
 
-8/8 Phase 1 tasks + 22/22 Phase 2 tasks complete (30/59 total tasks across all five phases). Ready for the orchestrator to review/decide on PR 2's size (`size:exception` recommended, or split into chained sub-PRs), then dispatch `sdd-apply` for Phase 3.
+8/8 Phase 1 + 22/22 Phase 2 + 19/19 Phase 3 tasks complete, plus one post-apply fix (49/59 total tasks across all five phases; the fix is not a numbered task, it corrects task 3.16/3.17's implementation using verified back behavior). No design deviations remain open. Ready for the orchestrator to review PR 3's size (see Workload / PR Boundary below) and dispatch `sdd-apply` for Phase 4.
+
+## Workload / PR Boundary (Phase 3)
+
+- Mode: chained PR slice (`stacked-to-main`, per `auto-chain` resolution in `tasks.md`)
+- Current work unit: Unit 3 / PR 3 (front: login + MFA verify)
+- Boundary: starts from `main` (branch `feat/admin-session-login`, fresh checkout after PRs 1–2 merged), ends at commit `467d63a` (the MFA-verify fix, on top of the six Phase 3 feature commits)
+- Estimated review budget impact: **1,315 insertions ≈ 1,315 authored changed lines — well over the 400-line default budget**, and in line with Phase 2's precedent (also over budget for the same reason: Strict TDD's test volume — roughly 660 of the ~1,315 lines are test code across 9 new test files). The orchestrator's launch prompt explicitly scoped this apply batch to "Phase 3 ONLY... Do not start Phase 4," matching `tasks.md`'s own PR-3 boundary. Every file in this slice composes into a single cohesive login+MFA-verify flow (messages → role gate → form primitives → shell → login → MFA verify), so there is no smaller independently-shippable slice within Phase 3 without leaving the flow half-built. **Recommendation: `size:exception` for PR 3** (consistent with the precedent set for PR 2), or the orchestrator may choose to split it into chained sub-PRs before opening it — deferred back to the orchestrator/user per the workload-guard rule.
