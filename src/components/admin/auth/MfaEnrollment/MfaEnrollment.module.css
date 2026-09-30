@@ -1,0 +1,20 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.intro {
+  font: 500 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+}
+
+.secret {
+  align-self: flex-start;
+  font: 600 14px monospace;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-strong);
+  word-break: break-all;
+}
