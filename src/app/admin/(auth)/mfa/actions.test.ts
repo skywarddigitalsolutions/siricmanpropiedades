@@ -74,9 +74,12 @@ describe("verifyMfaAction", () => {
     expect(store.get(MFA_PENDING_COOKIE)?.value).toBeFalsy();
   });
 
-  it("keeps the mfaToken cookie intact and shows invalid-code on a wrong code (401)", async () => {
+  it("keeps the mfaToken cookie intact and shows invalid-code on a wrong code (401 'Invalid code')", async () => {
     store.set(MFA_PENDING_COOKIE, "mfa-token-1");
-    verifyMfa.mockRejectedValue(new ApiError(401, "wrong code"));
+    // Exact message thrown by back-siricmanpropiedades's
+    // MfaController.verify (src/auth/mfa/mfa.controller.ts:142) when the
+    // mfaToken is valid but the submitted code is wrong.
+    verifyMfa.mockRejectedValue(new ApiError(401, "Invalid code"));
 
     const state = await verifyMfaAction(
       initial,
@@ -87,13 +90,39 @@ describe("verifyMfaAction", () => {
     expect(store.get(MFA_PENDING_COOKIE)?.value).toBe("mfa-token-1");
   });
 
-  it("clears the stale mfaToken cookie and redirects to /admin/login for any other rejection (expired/invalid/consumed)", async () => {
+  it.each([
+    // Exact messages thrown by AuthService.resolveUserFromToken /
+    // verifyToken (back-siricmanpropiedades src/auth/auth.service.ts) for
+    // every way the mfaToken itself can be rejected — distinct from the
+    // "Invalid code" message above, which means the token was fine but the
+    // code was wrong.
+    "Invalid or expired token",
+    "This token cannot be used for this operation",
+    "Token has been revoked",
+    "Token not valid",
+    "User is not active",
+  ])(
+    "clears the stale mfaToken cookie and redirects to /admin/login?reason=expired for a 401 with message %j (token itself rejected, not the code)",
+    async (message) => {
+      store.set(MFA_PENDING_COOKIE, "mfa-token-1");
+      verifyMfa.mockRejectedValue(new ApiError(401, message));
+
+      await expectRedirect(
+        verifyMfaAction(initial, formDataFor({ code: "123456" })),
+        "/admin/login?reason=expired",
+      );
+
+      expect(store.get(MFA_PENDING_COOKIE)?.value).toBeFalsy();
+    },
+  );
+
+  it("clears the stale mfaToken cookie and redirects to /admin/login?reason=expired for any non-401 rejection", async () => {
     store.set(MFA_PENDING_COOKIE, "mfa-token-1");
-    verifyMfa.mockRejectedValue(new ApiError(400, "token no longer valid"));
+    verifyMfa.mockRejectedValue(new ApiError(400, "Bad request"));
 
     await expectRedirect(
       verifyMfaAction(initial, formDataFor({ code: "123456" })),
-      "/admin/login",
+      "/admin/login?reason=expired",
     );
 
     expect(store.get(MFA_PENDING_COOKIE)?.value).toBeFalsy();
