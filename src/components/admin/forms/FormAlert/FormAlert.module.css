@@ -1,0 +1,8 @@
+.alert {
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--color-navy-dark);
+  background: #fbeaea;
+  border: 1px solid #e6b8b8;
+}
