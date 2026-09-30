@@ -1,0 +1,4 @@
+.greeting {
+  font: 500 16px var(--font-body), sans-serif;
+  color: var(--color-text);
+}
