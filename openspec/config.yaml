@@ -1,0 +1,69 @@
+schema: spec-driven
+
+context: |
+  Project: siricmanpropiedades (front repo)
+  Stack: Next.js 16.3.6 (App Router), React 19.2.8, TypeScript 5, strict mode
+  Styling: CSS Modules + CSS custom-property design tokens (no Tailwind/CSS-in-JS)
+  Fonts: next/font/google — Bodoni Moda (display), Manrope (body)
+  Structure: src/app (routes), src/components/{layout,...}, src/lib
+  Testing: Vitest 5 + Testing Library (jsdom), co-located *.test.tsx/*.test.ts
+  Deploy: Docker standalone output, Caddy reverse proxy
+
+projects:
+  - path: .
+    stack: Next.js (App Router) + TypeScript
+    test_command: npm test
+    test_watch_command: npm run test:watch
+    lint_command: npm run lint
+    typecheck_command: npx tsc --noEmit
+    build_command: npm run build
+    coverage_command: ""
+    framework: vitest + @testing-library/react
+
+testing:
+  strict_tdd: true
+  detected: "2026-09-29"
+  projects:
+    - path: .
+      stack: Next.js (App Router) + TypeScript
+      test_command: npm test
+      framework: vitest + @testing-library/react
+  layers:
+    unit: true          # vitest + @testing-library/react
+    integration: true   # @testing-library/react + jsdom (component-level)
+    e2e: false           # no playwright/cypress detected
+  coverage:
+    available: false     # no coverage script or @vitest/coverage-v8/istanbul devDependency; present only transitively in package-lock.json
+    command: ""
+  quality:
+    linter: "npm run lint"       # eslint (flat config: eslint-config-next core-web-vitals + typescript)
+    type_checker: "npx tsc --noEmit"   # no dedicated script in package.json; tsconfig strict: true
+    formatter: "none detected"   # no prettier config/devDependency found
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes (auth/session, deploy config)
+    - State which pending product decision from docs/ROADMAP.md the change resolves, if any
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Document App Router route/segment layout (server vs client components)
+    - State env var handling explicitly; do not read/print .env* contents
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow existing CSS Modules + design-token convention (no Tailwind)
+      - Co-locate component test files (ComponentName.test.tsx) next to source
+      - Prefer server components; mark client components explicitly ("use client")
+      - Conventional Commits, no AI attribution; branch before committing on main
+    tdd: true           # RED-GREEN-REFACTOR — npm test (vitest run) covers this project
+    test_command: npm test
+  verify:
+    test_command: npm test
+    build_command: npm run build
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
