@@ -162,7 +162,7 @@ Error-code mapping:
 | login 401 or 400 (DTO rejects the shape) | `invalid-credentials` | "Usuario o contraseña incorrectos." |
 | any 429 (IP throttle or account lockout; no `Retry-After`) | `throttled` | "Demasiados intentos. Espere unos minutos e intente nuevamente." |
 | full session without an allowed role | `no-access` | "Esta cuenta no tiene acceso al panel de administración." |
-| verify/confirm 401 or 400 | `invalid-code` | "El código no es válido. Si el problema continúa, vuelva a iniciar sesión." (with a link) |
+| verify/confirm 401 or 400 | `invalid-code` | "El código no es válido. Si el problema continúa, vuelva a iniciar sesión." (with a link) — see the verified note below for `verify` |
 | enable 401 | `invalid-password` | "La contraseña no es correcta o la verificación expiró." |
 | `ApiError.status === 0` or 5xx | `unavailable` | "El servicio no está disponible. Intente nuevamente en unos minutos." |
 | empty required field (checked before any API call) | `validation` | "Complete todos los campos." |
@@ -170,6 +170,8 @@ Error-code mapping:
 | notice `reason=forbidden` | – | same text as `no-access` |
 
 **MFA verify.** A 401 keeps the `mfa` cookie. The back only revokes `mfaToken` on success, so the user can retry within 5 minutes. A missing cookie in the action redirects to `/admin/login`.
+
+**Verified correction (post-apply, `back-siricmanpropiedades` read directly):** `POST /api/auth/mfa/verify` returns `401` for *both* a wrong code and a rejected `mfaToken` — the table row above ("verify/confirm 401 or 400 → `invalid-code`") is not literally correct for `verify` on its own; the two cases share the same status and are distinguished only by the exception message. `MfaController.verify` (`src/auth/mfa/mfa.controller.ts:142`) throws exactly `UnauthorizedException('Invalid code')` for a wrong code, *before* revoking `mfaToken`, so the token stays valid for a retry. `AuthService.resolveUserFromToken`/`verifyToken` (`src/auth/auth.service.ts`) throw a `401` with one of `'Invalid or expired token'`, `'This token cannot be used for this operation'`, `'Token has been revoked'`, `'Token not valid'`, or `'User is not active'` whenever the `mfaToken` itself is rejected, before the code is even checked. The front (`verifyMfaAction`) matches on the exact message: only `401` + `"Invalid code"` → `invalid-code` (cookie kept); every other rejection → clear the cookie and redirect to `/admin/login?reason=expired`. This note applies to `verify` only — `confirm` (MFA enrollment, Phase 4, not yet implemented) has not been verified against the back the same way, and its row above should be re-checked before Phase 4's `confirmMfaAction` is implemented.
 
 **Enrollment (`MfaEnrollment`, one client component with local step state).**
 1. `enableMfaAction(password)` returns `{ step: "scan", qrSvgDataUri, secret }`.
