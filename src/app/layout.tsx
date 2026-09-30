@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import { Bodoni_Moda, Manrope } from "next/font/google";
-import Header from "@/components/layout/Header/Header";
-import Footer from "@/components/layout/Footer/Footer";
-import WhatsAppButton from "@/components/layout/WhatsAppButton/WhatsAppButton";
 import "./globals.css";
 
 const bodoniModa = Bodoni_Moda({
@@ -27,12 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${bodoniModa.variable} ${manrope.variable}`}>
-      <body>
-        <Header />
-        {children}
-        <Footer />
-        <WhatsAppButton />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
