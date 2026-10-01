@@ -32,7 +32,7 @@
 
 | ID | Task | Route | Status | Commit / PR |
 |----|------|-------|--------|-------------|
-| T1 | BFF transport (PATCH/PUT/DELETE, multipart) + typed properties/images/neighborhoods API + Spanish labels | delegated (writer trigger: 2+ files) | ⬜ | |
+| T1 | BFF transport (PATCH/PUT/DELETE, multipart) + typed properties/images/neighborhoods API + Spanish labels | delegated (writer trigger: 2+ files) | ✅ | `d9390e4`, `0f47d3f` |
 | T2 | Form primitives (SelectField, TextareaField, CheckboxField) + mobile-first panel shell with nav; `/admin` → `/admin/propiedades` | delegated | ⬜ | |
 | T3 | Property list page: filters (q, status, operation, type), pagination, cards → table | delegated | ⬜ | |
 | T4 | Create/edit form with server actions and field error mapping | delegated | ⬜ | |
@@ -53,8 +53,13 @@
 
 ## Progress / evidence
 
-(filled per task)
+### T1 — transport + typed API (strict TDD)
+
+- `apiFetch` supports GET/POST/PATCH/PUT/DELETE, empty/204 bodies, `FormData` (no Content-Type, 60 s default timeout); `ApiError.details` keeps Nest's `message[]` for field mapping.
+- `src/lib/api/properties.ts` (server-only) wraps every admin property/image endpoint plus `listNeighborhoods`; `src/lib/properties/{enums,labels}.ts` are client-safe (Spanish labels, `allowedDealStatuses`, `formatPrice`).
+- Numeric columns arrive as numbers (the back's `numericTransformer` parses them); `neighborhood` includes `createdAt`.
+- RED: client 6 failed / 20 passed; labels and properties failed on missing modules. GREEN: 201 tests passed. Lint 0 errors (1 pre-existing warning). Build OK. Parent spot check: `npx vitest run src/lib` → 104 passed.
 
 ## Next step
 
-T1.
+T2.
