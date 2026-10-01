@@ -8,7 +8,7 @@ import {
   uploadPropertyImage,
 } from "@/lib/api/properties";
 import { MAX_IMAGES_PER_PROPERTY, validateImageFile } from "@/lib/properties/images";
-import type { ActionFeedback } from "@/lib/properties/lifecycle";
+import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import { getSessionToken } from "@/lib/session/dal";
 import { handleSessionError } from "@/lib/session/session-error";
 

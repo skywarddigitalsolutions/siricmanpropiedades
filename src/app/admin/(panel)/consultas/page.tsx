@@ -8,6 +8,7 @@ import {
 import { getSessionToken } from "@/lib/session/dal";
 import { handleSessionError } from "@/lib/session/session-error";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
+import FormNotice from "@/components/admin/forms/FormNotice/FormNotice";
 import Pagination from "@/components/admin/panel/Pagination/Pagination";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import InboxFilters from "@/components/admin/leads/InboxFilters/InboxFilters";
@@ -29,7 +30,8 @@ type LeadsInboxPageProps = {
 
 /** `/admin/consultas` — leads inbox (feature 8). */
 export default async function LeadsInboxPage({ searchParams }: LeadsInboxPageProps) {
-  const state = parseInboxParams(await searchParams);
+  const query = await searchParams;
+  const state = parseInboxParams(query);
   const token = await getSessionToken();
 
   let leads: Lead[] = [];
@@ -50,6 +52,7 @@ export default async function LeadsInboxPage({ searchParams }: LeadsInboxPagePro
         title="Consultas"
         description="Mensajes del sitio: consultas por propiedades, tasaciones y contacto."
       />
+      {query.eliminada === "1" && <FormNotice>Consulta eliminada.</FormNotice>}
       <InboxFilters state={state} />
 
       {unavailable ? (

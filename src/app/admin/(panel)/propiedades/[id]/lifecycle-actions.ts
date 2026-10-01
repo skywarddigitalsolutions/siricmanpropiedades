@@ -11,10 +11,8 @@ import {
   updateDealStatus,
 } from "@/lib/api/properties";
 import { DEAL_STATUSES, type DealStatus } from "@/lib/properties/enums";
-import type {
-  ActionFeedback,
-  PublicationTransition,
-} from "@/lib/properties/lifecycle";
+import type { ActionFeedback } from "@/lib/forms/action-feedback";
+import type { PublicationTransition } from "@/lib/properties/lifecycle";
 import { getSessionToken } from "@/lib/session/dal";
 import { handleSessionError } from "@/lib/session/session-error";
 
