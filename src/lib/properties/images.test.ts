@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   MAX_IMAGE_BYTES,
+  MAX_ORIGINAL_BYTES,
   moveItem,
   moveToFront,
+  reorderByIds,
   validateImageFile,
+  validatePickedImage,
 } from "./images";
 
 function fileOf(type: string, size: number): File {
@@ -47,5 +50,34 @@ describe("moveItem", () => {
 describe("moveToFront", () => {
   it("moves an item to the first position (the cover)", () => {
     expect(moveToFront(["a", "b", "c"], 2)).toEqual(["c", "a", "b"]);
+  });
+});
+
+describe("reorderByIds", () => {
+  const items = [{ id: "a" }, { id: "b" }, { id: "c" }, { id: "d" }];
+
+  it("moves the dragged item to the position of the one it was dropped on", () => {
+    expect(reorderByIds(items, "a", "c").map((i) => i.id)).toEqual(["b", "c", "a", "d"]);
+    expect(reorderByIds(items, "d", "a").map((i) => i.id)).toEqual(["d", "a", "b", "c"]);
+  });
+
+  it("returns the same order when dropped on itself, outside, or on unknown ids", () => {
+    expect(reorderByIds(items, "b", "b")).toBe(items);
+    expect(reorderByIds(items, "b", null)).toBe(items);
+    expect(reorderByIds(items, "x", "a")).toBe(items);
+    expect(reorderByIds(items, "a", "x")).toBe(items);
+  });
+});
+
+describe("validatePickedImage", () => {
+  it("accepts any size up to the original cap, because it is compressed before upload", () => {
+    expect(validatePickedImage(fileOf("image/jpeg", MAX_IMAGE_BYTES + 1))).toBeNull();
+    expect(validatePickedImage(fileOf("image/png", MAX_ORIGINAL_BYTES))).toBeNull();
+  });
+
+  it("rejects unsupported formats, empty files and absurdly large originals", () => {
+    expect(validatePickedImage(fileOf("application/pdf", 10))).toMatch(/JPG, PNG o WebP/);
+    expect(validatePickedImage(fileOf("image/jpeg", 0))).toMatch(/vacío/);
+    expect(validatePickedImage(fileOf("image/jpeg", MAX_ORIGINAL_BYTES + 1))).toMatch(/demasiado pesada/);
   });
 });
