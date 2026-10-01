@@ -24,6 +24,26 @@
   color: var(--color-navy);
 }
 
+/* `display: flex` drops the native disclosure marker; draw a chevron instead. */
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-left: 10px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.details[open] > .summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+
 .summary:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;

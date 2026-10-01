@@ -151,6 +151,15 @@
     color: var(--color-gold);
   }
 
+  /* The logout pill is navy too; outline it so it reads as a button. */
+  .sidebarFooter :global(button) {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .sidebarFooter :global(button:hover:not(:disabled)) {
+    border-color: var(--color-gold);
+  }
+
   .sidebarNav {
     margin-top: 16px;
   }
