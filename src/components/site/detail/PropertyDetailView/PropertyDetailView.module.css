@@ -213,12 +213,6 @@
   background: var(--color-bg);
 }
 
-.locationCard {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font: 600 15px var(--font-body), sans-serif;
-}
 
 .aside {
   display: flex;

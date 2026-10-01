@@ -6,6 +6,7 @@ import {
   expensesLabel,
   propertyFacts,
   propertyLocation,
+  propertyMap,
   propertyPriceLabel,
   propertySpecs,
   serviceLabels,
@@ -127,5 +128,30 @@ describe("whatsappInquiry", () => {
       "Hola, me interesa la propiedad SP-0101 (Luminoso 3 ambientes con balcón al frente). ¿Podemos coordinar una visita?",
     );
     expect(href).toBe(`https://wa.me/5491138967363?text=${encodeURIComponent(message)}`);
+  });
+});
+
+describe("propertyMap", () => {
+  it("pins the exact address when it is public", () => {
+    expect(propertyMap(makePublicProperty())).toEqual({
+      query: "Gorriti 4800, Palermo, CABA",
+      precision: "exact",
+      label: "Gorriti 4800, Palermo",
+    });
+  });
+
+  it("falls back to the barrio when the address is hidden", () => {
+    const map = propertyMap(makePublicProperty({ address: null }));
+
+    expect(map).toEqual({
+      query: "Palermo, CABA",
+      precision: "approximate",
+      label: "Zona aproximada · Palermo",
+    });
+    expect(JSON.stringify(map)).not.toContain("Gorriti");
+  });
+
+  it("treats a blank address as hidden", () => {
+    expect(propertyMap(makePublicProperty({ address: "   " })).precision).toBe("approximate");
   });
 });
