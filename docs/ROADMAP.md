@@ -15,7 +15,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 8 | Leads: site forms + admin inbox | both | ODD | ✅ Done |
 | 8.1 | Remove SMTP lead emails + contact email in the footer (`odd/tasks/remove-smtp-footer-email.md`) | both | ODD | ✅ Done |
 | 9 | Institutional pages (Tasaciones, Nosotros, Contacto) + map (`odd/tasks/institutional-pages.md`) | front | ODD | ✅ Done |
-| 10 | Daily DB backups + uptime monitoring (back `odd/tasks/backups-monitoring.md`, back #27) | infra | ODD | 🟡 Code done; server rollout pending (runbook section 10) |
+| 10 | Daily DB backups + uptime monitoring (back `odd/tasks/backups-monitoring.md`, back #27) | infra | ODD | ✅ Done |
 
 ## Pending product decisions
 
