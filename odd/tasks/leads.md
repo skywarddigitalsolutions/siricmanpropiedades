@@ -36,7 +36,7 @@
 | T1 | Leads API client (public + admin) and the inquiry form on the property page | front | inline | ✅ | `2842f50` |
 | T2 | Admin inbox: "Consultas" nav with new-leads badge, list with filters and pagination | front | inline | ✅ | `92c050e` |
 | T3 | Admin lead detail: contact actions, status, notes, admin-only delete | front | inline | ✅ | `5246f3c` |
-| T4 | Browser walkthrough (375 / 1280), ROADMAP close-out | both | inline | ⬜ | |
+| T4 | Browser walkthrough (375 / 1280), ROADMAP close-out | both | inline | ✅ | `22ed118` |
 
 ## Acceptance criteria
 
@@ -82,6 +82,21 @@
 - Refactor: `ActionFeedback` moved to `src/lib/forms/action-feedback.ts` (generic; property imports updated).
 - RED: contact links, actions, panel, page, inbox notice. GREEN: 542 tests. Lint 0 errors. Build OK.
 
+### T4 — browser walkthrough + close-out
+
+- Production build (`next start`) against an in-memory mock of the API (job tmp dir, not in the repo) at 375 px and 1280 px. The local back has no published properties, so the real API was smoke-tested separately in B1.
+- Public: property page inquiry → name only shows "Dejanos un teléfono o un email…" next to Teléfono; with a phone → "¡Gracias por tu consulta!" (focused, `role="status"`); the lead reached the API with the property. A stale Next data cache (property ids from an earlier mock run) produced the "ya no está publicada" message — correct handling of a real case.
+- Panel: nav badge "Consultas 3" → 2 after marking one contacted; inbox tabs/chips/list; lead detail with call/WhatsApp/email, message, property links; notes saved; no horizontal scroll.
+- Found and fixed (`22ed118`): after "Marcar como contactada" the page revalidates, the lead arrives as contacted and the quick form unmounts — taking its "Cambios guardados." notice with it. The notice now renders outside the form (regression test added).
+- Interruption: the system stopped the background test servers once for low memory; resumed after checking free memory.
+- Checks: front `npm test` 543 passed, lint 0 errors (1 pre-existing warning), build OK; back 434 passed, lint/build OK.
+
+## Follow-ups
+
+- Feature 9: appraisal (Tasaciones) and contact (Contacto) forms on `POST /api/leads` (types `appraisal`, `contact`; the model, email and inbox already support them).
+- Configure SMTP in production to receive emails (deploy README section 9).
+- The local dev `.env` has `DB_SYNCHRONIZE=true`; consider turning it off so the dev DB follows migrations like production.
+
 ## Next step
 
-T4.
+Feature 8 done. Next: feature 9 (institutional pages + map).

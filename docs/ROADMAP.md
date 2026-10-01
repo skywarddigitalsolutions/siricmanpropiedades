@@ -12,7 +12,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 5 | Admin session: login + MFA from Next, token strategy | both | SDD | ✅ Done |
 | 6 | Admin panel: property list and editor | front | ODD | ✅ Done |
 | 7 | Public site: home, results, property detail (SEO) | front | ODD | ✅ Done |
-| 8 | Leads: site forms + admin inbox | both | ODD | ⬜ |
+| 8 | Leads: site forms + admin inbox | both | ODD | ✅ Done |
 | 9 | Institutional pages (Tasaciones, Nosotros, Contacto) + map | front | ODD | ⬜ |
 | 10 | Daily DB backups + monitoring | infra | ODD | ⬜ |
 
@@ -30,4 +30,4 @@ Resolve each one when its feature starts.
 - [x] Restrict deal status `sold` to sale and `rented` to rent operations — feature 6: yes, enforced in the admin panel; back enforcement is a follow-up
 - [ ] Back: enforce sold/rented vs operation in `PATCH /admin/properties/:id/deal-status` — follow-up of feature 6
 - [ ] Map provider: Google Maps vs OpenStreetMap — feature 9
-- [ ] Email notification on new leads? — feature 8
+- [x] Email notification on new leads — feature 8: yes, via SMTP (Google Workspace app password) when `SMTP_*` and `LEADS_NOTIFY_TO` are set; otherwise leads are only logged and always visible in the panel

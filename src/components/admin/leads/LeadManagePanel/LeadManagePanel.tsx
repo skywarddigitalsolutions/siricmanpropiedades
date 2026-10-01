@@ -47,9 +47,11 @@ export default function LeadManagePanel({
             <CheckCheck aria-hidden size={18} />
             Marcar como contactada
           </button>
-          <Feedback state={quickState} />
         </form>
       )}
+      {/* Outside the form: a successful one-tap change makes the lead
+          "contacted", which removes the form, but the confirmation stays. */}
+      <Feedback state={quickState} />
 
       <form action={submitSave} className={styles.card}>
         <h2 className={styles.title}>Seguimiento</h2>
