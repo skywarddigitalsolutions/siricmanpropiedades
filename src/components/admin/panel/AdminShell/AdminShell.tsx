@@ -9,6 +9,8 @@ import styles from "./AdminShell.module.css";
 type AdminShellProps = {
   userName: string;
   logout: ReactNode;
+  /** Counts shown in the nav, keyed by href (e.g. new leads). */
+  navBadges?: Record<string, number>;
   children: ReactNode;
 };
 
@@ -25,6 +27,7 @@ const DRAWER_ID = "admin-nav-drawer";
 export default function AdminShell({
   userName,
   logout,
+  navBadges,
   children,
 }: AdminShellProps) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -66,7 +69,7 @@ export default function AdminShell({
         <span className={styles.brand}>
           Siricman <span className={styles.brandDot}>·</span> Panel
         </span>
-        <AdminNav className={styles.sidebarNav} />
+        <AdminNav className={styles.sidebarNav} badges={navBadges} />
         <div className={styles.sidebarFooter}>
           <span className={styles.userName}>{userName}</span>
           {logout}
@@ -95,7 +98,7 @@ export default function AdminShell({
             </button>
           </div>
 
-          <AdminNav className={styles.drawerNav} onNavigate={closeMenu} />
+          <AdminNav className={styles.drawerNav} onNavigate={closeMenu} badges={navBadges} />
 
           <div className={styles.drawerFooter}>
             <span className={styles.userName}>{userName}</span>

@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import AdminShell from "@/components/admin/panel/AdminShell/AdminShell";
 import LogoutButton from "@/components/admin/panel/LogoutButton/LogoutButton";
-import { getCurrentUser } from "@/lib/session/dal";
+import { loadNavBadges } from "@/lib/leads/nav-badges";
+import { getCurrentUser, getSessionToken } from "@/lib/session/dal";
 import { logoutAction } from "./actions";
 
 /**
@@ -17,10 +18,13 @@ export default async function AdminPanelLayout({
   children: ReactNode;
 }) {
   const user = await getCurrentUser();
+  // Best effort: a failing count never blocks the panel.
+  const navBadges = await loadNavBadges(await getSessionToken());
 
   return (
     <AdminShell
       userName={user.userName}
+      navBadges={navBadges}
       logout={<LogoutButton action={logoutAction} />}
     >
       {children}
