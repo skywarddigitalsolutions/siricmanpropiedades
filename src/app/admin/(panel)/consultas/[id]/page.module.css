@@ -54,7 +54,8 @@
 }
 
 .cardTitle {
-  font: 500 20px var(--font-display), serif;
+  font: 700 20px var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
   color: var(--color-navy);
 }
 

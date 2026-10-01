@@ -5,8 +5,11 @@
 }
 
 .brand {
-  font: 500 18px var(--font-display), serif;
-  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 17px var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
   color: var(--color-navy);
   white-space: nowrap;
 }
@@ -191,4 +194,10 @@
   .main {
     padding: 32px 32px 48px;
   }
+}
+
+.brandEmblem {
+  width: 28px;
+  height: auto;
+  flex: none;
 }

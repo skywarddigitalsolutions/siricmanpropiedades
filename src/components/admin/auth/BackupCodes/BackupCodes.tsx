@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import AuthHeading from "../AuthHeading/AuthHeading";
 import styles from "./BackupCodes.module.css";
 
 type BackupCodesProps = {
@@ -20,6 +21,7 @@ export default function BackupCodes({ codes, onFinish }: BackupCodesProps) {
 
   return (
     <div className={styles.wrapper}>
+      <AuthHeading title="Guardá tus códigos de respaldo" />
       <p className={styles.intro}>
         Guarde estos códigos de respaldo en un lugar seguro. Cada uno se
         puede usar una sola vez si no tiene acceso a su aplicación de

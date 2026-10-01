@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, Ref } from "react";
+import type { InputHTMLAttributes, ReactNode, Ref } from "react";
 import styles from "./TextField.module.css";
 
 type TextFieldProps = {
@@ -8,6 +8,10 @@ type TextFieldProps = {
   error?: string;
   /** Extra class merged after the base input class (for one-off sizing). */
   inputClassName?: string;
+  /** Decorative leading icon (rendered `aria-hidden` by the caller). */
+  icon?: ReactNode;
+  /** Interactive trailing control (e.g. a show/hide button). */
+  trailing?: ReactNode;
   /** React 19 passes `ref` as a regular prop. */
   ref?: Ref<HTMLInputElement>;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "id" | "name">;
@@ -19,25 +23,39 @@ export default function TextField({
   label,
   error,
   inputClassName,
+  icon,
+  trailing,
   type = "text",
   ...inputProps
 }: TextFieldProps) {
   const errorId = `${id}-error`;
+  const classes = [
+    styles.input,
+    icon && styles.withIcon,
+    trailing && styles.withTrailing,
+    inputClassName,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className={styles.field}>
       <label htmlFor={id} className={styles.label}>
         {label}
       </label>
-      <input
-        id={id}
-        name={name}
-        type={type}
-        className={inputClassName ? `${styles.input} ${inputClassName}` : styles.input}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
-        {...inputProps}
-      />
+      <div className={styles.control}>
+        {icon && <span className={styles.icon}>{icon}</span>}
+        <input
+          id={id}
+          name={name}
+          type={type}
+          className={classes}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          {...inputProps}
+        />
+        {trailing && <span className={styles.trailing}>{trailing}</span>}
+      </div>
       {error && (
         <p id={errorId} className={styles.error}>
           {error}

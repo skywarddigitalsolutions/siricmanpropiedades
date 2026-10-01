@@ -1,0 +1,16 @@
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  font: 700 26px / 1.15 var(--font-body), sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.subtitle {
+  font: 500 14px / 1.5 var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
