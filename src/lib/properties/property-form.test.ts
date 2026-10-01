@@ -253,6 +253,16 @@ describe("mapApiErrorToFields", () => {
     expect(fieldErrors.expenses).toBe("expenses must not be less than 0");
   });
 
+  it("maps the back's rejected operation change to the operation field in Spanish", () => {
+    const fieldErrors = mapApiErrorToFields([
+      'Cannot change operation to "rent" while the property is "sold"; set the deal status to available or reserved first',
+    ]);
+    expect(fieldErrors.operation).toBe(
+      "No se puede cambiar la operación de una propiedad vendida o alquilada. Primero pasala a Disponible o Reservada.",
+    );
+    expect(fieldErrors.general).toBeUndefined();
+  });
+
   it("buckets an unrecognized field into general", () => {
     const fieldErrors = mapApiErrorToFields(["Neighborhood not found"]);
     expect(fieldErrors.general).toBe("Neighborhood not found");

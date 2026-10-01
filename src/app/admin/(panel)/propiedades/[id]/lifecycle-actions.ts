@@ -90,6 +90,9 @@ export async function changeDealStatusAction(
   try {
     await updateDealStatus(token, id, dealStatus as DealStatus);
   } catch (error) {
+    if (error instanceof ApiError && error.message.startsWith("Deal status")) {
+      return { error: "Ese estado comercial no corresponde a la operación de la propiedad." };
+    }
     return toFeedback(error, { 400: "La propiedad ya tiene ese estado comercial." });
   }
 

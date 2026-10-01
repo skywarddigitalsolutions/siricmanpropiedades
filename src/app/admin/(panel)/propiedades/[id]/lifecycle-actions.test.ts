@@ -123,6 +123,20 @@ describe("changeDealStatusAction", () => {
     expect(api.updateDealStatus).not.toHaveBeenCalled();
   });
 
+  it("explains an incompatible status instead of claiming it is already set", async () => {
+    api.updateDealStatus.mockRejectedValue(
+      new ApiError(400, 'Deal status "sold" is only allowed for sale properties'),
+    );
+
+    const state = await changeDealStatusAction(
+      "p1",
+      {},
+      formDataFor({ dealStatus: "sold" }),
+    );
+
+    expect(state.error).toMatch(/no corresponde a la operación/);
+  });
+
   it("renders not found when the property is gone", async () => {
     api.updateDealStatus.mockRejectedValue(new ApiError(404, "Not found"));
 

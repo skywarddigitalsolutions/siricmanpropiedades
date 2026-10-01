@@ -498,18 +498,28 @@ export function extractFormValues(formData: FormData): PropertyFormValues {
   };
 }
 
+const OPERATION_CHANGE_REJECTED_PREFIX = "Cannot change operation to";
+const OPERATION_CHANGE_REJECTED_MESSAGE =
+  "No se puede cambiar la operación de una propiedad vendida o alquilada. Primero pasala a Disponible o Reservada.";
+
 /**
  * Maps the back's Nest validation messages (`ApiError.details`, e.g.
  * `"price must be a positive number"`) to the field they describe — the
  * message's first token is always the DTO property name. Anything that does
  * not match a known field (e.g. `"Neighborhood not found"`) is bucketed into
- * `general` instead of being silently dropped.
+ * `general` instead of being silently dropped. The back's rejection of an
+ * operation change on a sold/rented property is recognized by its stable
+ * message prefix and shown on the `operation` field in Spanish.
  */
 export function mapApiErrorToFields(details: string[]): PropertyFieldErrors {
   const fieldErrors: PropertyFieldErrors = {};
   const generalMessages: string[] = [];
 
   for (const detail of details) {
+    if (detail.startsWith(OPERATION_CHANGE_REJECTED_PREFIX)) {
+      fieldErrors.operation = OPERATION_CHANGE_REJECTED_MESSAGE;
+      continue;
+    }
     const token = detail.match(/^(\w+)\b/)?.[1];
     const field = token as keyof CreatePropertyInput | undefined;
     if (field && KNOWN_FIELDS.has(field)) {
