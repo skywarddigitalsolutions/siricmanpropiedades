@@ -29,6 +29,12 @@ type ApiFetchOptions = {
   token?: string;
   /** Overrides the default timeout (10s JSON, 60s multipart uploads). */
   timeoutMs?: number;
+  /**
+   * Seconds to keep the response in Next's data cache (public catalog reads).
+   * A cached response is shared by every visitor, so no visitor IP is
+   * forwarded in that case; without it the request is never cached.
+   */
+  revalidate?: number;
 };
 
 const REQUEST_TIMEOUT_MS = 10_000;
@@ -37,9 +43,10 @@ const MULTIPART_TIMEOUT_MS = 60_000;
 /**
  * Server-only fetch wrapper for the internal API (per ADR-5). Composes
  * `${API_INTERNAL_URL}/api<path>`, attaches the bearer token when provided,
- * forwards the real client IP as `X-Forwarded-For` (per ADR-4), and always
- * disables caching. Non-2xx responses and network failures/timeouts are
- * normalized into `ApiError`.
+ * forwards the real client IP as `X-Forwarded-For` (per ADR-4), and disables
+ * caching unless `revalidate` opts into Next's data cache (shared public
+ * reads, sent without a client IP). Non-2xx responses and network
+ * failures/timeouts are normalized into `ApiError`.
  */
 export async function apiFetch<T = unknown>(
   path: `/${string}`,
@@ -65,9 +72,12 @@ export async function apiFetch<T = unknown>(
     requestHeaders.Authorization = `Bearer ${opts.token}`;
   }
 
-  const clientIp = getClientIp(await headers());
-  if (clientIp) {
-    requestHeaders["X-Forwarded-For"] = clientIp;
+  const cached = opts.revalidate !== undefined;
+  if (!cached) {
+    const clientIp = getClientIp(await headers());
+    if (clientIp) {
+      requestHeaders["X-Forwarded-For"] = clientIp;
+    }
   }
 
   const timeoutMs =
@@ -84,7 +94,9 @@ export async function apiFetch<T = unknown>(
           : isFormData
             ? (opts.body as FormData)
             : JSON.stringify(opts.body),
-      cache: "no-store",
+      ...(cached
+        ? { next: { revalidate: opts.revalidate } }
+        : { cache: "no-store" as const }),
       signal: AbortSignal.timeout(timeoutMs),
     });
   } catch {
