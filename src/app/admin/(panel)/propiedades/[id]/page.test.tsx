@@ -18,10 +18,18 @@ const { getProperty, listNeighborhoods } = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/api/properties", () => ({ getProperty, listNeighborhoods }));
 
-const { getSessionToken } = vi.hoisted(() => ({ getSessionToken: vi.fn() }));
-vi.mock("@/lib/session/dal", () => ({ getSessionToken }));
+const { getSessionToken, getCurrentUser } = vi.hoisted(() => ({
+  getSessionToken: vi.fn(),
+  getCurrentUser: vi.fn(),
+}));
+vi.mock("@/lib/session/dal", () => ({ getSessionToken, getCurrentUser }));
 
 vi.mock("./actions", () => ({ updatePropertyAction: vi.fn() }));
+vi.mock("./lifecycle-actions", () => ({
+  changePublicationAction: vi.fn(),
+  changeDealStatusAction: vi.fn(),
+  deletePropertyAction: vi.fn(),
+}));
 
 import { ApiError } from "@/lib/api/client";
 import EditPropertyPage from "./page";
@@ -38,6 +46,7 @@ afterEach(() => cleanup());
 beforeEach(() => {
   vi.clearAllMocks();
   getSessionToken.mockResolvedValue("jwt-1");
+  getCurrentUser.mockResolvedValue({ id: "u1", userName: "gabriel", isActive: true, roles: ["manager"] });
   listNeighborhoods.mockResolvedValue([
     { id: "n1", name: "Palermo", slug: "palermo", createdAt: "2024-01-01" },
   ]);
@@ -57,7 +66,7 @@ describe("EditPropertyPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/SP-0001/)).toBeInTheDocument();
     expect(screen.getByText("Publicada")).toBeInTheDocument();
-    expect(screen.getByText("Reservada")).toBeInTheDocument();
+    expect(screen.getByText("Reservada", { ignore: "option" })).toBeInTheDocument();
     expect(screen.getByLabelText("Título")).toHaveValue("Casa en Palermo");
     expect(screen.getByRole("link", { name: /Volver al listado/ })).toHaveAttribute(
       "href",
@@ -74,6 +83,34 @@ describe("EditPropertyPage", () => {
 
     render(await renderPage({ guardada: "1" }));
     expect(screen.getByRole("status")).toHaveTextContent(/Cambios guardados/);
+  });
+
+  it("shows the status and actions section", async () => {
+    getProperty.mockResolvedValue(makePropertyDetail());
+
+    render(await renderPage());
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Estado y acciones" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Publicar" })).toBeInTheDocument();
+  });
+
+  it("offers delete only to admins on never-published properties", async () => {
+    getProperty.mockResolvedValue(makePropertyDetail({ firstPublishedAt: null }));
+    render(await renderPage());
+    expect(screen.queryByText("Eliminar propiedad")).toBeNull();
+    cleanup();
+
+    getCurrentUser.mockResolvedValue({ id: "u1", userName: "gabriel", isActive: true, roles: ["admin"] });
+    render(await renderPage());
+    expect(screen.getByText("Eliminar propiedad")).toBeInTheDocument();
+    cleanup();
+
+    getProperty.mockResolvedValue(makePropertyDetail({ firstPublishedAt: "2024-02-01" }));
+    render(await renderPage());
+    expect(screen.queryByText("Eliminar propiedad")).toBeNull();
+    expect(screen.getByText(/ya fue publicada/)).toBeInTheDocument();
   });
 
   it.each([404, 400])("renders not found when the back answers %i", async (status) => {
