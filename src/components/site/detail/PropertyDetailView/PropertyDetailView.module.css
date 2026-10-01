@@ -3,8 +3,12 @@
   width: 100%;
   max-width: var(--content-max-width);
   margin: 0 auto;
-  /* Room for the fixed bottom bar on phones. */
-  padding-bottom: 110px;
+  padding-bottom: 32px;
+}
+
+/* Room for the fixed bottom bar on phones, below the footer too. */
+:global(body):has(.bottomBar) {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
 .topRow {
@@ -323,6 +327,10 @@
 @media (min-width: 960px) {
   .main {
     padding-bottom: 80px;
+  }
+
+  :global(body):has(.bottomBar) {
+    padding-bottom: 0;
   }
 
   .layout {

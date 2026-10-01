@@ -85,7 +85,8 @@ export default function ResultsFilterBar({ state, neighborhoods }: ResultsFilter
               defaultValue={state.neighborhood ?? ""}
               className={styles.barrioSelect}
             >
-              <option value="">Todos los barrios</option>
+              {/* Short label: the bar is narrow on phones. */}
+              <option value="">Barrio</option>
               {neighborhoods.map((neighborhood) => (
                 <option key={neighborhood.slug} value={neighborhood.slug}>
                   {neighborhood.name}
