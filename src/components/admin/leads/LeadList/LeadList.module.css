@@ -9,7 +9,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   padding: 14px 16px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -19,13 +19,7 @@
 }
 
 .row:hover {
-  color: var(--color-text);
   border-color: var(--color-gold);
-}
-
-.row:focus-visible {
-  outline: 2px solid var(--color-gold);
-  outline-offset: 2px;
 }
 
 /* New leads: gold edge and a bolder name. */
@@ -40,8 +34,26 @@
   gap: 12px;
 }
 
+/* The name is the card's link: its ::after covers the whole row. */
 .name {
   font: 600 15px var(--font-body), sans-serif;
+  color: var(--color-text);
+}
+
+.name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+}
+
+.name:focus-visible {
+  outline: none;
+}
+
+.name:focus-visible::after {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
 }
 
 .row[data-new] .name {
@@ -54,9 +66,33 @@
   color: var(--color-text-faint);
 }
 
+.chip {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font: 700 12px var(--font-body), sans-serif;
+  color: var(--color-navy-dark);
+  background: #f3ecdb;
+}
+
 .summary {
   font: 600 13px var(--font-body), sans-serif;
   color: var(--color-navy);
+}
+
+.contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font: 500 13px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+}
+
+.contactItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: anywhere;
 }
 
 .preview {
@@ -69,9 +105,17 @@
   color: var(--color-text-muted);
 }
 
-.meta {
+.footer {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Above the stretched link so the buttons stay clickable. */
+.actions {
+  position: relative;
+  z-index: 1;
 }
 
 @media (min-width: 960px) {

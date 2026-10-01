@@ -33,9 +33,17 @@ export type Lead = {
   updatedAt: string;
 };
 
+/** Per-status totals of the current search (they ignore the `status` filter). */
+export type LeadCounts = Record<LeadStatus, number>;
+
+export type LeadsPage = Paginated<Lead> & { counts?: LeadCounts };
+
 export type LeadFilters = {
   status?: LeadStatus;
   type?: LeadType;
+  /** Search over name, email, phone and message. */
+  q?: string;
+  propertyId?: string;
   limit?: number;
   offset?: number;
 };
@@ -45,8 +53,8 @@ export function submitLead(input: LeadSubmission): Promise<{ received: true }> {
   return apiFetch("/leads", { method: "POST", body: input });
 }
 
-export function listLeads(token: string, filters: LeadFilters = {}): Promise<Paginated<Lead>> {
-  return apiFetch<Paginated<Lead>>(`/admin/leads${buildQuery(filters)}` as `/${string}`, {
+export function listLeads(token: string, filters: LeadFilters = {}): Promise<LeadsPage> {
+  return apiFetch<LeadsPage>(`/admin/leads${buildQuery(filters)}` as `/${string}`, {
     token,
   });
 }

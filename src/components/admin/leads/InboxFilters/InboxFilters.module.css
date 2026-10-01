@@ -62,3 +62,22 @@
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
+
+.tab {
+  gap: 8px;
+}
+
+.pill {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  text-align: center;
+  font: 700 12px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  background: var(--color-bg);
+}
+
+.tab[aria-current="page"] .pill {
+  color: var(--color-navy-dark);
+  background: #f3ecdb;
+}

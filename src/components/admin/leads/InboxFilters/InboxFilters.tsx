@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { LeadCounts } from "@/lib/api/leads";
 import {
   buildInboxHref,
   type InboxState,
@@ -8,10 +9,10 @@ import type { LeadType } from "@/lib/leads/labels";
 import styles from "./InboxFilters.module.css";
 
 const STATUS_TABS: { label: string; status: InboxStatus }[] = [
+  { label: "Todas", status: "all" },
   { label: "Nuevas", status: "new" },
   { label: "Contactadas", status: "contacted" },
   { label: "Cerradas", status: "closed" },
-  { label: "Todas", status: "all" },
 ];
 
 const TYPE_CHIPS: { label: string; type?: LeadType }[] = [
@@ -21,8 +22,21 @@ const TYPE_CHIPS: { label: string; type?: LeadType }[] = [
   { label: "Contacto", type: "contact" },
 ];
 
-/** Status tabs and type chips; plain links, so the URL keeps the inbox state. */
-export default function InboxFilters({ state }: { state: InboxState }) {
+function tabCount(status: InboxStatus, counts: LeadCounts): number {
+  return status === "all" ? counts.new + counts.contacted + counts.closed : counts[status];
+}
+
+/**
+ * Status tabs (with a count pill when the API sent counts) and type chips;
+ * plain links, so the URL keeps the inbox state, search included.
+ */
+export default function InboxFilters({
+  state,
+  counts,
+}: {
+  state: InboxState;
+  counts?: LeadCounts;
+}) {
   return (
     <div className={styles.filters}>
       <nav aria-label="Estado" className={styles.tabs}>
@@ -34,6 +48,7 @@ export default function InboxFilters({ state }: { state: InboxState }) {
             className={styles.tab}
           >
             {label}
+            {counts && <span className={styles.pill}>{tabCount(status, counts)}</span>}
           </Link>
         ))}
       </nav>

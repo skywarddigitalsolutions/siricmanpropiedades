@@ -1,0 +1,38 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  height: 40px;
+  width: 50%;
+  border-radius: var(--radius-sm);
+  background: var(--color-border-soft);
+}
+
+.search {
+  height: 64px;
+  border-radius: var(--radius-sm);
+  background: var(--color-border-soft);
+}
+
+.tabs {
+  height: 48px;
+  max-width: 420px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border-soft);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+
+.row {
+  height: 132px;
+  border-radius: var(--radius-md);
+  background: var(--color-border-soft);
+}

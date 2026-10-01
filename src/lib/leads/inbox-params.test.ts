@@ -72,3 +72,32 @@ describe("leadSummary", () => {
     );
   });
 });
+
+const PROPERTY_ID = "3f2b8c1e-5a1d-4c0e-9b7a-1d2e3f4a5b6c";
+
+describe("inbox search and property filter", () => {
+  it("parses q and propiedad, dropping a malformed property id", () => {
+    expect(parseInboxParams({ q: "  ana ", propiedad: PROPERTY_ID })).toEqual({
+      status: "new",
+      q: "ana",
+      propertyId: PROPERTY_ID,
+      page: 1,
+    });
+    expect(parseInboxParams({ propiedad: "nope", q: " " })).toEqual({ status: "new", page: 1 });
+  });
+
+  it("maps them to API filters", () => {
+    expect(
+      toLeadFilters({ status: "all", q: "ana", propertyId: PROPERTY_ID, page: 1 }, 20),
+    ).toEqual({ q: "ana", propertyId: PROPERTY_ID, limit: 20, offset: 0 });
+  });
+
+  it("keeps them in the URL and resets the page on filter changes", () => {
+    expect(buildInboxHref({ status: "new", q: "ana", propertyId: PROPERTY_ID, page: 3 }, { status: "all" })).toBe(
+      `/admin/consultas?estado=todas&q=ana&propiedad=${PROPERTY_ID}`,
+    );
+    expect(buildInboxHref({ status: "new", q: "ana", page: 1 }, { page: 2 })).toBe(
+      "/admin/consultas?q=ana&pagina=2",
+    );
+  });
+});
