@@ -87,3 +87,30 @@
   font-size: 12px;
   color: var(--color-text-on-dark-muted);
 }
+
+.contactLinks {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+}
+
+.link {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-white);
+  text-underline-offset: 3px;
+}
+
+.link:hover,
+.email:hover {
+  color: var(--color-gold);
+}
+
+.link:focus-visible,
+.email:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

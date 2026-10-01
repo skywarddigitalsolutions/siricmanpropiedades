@@ -37,4 +37,11 @@ describe("WhatsAppButton", () => {
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", expect.stringContaining("noopener"));
   });
+
+  it("shows a visible label for desktop while keeping the accessible name", () => {
+    render(<WhatsAppButton />);
+
+    const link = screen.getByRole("link", { name: "Escribinos por WhatsApp" });
+    expect(link).toHaveTextContent("Escribinos");
+  });
 });

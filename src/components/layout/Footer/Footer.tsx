@@ -1,13 +1,16 @@
 import Image from "next/image";
 import {
   CONTACT_EMAIL,
-  INSTAGRAM_HANDLE,
   OFFICE_ADDRESS,
   OFFICE_CITY,
   OFFICE_HOURS,
   OFFICE_NEIGHBORHOOD,
+  INSTAGRAM_HANDLE,
+  INSTAGRAM_URL,
   PHONE_DISPLAY,
+  PHONE_HREF,
 } from "@/lib/contact";
+import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
@@ -37,9 +40,33 @@ export default function Footer() {
             {OFFICE_ADDRESS} · {OFFICE_NEIGHBORHOOD}, {OFFICE_CITY}
           </span>
           <span>{OFFICE_HOURS} · con cita previa</span>
-          <span>
-            {PHONE_DISPLAY} · {INSTAGRAM_HANDLE}
-          </span>
+          <ul className={styles.contactLinks}>
+            <li>
+              <a href={PHONE_HREF} className={styles.link}>
+                {PHONE_DISPLAY}
+              </a>
+            </li>
+            <li>
+              <a
+                href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.link}
+              >
+                WhatsApp
+              </a>
+            </li>
+            <li>
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.link}
+              >
+                {INSTAGRAM_HANDLE}
+              </a>
+            </li>
+          </ul>
           <a href={`mailto:${CONTACT_EMAIL}`} className={styles.email}>
             {CONTACT_EMAIL}
           </a>

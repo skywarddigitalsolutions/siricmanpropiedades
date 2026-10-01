@@ -36,15 +36,25 @@
 }
 
 .badge {
-  padding: 6px 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
   border-radius: var(--radius-pill);
   font: 700 12px var(--font-body), sans-serif;
   color: var(--color-navy);
-  background: var(--color-white);
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 3px rgba(20, 25, 60, 0.18);
 }
 
-.tag {
-  color: var(--color-navy-dark);
+/* Marketing tag: same white pill as the operation chip, set apart by a gold dot. */
+.tag::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
   background: var(--color-gold);
 }
 

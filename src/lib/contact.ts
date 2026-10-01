@@ -7,6 +7,8 @@ export const OFFICE_CITY = "CABA";
 /** Opening hours; visits are by appointment only. */
 export const OFFICE_HOURS = "10:30 a 18:00";
 export const PHONE_DISPLAY = "11 3896-7363";
+/** Dialable form of the office mobile (same line as the WhatsApp number). */
+export const PHONE_HREF = "tel:+5491138967363";
 
 export const INSTAGRAM_HANDLE = "@gabrielsiricman";
 export const INSTAGRAM_URL = "https://www.instagram.com/gabrielsiricman/";
