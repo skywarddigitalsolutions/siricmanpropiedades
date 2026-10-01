@@ -3,6 +3,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const { getSessionCookie } = vi.hoisted(() => ({ getSessionCookie: vi.fn() }));
 vi.mock("@/lib/session/cookies", () => ({ getSessionCookie }));
 
+const { getMe } = vi.hoisted(() => ({ getMe: vi.fn() }));
+vi.mock("@/lib/api/auth", () => ({ getMe }));
+
 const { searchAddresses, lookupBarrio } = vi.hoisted(() => ({
   searchAddresses: vi.fn(),
   lookupBarrio: vi.fn(),
@@ -24,6 +27,8 @@ describe("GET /admin/api/direcciones", () => {
   beforeEach(() => {
     getSessionCookie.mockReset();
     getSessionCookie.mockResolvedValue("jwt");
+    getMe.mockReset();
+    getMe.mockResolvedValue({ id: "u1", userName: "admin", isActive: true, roles: ["admin"] });
     searchAddresses.mockReset();
     lookupBarrio.mockReset();
   });
@@ -34,6 +39,25 @@ describe("GET /admin/api/direcciones", () => {
     const response = await GET(request("?q=boedo 123"));
 
     expect(response.status).toBe(401);
+    expect(searchAddresses).not.toHaveBeenCalled();
+  });
+
+  it("answers 401 when the session cookie is not a valid session and never calls USIG", async () => {
+    getMe.mockRejectedValue(new Error("401"));
+
+    const response = await GET(request("?q=boedo 123"));
+
+    expect(response.status).toBe(401);
+    expect(getMe).toHaveBeenCalledWith("jwt");
+    expect(searchAddresses).not.toHaveBeenCalled();
+  });
+
+  it("answers 403 when the user cannot access the panel", async () => {
+    getMe.mockResolvedValue({ id: "u2", userName: "x", isActive: true, roles: ["user"] });
+
+    const response = await GET(request("?q=boedo 123"));
+
+    expect(response.status).toBe(403);
     expect(searchAddresses).not.toHaveBeenCalled();
   });
 

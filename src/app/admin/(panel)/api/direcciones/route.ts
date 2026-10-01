@@ -1,4 +1,6 @@
+import { getMe } from "@/lib/api/auth";
 import { getSessionCookie } from "@/lib/session/cookies";
+import { canAccessPanel } from "@/lib/session/roles";
 import { sanitizeAddressQuery } from "@/lib/usig/address";
 import {
   lookupBarrio,
@@ -10,13 +12,22 @@ import {
  * `GET /admin/api/direcciones?q=` — CABA address suggestions, and
  * `?lat=&lon=` — the barrio for a point. The browser only ever calls this
  * same-origin endpoint (the admin CSP keeps `connect-src 'self'`); USIG is
- * called from here, behind the session cookie, with a short timeout. A USIG
+ * called from here, behind a validated panel session, with a short timeout. A USIG
  * outage answers 200 with `unavailable: true` so the editor can still save.
  */
 export async function GET(request: Request): Promise<Response> {
-  if (!(await getSessionCookie())) {
+  const token = await getSessionCookie();
+  if (!token) return json({ error: "No autenticado." }, 401);
+
+  // A cookie alone proves nothing: validate it against the API so this
+  // endpoint is never an open relay to USIG.
+  let roles: readonly string[];
+  try {
+    ({ roles } = await getMe(token));
+  } catch {
     return json({ error: "No autenticado." }, 401);
   }
+  if (!canAccessPanel(roles)) return json({ error: "Sin permiso." }, 403);
 
   const params = new URL(request.url).searchParams;
 
