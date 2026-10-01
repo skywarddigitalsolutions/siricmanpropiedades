@@ -5,12 +5,14 @@
  * pagination) build hrefs with it — none of them touch `fetch` or cookies.
  */
 import {
+  CURRENCIES,
   DEAL_STATUSES,
   OPERATIONS,
   PROPERTY_TYPES,
   PUBLICATION_STATUSES,
 } from "./enums";
 import type {
+  Currency,
   DealStatus,
   Operation,
   PropertyType,
@@ -23,7 +25,41 @@ export const PAGE_SIZE = 20;
 /** The `q` filter is capped at 100 characters, matching the back's limit. */
 const MAX_QUERY_LENGTH = 100;
 
+/** Sort choices of the list (`orden` in the URL); `recientes` is the default. */
+export const LIST_ORDERS = [
+  "recientes",
+  "editadas",
+  "precio-asc",
+  "precio-desc",
+] as const;
+export type ListOrder = (typeof LIST_ORDERS)[number];
+
+export function isPriceOrder(orden: ListOrder | undefined): boolean {
+  return orden === "precio-asc" || orden === "precio-desc";
+}
+
+/** Maps `orden` to the back's `sort`/`order` params; the default sends none. */
+export function listOrderToApi(orden: ListOrder | undefined): {
+  sort?: "updatedAt" | "price";
+  order?: "asc" | "desc";
+} {
+  switch (orden) {
+    case "editadas":
+      return { sort: "updatedAt", order: "desc" };
+    case "precio-asc":
+      return { sort: "price", order: "asc" };
+    case "precio-desc":
+      return { sort: "price", order: "desc" };
+    default:
+      return {};
+  }
+}
+
 export type PropertyListFilters = {
+  currency?: Currency;
+  /** Only `false` ("Sin fotos") is offered in the UI. */
+  hasImages?: boolean;
+  orden?: ListOrder;
   q?: string;
   publicationStatus?: PublicationStatus;
   dealStatus?: DealStatus;
@@ -83,6 +119,15 @@ export function parsePropertyListParams(
   const type = parseEnumValue(firstValue(raw.type), PROPERTY_TYPES);
   if (type) filters.type = type;
   if (neighborhoodId) filters.neighborhoodId = neighborhoodId;
+  const currency = parseEnumValue(firstValue(raw.currency), CURRENCIES);
+  if (currency) filters.currency = currency;
+  const hasImagesRaw = firstValue(raw.hasImages);
+  if (hasImagesRaw === "true" || hasImagesRaw === "false") {
+    filters.hasImages = hasImagesRaw === "true";
+  }
+  const orden = parseEnumValue(firstValue(raw.orden), LIST_ORDERS);
+  // Price sorting needs a currency (the back answers 400 otherwise).
+  if (orden && (!isPriceOrder(orden) || currency)) filters.orden = orden;
 
   const pageRaw = Number.parseInt(firstValue(raw.page) ?? "1", 10);
   const page = Number.isFinite(pageRaw) && pageRaw > 1 ? pageRaw : 1;
@@ -102,12 +147,14 @@ export function countSecondaryFilters(filters: PropertyListFilters): number {
     filters.operation,
     filters.type,
     filters.neighborhoodId,
+    filters.currency,
+    filters.hasImages === undefined ? undefined : true,
   ].filter(Boolean).length;
 }
 
 /** True when any filter, including `q`, is active. */
 export function hasActiveFilters(filters: PropertyListFilters): boolean {
-  return Object.keys(filters).length > 0;
+  return Object.keys(filters).some((key) => key !== "orden");
 }
 
 /** Builds an `/admin/propiedades` href preserving every filter, for a given page. */
@@ -126,6 +173,11 @@ export function buildPropertyListHref(
   if (filters.neighborhoodId) {
     params.set("neighborhoodId", filters.neighborhoodId);
   }
+  if (filters.currency) params.set("currency", filters.currency);
+  if (filters.hasImages !== undefined) {
+    params.set("hasImages", String(filters.hasImages));
+  }
+  if (filters.orden) params.set("orden", filters.orden);
   if (page > 1) params.set("page", String(page));
 
   const query = params.toString();

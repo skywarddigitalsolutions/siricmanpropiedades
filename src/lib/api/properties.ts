@@ -70,6 +70,12 @@ export type Property = {
   updatedAt: string;
 };
 
+/** Item of `GET /api/admin/properties`: the property plus cover and photo count. */
+export type PropertyListItem = Property & {
+  coverThumbnailUrl: string | null;
+  imageCount: number;
+};
+
 /** Admin-facing image shape — see `PropertyImageResponse` on the back. */
 export type PropertyImage = {
   id: string;
@@ -142,18 +148,33 @@ export type PropertyFilters = {
   type?: PropertyType;
   neighborhoodId?: string;
   q?: string;
+  currency?: Currency;
+  hasImages?: boolean;
+  sort?: "createdAt" | "updatedAt" | "price";
+  order?: "asc" | "desc";
   limit?: number;
   offset?: number;
 };
 
 export type Paginated<T> = { items: T[]; total: number };
 
+/** Per-publication-status totals; they ignore the `publicationStatus` filter. */
+export type PublicationCounts = {
+  draft: number;
+  published: number;
+  archived: number;
+};
+
+export type PropertyListPage = Paginated<PropertyListItem> & {
+  counts: PublicationCounts;
+};
+
 /** `GET /api/admin/properties` — every publicationStatus, filterable, paginated. */
 export function listProperties(
   token: string,
   filters: PropertyFilters = {},
-): Promise<Paginated<Property>> {
-  return apiFetch<Paginated<Property>>(
+): Promise<PropertyListPage> {
+  return apiFetch<PropertyListPage>(
     `/admin/properties${buildQuery(filters)}` as `/${string}`,
     { token },
   );

@@ -96,3 +96,14 @@ describe("SelectField", () => {
     expect(select).not.toHaveAttribute("aria-describedby");
   });
 });
+
+describe("SelectField chevron", () => {
+  it("draws a decorative chevron next to the native select", () => {
+    const { container } = render(
+      <SelectField id="x" name="x" label="X" options={options} />,
+    );
+
+    expect(container.querySelector("svg[aria-hidden='true']")).not.toBeNull();
+    expect(container.querySelector("select")).not.toBeNull();
+  });
+});

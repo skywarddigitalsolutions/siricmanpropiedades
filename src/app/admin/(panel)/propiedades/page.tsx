@@ -1,21 +1,27 @@
 import Link from "next/link";
 import { listNeighborhoods, listProperties } from "@/lib/api/properties";
-import type { Property } from "@/lib/api/properties";
+import type {
+  PropertyListItem,
+  PublicationCounts,
+} from "@/lib/api/properties";
 import { ApiError } from "@/lib/api/client";
 import { getSessionToken } from "@/lib/session/dal";
 import { handleSessionError } from "@/lib/session/session-error";
 import {
   countSecondaryFilters,
   hasActiveFilters,
+  listOrderToApi,
   parsePropertyListParams,
   type RawSearchParams,
 } from "@/lib/properties/list-params";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import PropertyFilters from "@/components/admin/properties/PropertyFilters/PropertyFilters";
+import PropertyStatusTabs from "@/components/admin/properties/PropertyStatusTabs/PropertyStatusTabs";
 import PropertyList from "@/components/admin/properties/PropertyList/PropertyList";
 import PropertyPagination from "@/components/admin/properties/PropertyPagination/PropertyPagination";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
 import FormNotice from "@/components/admin/forms/FormNotice/FormNotice";
+import { changePublicationAction } from "./[id]/lifecycle-actions";
 import styles from "./page.module.css";
 
 type AdminPropertiesPageProps = {
@@ -40,13 +46,21 @@ export default async function AdminPropertiesPage({
 
   const neighborhoods = await listNeighborhoods();
 
-  let items: Property[] = [];
+  let items: PropertyListItem[] = [];
+  let counts: PublicationCounts = { draft: 0, published: 0, archived: 0 };
   let total = 0;
   let notice: string | undefined;
 
   try {
-    const result = await listProperties(token, { ...filters, limit, offset });
+    const { orden, ...apiFilters } = filters;
+    const result = await listProperties(token, {
+      ...apiFilters,
+      ...listOrderToApi(orden),
+      limit,
+      offset,
+    });
     items = result.items;
+    counts = result.counts;
     total = result.total;
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
@@ -77,6 +91,8 @@ export default async function AdminPropertiesPage({
       )}
       {notice && <FormAlert>{notice}</FormAlert>}
 
+      <PropertyStatusTabs filters={filters} counts={counts} />
+
       <PropertyFilters
         filters={filters}
         neighborhoods={neighborhoods}
@@ -86,6 +102,7 @@ export default async function AdminPropertiesPage({
       <PropertyList
         properties={items}
         hasActiveFilters={hasActiveFilters(filters)}
+        publicationAction={changePublicationAction}
       />
 
       {items.length > 0 && (
