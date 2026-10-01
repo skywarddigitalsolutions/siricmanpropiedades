@@ -11,7 +11,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 4 | Images: upload, WebP conversion, ordering/cover, storage | back | SDD | ✅ Done |
 | 5 | Admin session: login + MFA from Next, token strategy | both | SDD | ✅ Done |
 | 6 | Admin panel: property list and editor | front | ODD | ✅ Done |
-| 7 | Public site: home, results, property detail (SEO) | front | ODD | ⬜ |
+| 7 | Public site: home, results, property detail (SEO) | front | ODD | ✅ Done |
 | 8 | Leads: site forms + admin inbox | both | ODD | ⬜ |
 | 9 | Institutional pages (Tasaciones, Nosotros, Contacto) + map | front | ODD | ⬜ |
 | 10 | Daily DB backups + monitoring | infra | ODD | ⬜ |
@@ -25,8 +25,8 @@ Resolve each one when its feature starts.
 - [x] Image storage — feature 4: local disk (Docker volume `media_data`) behind a `StoragePort`, served by Caddy at `/media/*`; an R2 adapter can be added later without domain changes
 - [ ] Back up the `media_data` volume (not covered by `pg_dump`) — feature 10
 - [x] Admin token strategy — feature 5: Next BFF with an httpOnly cookie (JWT never reaches the browser), no refresh token (60-min session, reactive expiry); BFF forwards the client IP so throttling stays per user
-- [ ] Public catalog: expose a `featured` filter? — feature 7
-- [ ] API rate limit (global throttler, 20 req/min per IP) vs server-side fetching of the public catalog — feature 7 (admin traffic already forwards the client IP since feature 5)
+- [x] Public catalog: expose a `featured` filter — feature 7: yes (`featured=true`, home "Destacadas"), plus a `code` filter for code lookups
+- [x] API rate limit vs server-side fetching of the public catalog — feature 7: pages render per request with Next's 60 s data cache; public catalog reads get their own 300 req/min per-IP limit (the Next container shares one IP)
 - [x] Restrict deal status `sold` to sale and `rented` to rent operations — feature 6: yes, enforced in the admin panel; back enforcement is a follow-up
 - [ ] Back: enforce sold/rented vs operation in `PATCH /admin/properties/:id/deal-status` — follow-up of feature 6
 - [ ] Map provider: Google Maps vs OpenStreetMap — feature 9

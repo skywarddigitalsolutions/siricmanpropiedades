@@ -43,7 +43,7 @@
 | T3 | Results page: filter bar, filters sheet, quick chips, sort, grid, pagination, empty state | front | inline | ✅ | `a22e0ef` |
 | T4 | Property detail page: gallery, facts, chips, description, services, location, WhatsApp, bottom bar | front | inline | ✅ | `4b7e254` |
 | T5 | SEO: `SITE_URL`/metadataBase, per-page metadata, JSON-LD, sitemap, robots; deploy env docs | both | inline | ✅ | `de59d68`, back #22 |
-| T6 | Browser walkthrough (375 / 1280), ROADMAP close-out | front | inline | ⬜ | |
+| T6 | Browser walkthrough (375 / 1280), ROADMAP close-out | front | inline | ✅ | `9fb5fb2`, back #23 |
 
 ## Acceptance criteria
 
@@ -92,9 +92,26 @@
 - JSON-LD (`serializeJsonLd` escapes `<`): `RealEstateListing` + `Offer` (Sell/LeaseOut, InStock/SoldOut, street address only when public) on property pages; `RealEstateAgent` on the home.
 - `robots.ts` (disallow `/admin`, sitemap link) and `sitemap.ts` (landings + every published property, paged by 50, landings only if the API fails), both `force-dynamic`.
 - Deploy (back #22): `SITE_URL: https://${SITE_DOMAIN}` on `web`; README section 8 (rollout order, checks, throttle rationale). Front README documents `SITE_URL`.
-- Gotcha: this shell layer collapses `\` to `\` in commands, so escaped strings were written via `chr(92)`/the Write tool.
+- Gotcha: the shell layer used here collapses doubled backslashes in commands, so strings with escapes were written via `chr(92)` or the Write tool.
 - RED: helpers (missing modules), SEO routes (missing modules), JSON-LD on pages (2 failing). GREEN: 479 tests. Lint 0 errors. Build OK.
+
+### T6 — browser walkthrough + close-out
+
+- Production build (`next start`) against an in-memory mock of the public API (job tmp dir, not in the repo), at 375 px and 1280 px: home (hero search, chips, featured carousel, sections), hero search → `/propiedades?operacion=venta` (empty fields dropped by the canonical redirect), filters sheet (type + max price) → `operacion=venta&tipo=casa&hasta=120000`, sort → `orden=mayor-precio`, card → property page (title "… · USD 117.000 | Siricman Propiedades", canonical with `SITE_URL`, OG image, `RealEstateListing` JSON-LD, no floating WhatsApp), no horizontal scroll anywhere.
+- Found and fixed:
+  - **Back (#23):** ordering by the `dealStatus` enum split reserved below every available property, breaking price sorts. Now ordered by a stored generated column `is_unavailable` (migration `AddPropertyIsUnavailable1790600000000`; SQL dry-run on the dev Postgres inside a rolled-back transaction). Verified: reserved properties interleave by price, sold last.
+  - **Front (`9fb5fb2`):** the fixed bottom bar covered the end of the footer → `body:has(.bottomBar)` reserves its height on phones; the results bar's barrio placeholder clipped at 375 px → "Barrio".
+- Expected console 404s: nav prefetches `/tasaciones`, `/nosotros`, `/contacto` (feature 9).
+- Checks: front `npm test` 479 passed, lint 0 errors, build OK; back 405 passed, lint/build OK.
+
+## Follow-ups
+
+- Feature 8: inquiry form on the property page (the aside already has `id="consulta"`), "Contanos qué buscás" lead capture from the empty state.
+- Feature 9: institutional pages and the map in the property page's "Ubicación" card.
+- Real photos for the home hero and Gabriel's portrait (placeholders: navy pattern, "GS" monogram).
+- Type-chip counts on the home need a facets endpoint.
+- Real e2e against the back with seeded data, and deploy (back first: migration + filters; then front; `compose.yml` with `SITE_URL`).
 
 ## Next step
 
-T6.
+Feature 7 done. Next: feature 8 (leads).
