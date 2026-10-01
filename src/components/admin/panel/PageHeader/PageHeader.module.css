@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font: 500 26px var(--font-display), serif;
+  color: var(--color-navy);
+}
+
+.description {
+  font: 500 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .title {
+    font-size: 30px;
+  }
+}
