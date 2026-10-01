@@ -1,0 +1,199 @@
+.item {
+  list-style: none;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.card:focus-within {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 16 / 11;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(135deg, #ebe7dc 0 12px, #e3ded1 12px 24px);
+}
+
+.photo {
+  object-fit: cover;
+}
+
+/* Sold, rented or removed: the photo is muted so the card reads as "not for you anymore". */
+.card[data-state="closed"] .media,
+.card[data-state="gone"] .media {
+  opacity: 0.5;
+}
+
+.card[data-state="gone"] {
+  background: #f7f5ef;
+}
+
+.noPhoto {
+  font: 600 13px var(--font-body), sans-serif;
+  color: #7a7461;
+}
+
+.badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font: 700 12px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 3px rgba(20, 25, 60, 0.18);
+}
+
+.status {
+  padding: 7px 18px;
+  font: 700 12px var(--font-body), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  background: var(--color-navy);
+}
+
+.status[data-tone="reserved"] {
+  color: var(--color-navy-dark);
+  background: var(--color-gold);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 16px 18px 18px;
+}
+
+.card[data-state="closed"] .price,
+.card[data-state="closed"] .title {
+  color: var(--color-text-muted);
+}
+
+.priceRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.price {
+  font: 800 21px var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
+}
+
+.card[data-state="closed"] .price {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.priceNote {
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font: 700 11px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  background: #f3ead2;
+}
+
+.goneMessage {
+  font: 700 16px/1.35 var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+}
+
+.title {
+  font: 600 15px/1.35 var(--font-body), sans-serif;
+  color: var(--color-text);
+}
+
+.link {
+  color: inherit;
+}
+
+.link:hover {
+  color: inherit;
+}
+
+/* Stretch the title link over the card; the action buttons sit above it. */
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.pin {
+  flex: none;
+  color: var(--color-gold-dark);
+}
+
+.actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-soft);
+}
+
+.similar,
+.remove {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  font: 700 14px var(--font-body), sans-serif;
+  cursor: pointer;
+}
+
+.similar {
+  color: var(--color-white);
+  background: var(--color-navy);
+}
+
+.similar:hover {
+  color: var(--color-white);
+  background: var(--color-navy-dark);
+}
+
+.remove {
+  color: var(--color-text-muted-2);
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+}
+
+.remove:hover {
+  background: #f0eee8;
+}
