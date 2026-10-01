@@ -115,6 +115,18 @@ describe("properties endpoint functions", () => {
     });
   });
 
+  it("updateProperty forwards an explicit null to clear description/expenses", async () => {
+    apiFetch.mockResolvedValue({ id: "p1" });
+
+    await updateProperty("token-1", "p1", { description: null, expenses: null });
+
+    expect(apiFetch).toHaveBeenCalledWith("/admin/properties/p1", {
+      method: "PATCH",
+      body: { description: null, expenses: null },
+      token: "token-1",
+    });
+  });
+
   it("publishProperty patches the publish lifecycle route", async () => {
     apiFetch.mockResolvedValue({ id: "p1" });
 
