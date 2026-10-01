@@ -1,0 +1,237 @@
+.main {
+  flex: 1;
+}
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 16px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 20px;
+  align-items: center;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.eyebrow {
+  font: 700 12px var(--font-body), sans-serif;
+  letter-spacing: 0.16em;
+  color: var(--color-gold-dark);
+}
+
+.title {
+  font: 800 clamp(28px, 4vw, 44px) / 1.1 var(--font-body), sans-serif;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.lead {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--color-text-muted-2);
+}
+
+.logoTile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  max-height: 420px;
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
+  background: var(--color-navy);
+}
+
+/* Crops the JPG white margin so the mark sits cleanly on the navy tile. */
+.logoCrop {
+  width: 72%;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.logoImg {
+  display: block;
+  width: 133.9%;
+  max-width: none;
+  height: auto;
+  margin: -2% 0 0 -16%;
+}
+
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 12px;
+}
+
+.pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  background: var(--color-white);
+}
+
+.pillarText {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.heading {
+  margin-top: 16px;
+  font: 800 24px var(--font-body), sans-serif;
+}
+
+.values {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: 10px;
+  list-style: none;
+}
+
+.value {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--color-white);
+}
+
+.valueTitle {
+  font: 800 15px var(--font-body), sans-serif;
+  color: var(--color-navy);
+}
+
+.valueText {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.team {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+  list-style: none;
+}
+
+.member {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 12px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  margin-bottom: 6px;
+  border-radius: 14px;
+  font: 800 clamp(36px, 6vw, 56px) var(--font-body), sans-serif;
+  letter-spacing: 0.04em;
+  color: var(--color-gold);
+  background: var(--color-navy);
+}
+
+.memberName {
+  padding: 0 4px;
+  font: 800 15px var(--font-body), sans-serif;
+}
+
+.memberRole {
+  padding: 0 4px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.cta {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  margin-top: 16px;
+  overflow: hidden;
+  padding: clamp(28px, 5vw, 48px);
+  border-radius: var(--radius-2xl);
+  color: var(--color-white);
+  background: var(--color-navy-dark);
+}
+
+.ctaText {
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ctaTitle {
+  font: 800 clamp(22px, 3vw, 30px) / 1.2 var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.ctaBody {
+  font-size: 16px;
+  line-height: 1.55;
+  color: #d7dbef;
+}
+
+.ctaActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.ctaButton,
+.ctaLink {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 26px;
+  border-radius: var(--radius-pill);
+  font: 800 15px var(--font-body), sans-serif;
+}
+
+.ctaButton {
+  color: var(--color-navy-dark);
+  background: var(--color-gold);
+}
+
+.ctaButton:hover {
+  color: var(--color-navy-dark);
+  background: #d4b268;
+}
+
+.ctaLink {
+  color: var(--color-white);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.ctaLink:hover {
+  color: var(--color-white);
+  border-color: var(--color-white);
+}
+
+.ctaButton:focus-visible,
+.ctaLink:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
