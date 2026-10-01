@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ExternalLink, Mail, Pencil, Phone } from "lucide-react";
+import { ExternalLink, Mail, Pencil, Phone, Users } from "lucide-react";
 import { ApiError } from "@/lib/api/client";
-import { getLead, type Lead } from "@/lib/api/leads";
+import { getLead, listLeads, type Lead } from "@/lib/api/leads";
 import { PROPERTY_TYPE_LABELS } from "@/lib/properties/labels";
 import type { PropertyType } from "@/lib/properties/enums";
 import { leadContactLinks } from "@/lib/leads/contact-links";
@@ -14,7 +14,7 @@ import { publicSiteHref } from "@/lib/site-url";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import LeadManagePanel from "@/components/admin/leads/LeadManagePanel/LeadManagePanel";
 import LeadStatusBadge from "@/components/admin/leads/LeadStatusBadge/LeadStatusBadge";
-import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
+import WhatsAppReplyLink from "@/components/admin/leads/WhatsAppReplyLink/WhatsAppReplyLink";
 import { deleteLeadAction, updateLeadAction } from "./actions";
 import styles from "./page.module.css";
 
@@ -27,6 +27,24 @@ async function loadLead(token: string, id: string): Promise<Lead> {
     // 400 = malformed id (the API validates UUIDs), 404 = unknown or deleted.
     if (error instanceof ApiError && (error.status === 404 || error.status === 400)) notFound();
     handleSessionError(error);
+  }
+}
+
+/**
+ * How many inquiries this person sent (matched by email, else phone), for the
+ * "ver consultas de esta persona" link. Best effort: a failure shows no link.
+ */
+async function countInquiriesOfPerson(
+  token: string,
+  lead: Lead,
+): Promise<{ total: number; q: string } | null> {
+  const q = lead.email ?? lead.phone;
+  if (!q) return null;
+  try {
+    const { total } = await listLeads(token, { q, limit: 1 });
+    return { total, q };
+  } catch {
+    return null;
   }
 }
 
@@ -54,6 +72,8 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const [lead, user] = await Promise.all([loadLead(token, id), getCurrentUser()]);
   const links = leadContactLinks(lead);
   const rows = detailRows(lead);
+  const updateAction = updateLeadAction.bind(null, lead.id);
+  const person = await countInquiriesOfPerson(token, lead);
 
   return (
     <div className={styles.page}>
@@ -75,22 +95,18 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             <h2 id="lead-contact" className={styles.cardTitle}>
               Responder
             </h2>
+            {links.whatsapp && (
+              <WhatsAppReplyLink
+                status={lead.status}
+                href={links.whatsapp}
+                updateAction={updateAction}
+              />
+            )}
             <div className={styles.contactActions}>
               {links.call && (
                 <a href={links.call} className={styles.contact}>
                   <Phone aria-hidden size={18} />
                   Llamar · {lead.phone}
-                </a>
-              )}
-              {links.whatsapp && (
-                <a
-                  href={links.whatsapp}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${styles.contact} ${styles.whatsapp}`}
-                >
-                  <WhatsAppIcon size={20} />
-                  WhatsApp
                 </a>
               )}
               {links.email && (
@@ -123,6 +139,16 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               </dl>
             )}
           </section>
+
+          {person && person.total > 1 && (
+            <Link
+              href={`${INBOX_PATH}?${new URLSearchParams({ estado: "todas", q: person.q }).toString()}`}
+              className={styles.person}
+            >
+              <Users aria-hidden size={18} />
+              Ver {person.total} consultas de esta persona
+            </Link>
+          )}
 
           {lead.type === "property_inquiry" && (
             <section aria-labelledby="lead-property" className={styles.card}>
@@ -161,7 +187,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           status={lead.status}
           notes={lead.notes}
           canDelete={user.roles.includes("admin")}
-          updateAction={updateLeadAction.bind(null, lead.id)}
+          updateAction={updateAction}
           deleteAction={deleteLeadAction.bind(null, lead.id)}
         />
       </div>

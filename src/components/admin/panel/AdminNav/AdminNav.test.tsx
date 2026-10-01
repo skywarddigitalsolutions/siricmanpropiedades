@@ -28,6 +28,12 @@ describe("AdminNav", () => {
     expect(ADMIN_NAV_ITEMS).toContainEqual({ label: "Consultas", href: "/admin/consultas" });
   });
 
+  it("includes the clients view after the inbox", () => {
+    const hrefs = ADMIN_NAV_ITEMS.map((item) => item.href);
+    expect(ADMIN_NAV_ITEMS).toContainEqual({ label: "Clientes", href: "/admin/clientes" });
+    expect(hrefs.indexOf("/admin/clientes")).toBe(hrefs.indexOf("/admin/consultas") + 1);
+  });
+
   it("shows a badge with the count of new items, announced in words", () => {
     usePathname.mockReturnValue("/admin/propiedades");
     render(<AdminNav badges={{ "/admin/consultas": 3 }} />);

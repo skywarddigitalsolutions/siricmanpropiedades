@@ -11,3 +11,14 @@
   font: 500 15px var(--font-body), sans-serif;
   color: var(--color-text-muted);
 }
+
+.scope {
+  margin-bottom: 12px;
+  font: 500 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
+.scope a {
+  font-weight: 700;
+  text-decoration: underline;
+}

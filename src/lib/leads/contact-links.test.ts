@@ -23,6 +23,12 @@ describe("leadContactLinks", () => {
     );
   });
 
+  it("strips ? and & from the email so it cannot inject mailto fields", () => {
+    const links = leadContactLinks({ ...base, email: "a@b.com?bcc=x@evil.com&cc=y@evil.com" });
+
+    expect(links.email).toMatch(/^mailto:a@b\.combcc=x@evil\.comcc=y@evil\.com\?subject=/);
+  });
+
   it("keeps the + of international numbers and omits what the visitor didn't leave", () => {
     const links = leadContactLinks({ ...base, phone: "+54 9 11 3896-7363", email: null, property: null });
 

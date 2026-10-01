@@ -52,6 +52,23 @@ export async function apiFetch<T = unknown>(
   path: `/${string}`,
   opts: ApiFetchOptions = {},
 ): Promise<T> {
+  const response = await apiFetchRaw(path, opts);
+  const text = await response.text();
+  if (!text) {
+    return undefined as T;
+  }
+  return JSON.parse(text) as T;
+}
+
+/**
+ * Same request as `apiFetch` (URL, bearer token, forwarded IP, timeout, error
+ * normalization) but returns the successful `Response` untouched, so the BFF
+ * can stream non-JSON bodies such as the clients CSV.
+ */
+export async function apiFetchRaw(
+  path: `/${string}`,
+  opts: ApiFetchOptions = {},
+): Promise<Response> {
   const baseUrl = process.env.API_INTERNAL_URL;
   if (!baseUrl) {
     throw new Error("API_INTERNAL_URL is not configured");
@@ -108,11 +125,7 @@ export async function apiFetch<T = unknown>(
     throw new ApiError(response.status, message, details);
   }
 
-  const text = await response.text();
-  if (!text) {
-    return undefined as T;
-  }
-  return JSON.parse(text) as T;
+  return response;
 }
 
 async function extractErrorMessage(

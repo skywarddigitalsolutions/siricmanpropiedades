@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import LeadManagePanel from "./LeadManagePanel";
@@ -25,61 +25,105 @@ function setup(overrides: Partial<Parameters<typeof LeadManagePanel>[0]> = {}) {
   return { user: userEvent.setup(), updateAction, deleteAction };
 }
 
-describe("LeadManagePanel", () => {
-  it("marks a new lead as contacted in one tap", async () => {
-    const { user, updateAction } = setup();
-
-    await user.click(screen.getByRole("button", { name: "Marcar como contactada" }));
-
-    const formData = updateAction.mock.calls[0][1];
-    expect(formData.get("status")).toBe("contacted");
-    expect(formData.has("notes")).toBe(false);
-    expect(await screen.findByRole("status")).toHaveTextContent("Cambios guardados.");
-  });
-
-  it("keeps the confirmation after the page refreshes with the new status", async () => {
-    const updateAction = vi.fn<UpdateAction>(async () => ({ message: "Cambios guardados." }));
-    const deleteAction = vi.fn<DeleteAction>(async () => ({}));
-    const props = { notes: null, canDelete: false, updateAction, deleteAction };
-    const { rerender } = render(<LeadManagePanel status="new" {...props} />);
-    const user = userEvent.setup();
-
-    await user.click(screen.getByRole("button", { name: "Marcar como contactada" }));
-    await screen.findByRole("status");
-    // The action revalidates the page: the lead now arrives as contacted.
-    rerender(<LeadManagePanel status="contacted" {...props} />);
-
-    expect(screen.queryByRole("button", { name: "Marcar como contactada" })).toBeNull();
-    expect(screen.getByRole("status")).toHaveTextContent("Cambios guardados.");
-  });
-
-  it("hides the one-tap action once the lead is no longer new", () => {
+describe("LeadManagePanel status control", () => {
+  it("is a 3-option radio group with the current status selected", () => {
     setup({ status: "contacted" });
 
-    expect(screen.queryByRole("button", { name: "Marcar como contactada" })).toBeNull();
+    const group = screen.getByRole("radiogroup", { name: "Estado" });
+    expect(group).toBeInTheDocument();
+    expect(screen.getAllByRole("radio")).toHaveLength(3);
+    expect(screen.getByRole("radio", { name: "Nueva" })).not.toBeChecked();
+    expect(screen.getByRole("radio", { name: "Contactada" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "Cerrada" })).not.toBeChecked();
   });
 
-  it("saves the status and notes together", async () => {
+  it("saves instantly when another option is picked (no save button for the status)", async () => {
+    const { user, updateAction } = setup();
+
+    await user.click(screen.getByRole("radio", { name: "Cerrada" }));
+
+    expect(updateAction).toHaveBeenCalledTimes(1);
+    const formData = updateAction.mock.calls[0][1];
+    expect(formData.get("status")).toBe("closed");
+    expect(formData.has("notes")).toBe(false);
+    expect(await screen.findByRole("status")).toHaveTextContent("Estado actualizado.");
+  });
+
+  it("does not call the API when the current option is picked again", async () => {
+    const { user, updateAction } = setup({ status: "contacted" });
+
+    await user.click(screen.getByRole("radio", { name: "Contactada" }));
+
+    expect(updateAction).not.toHaveBeenCalled();
+  });
+
+  it("selects the new option right away while saving", async () => {
+    let finish: (feedback: ActionFeedback) => void = () => {};
+    const pending = new Promise<ActionFeedback>((resolve) => {
+      finish = resolve;
+    });
+    const { user } = setup({ updateAction: vi.fn<UpdateAction>(() => pending) });
+
+    await user.click(screen.getByRole("radio", { name: "Contactada" }));
+
+    expect(screen.getByRole("radio", { name: "Contactada" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "Nueva" })).not.toBeChecked();
+    finish({ message: "ok" });
+    await waitFor(() => expect(screen.getByRole("status")).toBeInTheDocument());
+  });
+
+  it("rolls back to the saved status and shows the error when saving fails", async () => {
+    const { user } = setup({
+      updateAction: vi.fn<UpdateAction>(async () => ({ error: "No se pudo guardar." })),
+    });
+
+    await user.click(screen.getByRole("radio", { name: "Cerrada" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("No se pudo guardar.");
+    await waitFor(() => expect(screen.getByRole("radio", { name: "Nueva" })).toBeChecked());
+    expect(screen.getByRole("radio", { name: "Cerrada" })).not.toBeChecked();
+  });
+
+  it("follows the status the server sends after a refresh", () => {
+    const props = {
+      notes: null,
+      canDelete: false,
+      updateAction: vi.fn<UpdateAction>(),
+      deleteAction: vi.fn<DeleteAction>(),
+    };
+    const { rerender } = render(<LeadManagePanel status="new" {...props} />);
+
+    rerender(<LeadManagePanel status="contacted" {...props} />);
+
+    expect(screen.getByRole("radio", { name: "Contactada" })).toBeChecked();
+  });
+});
+
+describe("LeadManagePanel notes", () => {
+  it("saves the notes together with the current status", async () => {
     const { user, updateAction } = setup({ status: "contacted", notes: "Llamar el lunes" });
 
     expect(screen.getByLabelText("Notas internas")).toHaveValue("Llamar el lunes");
-    await user.selectOptions(screen.getByLabelText("Estado"), "closed");
-    await user.click(screen.getByRole("button", { name: "Guardar" }));
+    await user.type(screen.getByLabelText("Notas internas"), " a la tarde");
+    await user.click(screen.getByRole("button", { name: "Guardar notas" }));
 
     const formData = updateAction.mock.calls[0][1];
-    expect(formData.get("status")).toBe("closed");
-    expect(formData.get("notes")).toBe("Llamar el lunes");
+    expect(formData.get("status")).toBe("contacted");
+    expect(formData.get("notes")).toBe("Llamar el lunes a la tarde");
+    expect(await screen.findByText("Cambios guardados.")).toBeInTheDocument();
   });
 
-  it("shows errors as alerts", async () => {
+  it("shows note errors as alerts", async () => {
     const { user, updateAction } = setup({ status: "contacted" });
     updateAction.mockResolvedValue({ error: "No se pudo guardar." });
 
-    await user.click(screen.getByRole("button", { name: "Guardar" }));
+    await user.click(screen.getByRole("button", { name: "Guardar notas" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("No se pudo guardar.");
   });
+});
 
+describe("LeadManagePanel delete", () => {
   it("lets admins delete after confirming", async () => {
     const { user, deleteAction } = setup({ canDelete: true });
 

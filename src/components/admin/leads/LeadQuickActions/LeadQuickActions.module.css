@@ -1,0 +1,63 @@
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 44px targets on phones. */
+.button {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  font: 700 13px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  background: var(--color-white);
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  border-color: var(--color-gold);
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.whatsapp {
+  color: var(--color-white);
+  border-color: var(--color-whatsapp-dark);
+  background: var(--color-whatsapp-dark);
+}
+
+.whatsapp:hover {
+  border-color: var(--color-whatsapp-dark);
+  filter: brightness(0.95);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.error {
+  flex: 1 1 100%;
+  font: 500 13px var(--font-body), sans-serif;
+  color: #a13d3d;
+}

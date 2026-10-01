@@ -51,3 +51,14 @@ describe("leads API", () => {
     });
   });
 });
+
+describe("leads API inbox filters", () => {
+  it("sends the search and property filters", async () => {
+    await listLeads("jwt", { q: "ana@mail.com", propertyId: "p-uuid", limit: 20, offset: 0 });
+
+    expect(apiFetch).toHaveBeenCalledWith(
+      "/admin/leads?q=ana%40mail.com&propertyId=p-uuid&limit=20&offset=0",
+      { token: "jwt" },
+    );
+  });
+});
