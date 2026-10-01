@@ -1,5 +1,13 @@
 import Image from "next/image";
-import { CONTACT_EMAIL } from "@/lib/contact";
+import {
+  CONTACT_EMAIL,
+  INSTAGRAM_HANDLE,
+  OFFICE_ADDRESS,
+  OFFICE_CITY,
+  OFFICE_HOURS,
+  OFFICE_NEIGHBORHOOD,
+  PHONE_DISPLAY,
+} from "@/lib/contact";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
@@ -25,9 +33,13 @@ export default function Footer() {
         </div>
 
         <div className={styles.address}>
-          <span>Las Casas 4054, 1° B · Boedo, CABA</span>
-          <span>10:30 a 18:00 · con cita previa</span>
-          <span>11 3896-7363 · @gabrielsiricman</span>
+          <span>
+            {OFFICE_ADDRESS} · {OFFICE_NEIGHBORHOOD}, {OFFICE_CITY}
+          </span>
+          <span>{OFFICE_HOURS} · con cita previa</span>
+          <span>
+            {PHONE_DISPLAY} · {INSTAGRAM_HANDLE}
+          </span>
           <a href={`mailto:${CONTACT_EMAIL}`} className={styles.email}>
             {CONTACT_EMAIL}
           </a>

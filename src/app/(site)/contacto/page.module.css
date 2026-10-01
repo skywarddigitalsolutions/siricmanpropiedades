@@ -1,0 +1,117 @@
+.main {
+  flex: 1;
+}
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 16px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.eyebrow {
+  font: 700 12px var(--font-body), sans-serif;
+  letter-spacing: 0.16em;
+  color: var(--color-gold-dark);
+}
+
+.title {
+  font: 800 clamp(28px, 4vw, 44px) / 1.1 var(--font-body), sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 10px;
+  list-style: none;
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 100%;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  color: var(--color-ink);
+  background: var(--color-white);
+}
+
+a.tile:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.tileIcon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+}
+
+.toneWhatsapp {
+  color: #1a9e4b;
+  background: #e3f8ea;
+}
+
+.toneNavy {
+  color: var(--color-navy);
+  background: #eef0f8;
+}
+
+.toneGold {
+  color: var(--color-gold-dark);
+  background: #f3ecdb;
+}
+
+.toneNeutral {
+  color: var(--color-ink);
+  background: var(--color-bg);
+}
+
+.tileText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tileLabel {
+  font: 600 12px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
+.tileValue {
+  font: 700 15px var(--font-body), sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.card {
+  padding: clamp(18px, 3vw, 28px);
+  border-radius: var(--radius-xl);
+  background: var(--color-white);
+}
+
+@media (min-width: 860px) {
+  .columns {
+    grid-template-columns: 1fr 1fr;
+  }
+}
