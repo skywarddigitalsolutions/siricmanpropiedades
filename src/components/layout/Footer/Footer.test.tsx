@@ -16,4 +16,12 @@ describe("Footer", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("© 2026 Siricman Propiedades")).toBeInTheDocument();
   });
+
+  it("links the public contact email with mailto", () => {
+    render(<Footer />);
+
+    expect(
+      screen.getByRole("link", { name: "info@siricmanpropiedades.com.ar" }),
+    ).toHaveAttribute("href", "mailto:info@siricmanpropiedades.com.ar");
+  });
 });

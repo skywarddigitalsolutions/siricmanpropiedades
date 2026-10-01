@@ -20,12 +20,18 @@
 
 ## Pending input
 
-- **Contact email address:** __TBD — ask the user if still blank__.
+- **Contact email address:** `info@siricmanpropiedades.com.ar` (user, 2026-10-01).
 
 ## Checks
 
 Back: `npm test`, `npm run lint`, `npm run build`. Front: `npm test`, `npm run lint`, `npm run build`. Strict TDD for the footer change (RED first). One PR per repo, merged (autonomous delivery authorized).
 
+## Progress
+
+- [x] Back removal — PR back#26 merged (`cab1b6c`). `npm test` 42 suites / 427 tests, lint, build green. Route: inline (mechanical removal).
+- [x] Footer contact email (front) — `CONTACT_EMAIL` in `src/lib/contact.ts`, `mailto:` link in the footer. RED observed (1 failing test), then GREEN: `npm test` 80 files / 544 tests, build green, lint 0 errors (1 pre-existing warning in MfaEnrollment). Route: inline.
+- [x] Docs: `leads.md` B2 marked reverted, ROADMAP 8.1 done.
+
 ## Next step
 
-Start with the back removal, then the footer.
+Feature done. Next: feature 9 (institutional pages) — the Contacto page reuses `CONTACT_EMAIL`.

@@ -64,6 +64,13 @@
   line-height: 1.5;
 }
 
+.email {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
 .matricula {
   color: var(--color-text-on-dark-muted);
 }

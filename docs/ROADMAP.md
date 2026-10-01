@@ -13,7 +13,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 6 | Admin panel: property list and editor | front | ODD | ✅ Done |
 | 7 | Public site: home, results, property detail (SEO) | front | ODD | ✅ Done |
 | 8 | Leads: site forms + admin inbox | both | ODD | ✅ Done |
-| 8.1 | Remove SMTP lead emails + contact email in the footer (`odd/tasks/remove-smtp-footer-email.md`) | both | ODD | ⬜ |
+| 8.1 | Remove SMTP lead emails + contact email in the footer (`odd/tasks/remove-smtp-footer-email.md`) | both | ODD | ✅ Done |
 | 9 | Institutional pages (Tasaciones, Nosotros, Contacto) + map | front | ODD | ⬜ |
 | 10 | Daily DB backups + monitoring | infra | ODD | ⬜ |
 
@@ -31,4 +31,4 @@ Resolve each one when its feature starts.
 - [x] Restrict deal status `sold` to sale and `rented` to rent operations — feature 6: yes, enforced in the admin panel; back enforcement is a follow-up
 - [ ] Back: enforce sold/rented vs operation in `PATCH /admin/properties/:id/deal-status` — follow-up of feature 6
 - [ ] Map provider: Google Maps vs OpenStreetMap — feature 9
-- [x] Email notification on new leads — decided 2026-10-01: no mail service. Leads stay in the panel inbox and are answered by WhatsApp; the site shows a public contact email (mailto). The SMTP notifier from feature 8 is removed in task `odd/tasks/remove-smtp-footer-email.md`
+- [x] Email notification on new leads — decided 2026-10-01: no mail service. Leads stay in the panel inbox and are answered by WhatsApp; the site shows a public contact email (mailto). The SMTP notifier from feature 8 was removed in feature 8.1 (back #26); the footer links `info@siricmanpropiedades.com.ar` (`CONTACT_EMAIL` in `src/lib/contact.ts`)
