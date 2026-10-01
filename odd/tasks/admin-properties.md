@@ -38,7 +38,7 @@
 | T4 | Create/edit form with server actions and field error mapping | delegated → inline (writer hit the weekly subagent limit mid-task) | ✅ | `de77621`, `d6b92c0` |
 | T5 | Lifecycle actions: publish/archive/unpublish, deal status (restricted by operation), delete (admin only) | inline (subagents rate-limited) | ✅ | `6db2a46` |
 | T6 | Images manager: upload (15 MB limits), reorder, delete, cover badge | inline (subagents rate-limited) | ✅ | `c7c6c77` |
-| T7 | ROADMAP + docs close-out; manual e2e against the local back | inline | ⬜ | |
+| T7 | ROADMAP + docs close-out; browser e2e (mock API) + polish fixes | inline | ✅ | `9450604` |
 
 ## Acceptance criteria
 
@@ -98,6 +98,19 @@
 - `PropertyImagesManager`: one upload request per file with progress, client validation report, optimistic reorder with rollback, cover = first (badge + "usar como portada"), delete with inline confirmation, 2/3/4-column grid, `next/image` `unoptimized` (no remotePatterns needed; the back already serves WebP renditions). Syncs from props without remounting so a batch keeps its state across revalidations.
 - RED: helpers, actions, manager (missing modules), page (1 failing). GREEN: 394 tests passed. Lint 0 errors. Build OK.
 
+### T7 — browser walkthrough + close-out
+
+- Reading the `.env` files is denied in this environment (the seed passwords live there), so the walkthrough ran the production build (`next start`) against an in-memory mock of the API contract (kept out of the repo), with a session cookie set in Playwright. Verified at 375 px and 1280 px: list (cards → table), filters, menu drawer, create with a validation error (input kept) then success (`?creada=1`), photo upload ×3 through the real Server Action → BFF multipart path, set cover, publish, deal status restricted by operation (sale: Disponible/Reservada/Vendida), delete hidden once published, no horizontal scroll (home, list, form).
+- Found and fixed (`9450604`): `html, body { overflow-x: hidden }` made body a scroll container, silently disabling every `position: sticky` (panel top bar, form action bar, public header) → `overflow-x: clip` + `scroll-padding-top`; user-agent button borders; missing disclosure chevron on "Filtros"; focus now jumps to the first invalid field after a failed save; duplicate "Publicación" legend renamed "Destaque"; sidebar logout outlined.
+- Checks: `npm test` 394 passed, lint 0 errors (1 pre-existing warning), build OK.
+- **Pending (user):** a real end-to-end run against the local back with a seeded manager/admin login (needs the seed credentials and TOTP), and the production deploy.
+
+## Follow-ups
+
+- Back: enforce sold ↔ sale and rented ↔ rent in `PATCH /admin/properties/:id/deal-status` (the panel already restricts it).
+- Back: decide what happens to `dealStatus` when an edit changes the operation (the panel keeps showing an out-of-rule value so it is visible).
+- Creating neighborhoods from the panel (API exists: `POST /api/neighborhoods`).
+
 ## Next step
 
-T7: manual e2e against the local back, ROADMAP close-out.
+Feature 6 done. Next: feature 7 (public site).

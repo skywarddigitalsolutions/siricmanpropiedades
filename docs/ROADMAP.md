@@ -10,7 +10,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 3 | Properties domain (back): entity, migrations, admin CRUD, public listing with filters | back | SDD | ✅ Done |
 | 4 | Images: upload, WebP conversion, ordering/cover, storage | back | SDD | ✅ Done |
 | 5 | Admin session: login + MFA from Next, token strategy | both | SDD | ✅ Done |
-| 6 | Admin panel: property list and editor | front | ODD | ⬜ |
+| 6 | Admin panel: property list and editor | front | ODD | ✅ Done |
 | 7 | Public site: home, results, property detail (SEO) | front | ODD | ⬜ |
 | 8 | Leads: site forms + admin inbox | both | ODD | ⬜ |
 | 9 | Institutional pages (Tasaciones, Nosotros, Contacto) + map | front | ODD | ⬜ |
@@ -27,6 +27,7 @@ Resolve each one when its feature starts.
 - [x] Admin token strategy — feature 5: Next BFF with an httpOnly cookie (JWT never reaches the browser), no refresh token (60-min session, reactive expiry); BFF forwards the client IP so throttling stays per user
 - [ ] Public catalog: expose a `featured` filter? — feature 7
 - [ ] API rate limit (global throttler, 20 req/min per IP) vs server-side fetching of the public catalog — feature 7 (admin traffic already forwards the client IP since feature 5)
-- [ ] Restrict deal status `sold` to sale and `rented` to rent operations? — feature 6
+- [x] Restrict deal status `sold` to sale and `rented` to rent operations — feature 6: yes, enforced in the admin panel; back enforcement is a follow-up
+- [ ] Back: enforce sold/rented vs operation in `PATCH /admin/properties/:id/deal-status` — follow-up of feature 6
 - [ ] Map provider: Google Maps vs OpenStreetMap — feature 9
 - [ ] Email notification on new leads? — feature 8
