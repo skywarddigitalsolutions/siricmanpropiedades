@@ -23,9 +23,9 @@
 
 | ID | Task | Route | Status | Commit |
 |----|------|-------|--------|--------|
-| T1 | API client + "Clientes" page (search, list/cards, pagination, CSV export) + nav item | delegated (writer trigger: 2+ files) | ⬜ | |
-| T2 | Inbox: search, status tabs with counts, richer rows with quick actions, loading skeleton | delegated | ⬜ | |
-| T3 | Lead detail: WhatsApp + mark contacted, segmented status, "consultas de esta persona" | delegated | ⬜ | |
+| T1 | API client + "Clientes" page (search, list/cards, pagination, CSV export) + nav item | delegated (writer trigger: 2+ files) | ✅ | `e3ed82a` |
+| T2 | Inbox: search, status tabs with counts, richer rows with quick actions, loading skeleton | delegated | ✅ | `a7268ac` |
+| T3 | Lead detail: WhatsApp + mark contacted, segmented status, "consultas de esta persona" | delegated | ✅ | `6c6601f` |
 
 ## Acceptance criteria
 
@@ -37,7 +37,12 @@
 ## Progress
 
 - 2026-10-01: feature started, branch `feat/admin-clients-inbox`. RDD: off (default).
+- 2026-10-01: T1-T3 done (RDD off). Verification: lint 0 errors, 768/768 tests, build green.
+  - T1 RED: 4 new suites failed to resolve their modules + nav and mailto tests failing; GREEN after `clients.ts`, `clients-params.ts`, `ClientTable`, page and route handler. Route handler `/admin/clientes/export` streams the back CSV through `apiFetchRaw` (new, shared request logic with `apiFetch`).
+  - T2 RED: 10 tests failing (inbox params, page, quick actions); GREEN after `q`/`propiedad` params, `counts` pills, new row layout and `LeadQuickActions`.
+  - T3 RED: 11 tests failing (segmented control, WhatsApp reply link, person link); GREEN after rewriting `LeadManagePanel` (`useOptimistic` + rollback), `WhatsAppReplyLink` and the detail page.
+  - Decisions: WhatsApp is a real `target="_blank"` link whose click handler calls the server action (no `window.open`, so no popup blocker and no inline JS under the CSP); tabs reordered Todas/Nuevas/Contactadas/Cerradas, default stays Nuevas; the "N consultas de esta persona" count comes from `GET /admin/leads?q=<email|phone>&limit=1` (`q` also matches message text, so it can overcount slightly); malformed `propiedad` ids are ignored client-side because the back answers 400; mailto emails lose `?`/`&` (audit LOW).
 
 ## Next step
 
-T1.
+Push, PR, deploy.
