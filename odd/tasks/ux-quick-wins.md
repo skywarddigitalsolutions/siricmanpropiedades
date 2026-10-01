@@ -24,10 +24,11 @@
 
 | ID | Task | Route | Status | Commit |
 |----|------|-------|--------|--------|
-| T1 | Shared public `Select` + apply to public selects (excluding hero) | delegated (writer trigger: 2+ files) | ⬜ | |
-| T2 | Official WhatsApp glyph, floating button safe-area + label, footer links, tags restyle, card hover/reduced motion | delegated | ⬜ | |
-| T3 | Footer matrícula removal, `/terminos`, `/privacidad`, global `not-found` | delegated | ⬜ | |
-| T4 | Admin login + MFA screens redesign; admin titles to Manrope | delegated | ⬜ | |
+| T1 | Shared public `Select` + apply to public selects (excluding hero) | delegated (writer trigger: 2+ files) | ✅ | 26eed3b |
+| T2 | Official WhatsApp glyph, floating button safe-area + label, footer links, tags restyle, card hover/reduced motion | delegated | ✅ | 45a050b |
+| T3 | Footer matrícula removal, `/terminos`, `/privacidad`, global `not-found` | delegated | ✅ | e6d810f |
+| T4 | Admin login + MFA screens redesign; admin titles to Manrope | delegated | ✅ | ac8fc88 |
+| T5 | New transparent logo (emblem, no navy box) + browser icons; sources moved to `design/brand/` | delegated | ✅ (old `public/logo-siricman.jpg` still present, see Progress) | 5ef740d |
 
 ## Acceptance criteria
 
@@ -40,7 +41,12 @@
 ## Progress
 
 - 2026-10-01: feature started, branch `feat/ux-quick-wins`, roadmap rows 12–19 added. RDD: off (default).
+- 2026-10-01 T1: RED `Select.test.tsx` (module missing) -> GREEN 3/3; applied to ResultsSort, barrio filter (`bare` variant), ContactForm, AppraisalForm; inputs at 16px. HeroSearch untouched (feature 14).
+- 2026-10-01 T2: RED (icon viewBox, floating label, footer links: 3 failing) -> GREEN; Simple Icons glyph, safe-area + desktop pill, white translucent tags with gold dot, hover only on `(hover: hover)`, global reduced-motion.
+- 2026-10-01 T3: RED (not-found, legal pages, footer legal links, sitemap) -> GREEN; matricula removed; global `src/app/not-found.tsx` renders header/footer itself (it sits outside the `(site)` group).
+- 2026-10-01 T4: RED (`PasswordField`, login title/toggle/no "olvidé") -> GREEN; split auth shell, `AuthHeading` on every auth screen, show/hide password (`aria-pressed`), admin titles in Manrope 700.
+- 2026-10-01 T5: RED (Header emblem src, JSON-LD logo) -> GREEN; emblem has no background box anywhere; `/nosotros` tile is now white. Verification: lint 0 errors (1 pre-existing `<img>` warning), `npm test` 675 passed, `npm run build` OK (emits /icon.png, /apple-icon.png, favicon). `public/logo-siricman.jpg` could not be deleted by the writer (deletion was denied by the permission classifier); no code references it, delete it manually.
 
 ## Next step
 
-T1–T4 (one writer).
+Push, PR, deploy.
