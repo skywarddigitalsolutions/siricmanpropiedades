@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Neighborhood, Property } from "@/lib/api/properties";
 import {
@@ -79,7 +79,7 @@ describe("PropertyForm", () => {
       "Características",
       "Servicios",
       "Condiciones",
-      "Publicación",
+      "Destaque",
       "Descripción",
     ]) {
       expect(screen.getByRole("group", { name: legend })).toBeInTheDocument();
@@ -180,6 +180,8 @@ describe("PropertyForm", () => {
     expect(screen.getByText("El título es obligatorio.")).toBeInTheDocument();
     expect(screen.getByLabelText("Título")).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByLabelText("Dirección")).toHaveValue("Av. Corrientes 1000");
+    // Focus jumps to the first invalid field so the user sees what to fix.
+    await waitFor(() => expect(screen.getByLabelText("Título")).toHaveFocus());
     // Selects keep the submitted choice too (the form remounts with the returned values).
     expect(screen.getByLabelText("Operación")).toHaveValue("rent");
   });

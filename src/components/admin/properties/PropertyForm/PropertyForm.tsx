@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import type { Neighborhood } from "@/lib/api/properties";
 import {
   CURRENCIES,
@@ -97,6 +97,17 @@ export default function PropertyForm({
     setVersion((current) => current + 1);
   }
 
+  // After a failed submit, take the user to what needs fixing: the first
+  // invalid field, or the error summary when the error is not field-specific.
+  const formRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (version === 0 || !state.fieldErrors) return;
+    const form = formRef.current;
+    const target = form?.querySelector<HTMLElement>('[aria-invalid="true"]');
+    if (target) target.focus();
+    else form?.querySelector('[role="alert"]')?.scrollIntoView({ block: "center" });
+  }, [version, state.fieldErrors]);
+
   const values = state.values ?? initialValues;
   const errors = state.fieldErrors ?? {};
   const hasFieldErrors = Object.keys(errors).some((key) => key !== "general");
@@ -106,7 +117,12 @@ export default function PropertyForm({
   }));
 
   return (
-    <form key={version} action={formAction} className={styles.form}>
+    <form
+      key={version}
+      ref={formRef}
+      action={formAction}
+      className={styles.form}
+    >
       {(errors.general || hasFieldErrors) && (
         <FormAlert>
           {errors.general ?? "Revisá los campos marcados antes de guardar."}
@@ -311,7 +327,7 @@ export default function PropertyForm({
       </fieldset>
 
       <fieldset className={styles.section}>
-        <legend className={styles.legend}>Publicación</legend>
+        <legend className={styles.legend}>Destaque</legend>
         <SelectField
           id="marketingTag"
           name="marketingTag"
