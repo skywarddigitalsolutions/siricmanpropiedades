@@ -34,9 +34,9 @@ Strict TDD on (global config). Runner: `npm test` (Vitest + Testing Library). RE
 
 - [x] T1 Contact data + `MapEmbed` + `/contacto` page with contact form + sitemap entry. Route: delegated writer (4+ files).
 - [x] T2 `/tasaciones` page with appraisal form + sitemap entry. Route: delegated writer.
-- [ ] T3 `/nosotros` page + sitemap entry. Route: delegated writer.
-- [ ] T4 Property detail "Ubicación" uses `MapEmbed`. Route: delegated writer.
-- [ ] T5 Docs: ROADMAP (feature 9 done, map decision checked). Route: inline.
+- [x] T3 `/nosotros` page + sitemap entry. Route: delegated writer.
+- [x] T4 Property detail "Ubicación" uses `MapEmbed`. Route: delegated writer.
+- [x] T5 Docs: ROADMAP (feature 9 done, map decision checked). Route: inline.
 
 ## Progress
 
@@ -45,6 +45,16 @@ Strict TDD on (global config). Runner: `npm test` (Vitest + Testing Library). RE
 - T1 merged: PR #33 (`15cd8aa`).
 - T2 done on `feat/appraisal-page` (`24b5243`, `cfd3fe3`, `8d3dc45`). `appraisal-form.ts` (delegates name/phone/message to `parseInquiryForm`, maps `details.*` errors), `sendAppraisalAction` (`appraisal` lead, topic sell/rent, integer rooms/area), `AppraisalForm` (radio-group Vender/Alquilar, 7 property types via `PROPERTY_TYPE_LABELS`), `/tasaciones` page, sitemap (monthly, 0.7). Address and property type required; phone required (no email field, as designed); decimals in rooms/area rejected (back `@IsInt`). RED observed per behavior. `npm test` 91 files / 597 tests (parent spot check: same), lint 0 errors, build green, `tsc --noEmit` clean. ~1,140 lines, mostly tests/CSS.
 
+- T2 merged: PR #34 (`56422f3`).
+- T3 merged: PR #35 (`1b2648d`, merge `12fb888`). `/nosotros` with design copy, Gabriel only (GS initials avatar, test asserts no `[Nombre]`), closing CTA (own copy: "¿Querés vender, alquilar o consultarnos algo?"), sitemap (yearly, 0.5). RED: missing page module; sitemap length 6 vs 7. 603 tests, lint, build green.
+- T4 merged: PR #36 (`1625ae9`, merge `8156eee`). `propertyMap()` in `src/lib/public/property-view.ts`; hidden/blank address → barrio query + "Zona aproximada" chip, address never in DOM/iframe (tested). RED: 5 failures (missing helper / missing map). 602 tests, lint, build, tsc green.
+- Main after all merges: `npm test` 93 files / 608 tests (parent run), `npm run build` green.
+
+## Follow-ups
+
+- Team members: add the two other people (names, roles, portraits) when the owner provides them.
+- Production smoke check of the Google Maps embed after deploy.
+
 ## Next step
 
-T3 `/nosotros`.
+Feature done. Next: feature 10 (daily DB backups + monitoring).

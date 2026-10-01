@@ -14,7 +14,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 7 | Public site: home, results, property detail (SEO) | front | ODD | ✅ Done |
 | 8 | Leads: site forms + admin inbox | both | ODD | ✅ Done |
 | 8.1 | Remove SMTP lead emails + contact email in the footer (`odd/tasks/remove-smtp-footer-email.md`) | both | ODD | ✅ Done |
-| 9 | Institutional pages (Tasaciones, Nosotros, Contacto) + map | front | ODD | ⬜ |
+| 9 | Institutional pages (Tasaciones, Nosotros, Contacto) + map (`odd/tasks/institutional-pages.md`) | front | ODD | ✅ Done |
 | 10 | Daily DB backups + monitoring | infra | ODD | ⬜ |
 
 ## Pending product decisions
@@ -30,5 +30,5 @@ Resolve each one when its feature starts.
 - [x] API rate limit vs server-side fetching of the public catalog — feature 7: pages render per request with Next's 60 s data cache; public catalog reads get their own 300 req/min per-IP limit (the Next container shares one IP)
 - [x] Restrict deal status `sold` to sale and `rented` to rent operations — feature 6: yes, enforced in the admin panel; back enforcement is a follow-up
 - [ ] Back: enforce sold/rented vs operation in `PATCH /admin/properties/:id/deal-status` — follow-up of feature 6
-- [ ] Map provider: Google Maps vs OpenStreetMap — feature 9
+- [x] Map provider — feature 9: Google Maps keyless iframe embed (no lat/lng stored); exact address query when `showExactAddress`, otherwise the barrio with a "Zona aproximada" chip
 - [x] Email notification on new leads — decided 2026-10-01: no mail service. Leads stay in the panel inbox and are answered by WhatsApp; the site shows a public contact email (mailto). The SMTP notifier from feature 8 was removed in feature 8.1 (back #26); the footer links `info@siricmanpropiedades.com.ar` (`CONTACT_EMAIL` in `src/lib/contact.ts`)
