@@ -19,7 +19,7 @@ describe("completeSession", () => {
   let store: ReturnType<typeof createCookieStore>;
 
   beforeEach(() => {
-    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "development");
     store = createCookieStore({
       [MFA_PENDING_COOKIE]: "stale-mfa",
       [SETUP_PENDING_COOKIE]: "stale-setup",

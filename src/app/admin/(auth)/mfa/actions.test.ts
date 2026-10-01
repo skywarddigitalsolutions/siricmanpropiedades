@@ -38,7 +38,7 @@ describe("verifyMfaAction", () => {
   const initial: FormState = {};
 
   beforeEach(() => {
-    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "development");
     store = createCookieStore();
     cookies.mockResolvedValue(store);
     verifyMfa.mockReset();

@@ -10,6 +10,7 @@ import { formatLeadDate, INBOX_PATH } from "@/lib/leads/inbox-params";
 import { LEAD_TOPIC_LABELS, LEAD_TYPE_LABELS } from "@/lib/leads/labels";
 import { getCurrentUser, getSessionToken } from "@/lib/session/dal";
 import { handleSessionError } from "@/lib/session/session-error";
+import { publicSiteHref } from "@/lib/site-url";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import LeadManagePanel from "@/components/admin/leads/LeadManagePanel/LeadManagePanel";
 import LeadStatusBadge from "@/components/admin/leads/LeadStatusBadge/LeadStatusBadge";
@@ -139,7 +140,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                       Editar propiedad
                     </Link>
                     <a
-                      href={`/propiedades/${lead.property.slug}`}
+                      href={publicSiteHref(`/propiedades/${lead.property.slug}`)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.contact}

@@ -32,7 +32,7 @@ describe("getSessionToken", () => {
   let store: ReturnType<typeof createCookieStore>;
 
   beforeEach(() => {
-    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "development");
     store = createCookieStore();
     cookies.mockResolvedValue(store);
   });
@@ -51,7 +51,7 @@ describe("getCurrentUser", () => {
   let store: ReturnType<typeof createCookieStore>;
 
   beforeEach(() => {
-    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "development");
     store = createCookieStore({ [SESSION_COOKIE]: "jwt-token" });
     cookies.mockResolvedValue(store);
     getMe.mockReset();

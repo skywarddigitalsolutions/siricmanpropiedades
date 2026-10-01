@@ -3,3 +3,46 @@
   flex-direction: column;
   gap: 16px;
 }
+
+/* Doubled selectors beat the base `.input` rule regardless of CSS load order. */
+.form .appCode,
+.form .backupCode {
+  text-align: center;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-weight: 600;
+}
+
+.form .appCode {
+  min-height: 56px;
+  font-size: 28px;
+  letter-spacing: 0.5em;
+  /* Balance the trailing letter-spacing so the digits look centered. */
+  padding-left: calc(14px + 0.5em);
+}
+
+.form .backupCode {
+  font-size: 20px;
+  letter-spacing: 0.15em;
+}
+
+.hint {
+  font: 500 13px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
+.switch {
+  align-self: center;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.switch:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}

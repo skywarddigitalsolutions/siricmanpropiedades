@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { absoluteUrl, getSiteUrl } from "./site-url";
+import { absoluteUrl, getSiteUrl, publicSiteHref } from "./site-url";
 
 afterEach(() => vi.unstubAllEnvs());
 
@@ -21,5 +21,21 @@ describe("absoluteUrl", () => {
   it("joins a path to the site URL", () => {
     vi.stubEnv("SITE_URL", "https://siricman.com.ar");
     expect(absoluteUrl("/propiedades/casa")).toBe("https://siricman.com.ar/propiedades/casa");
+  });
+});
+
+describe("publicSiteHref", () => {
+  it("is a relative path when the admin shares the site host (no ADMIN_URL)", () => {
+    vi.stubEnv("ADMIN_URL", "");
+    vi.stubEnv("SITE_URL", "https://siricman.com.ar");
+    expect(publicSiteHref("/propiedades/casa")).toBe("/propiedades/casa");
+  });
+
+  it("is an absolute SITE_URL link when the admin has its own host", () => {
+    vi.stubEnv("ADMIN_URL", "https://admin.siricman.com.ar");
+    vi.stubEnv("SITE_URL", "https://siricman.com.ar");
+    expect(publicSiteHref("/propiedades/casa")).toBe(
+      "https://siricman.com.ar/propiedades/casa",
+    );
   });
 });
