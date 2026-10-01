@@ -36,7 +36,7 @@
 | T2 | Form primitives (SelectField, TextareaField, CheckboxField) + mobile-first panel shell with nav; `/admin` → `/admin/propiedades` | delegated | ✅ | `3c38c7a`, `c38221d` |
 | T3 | Property list page: filters (q, status, operation, type), pagination, cards → table | delegated | ✅ | `50f23e3` |
 | T4 | Create/edit form with server actions and field error mapping | delegated → inline (writer hit the weekly subagent limit mid-task) | ✅ | `de77621`, `d6b92c0` |
-| T5 | Lifecycle actions: publish/archive/unpublish, deal status (restricted by operation), delete (admin only) | delegated | ⬜ | |
+| T5 | Lifecycle actions: publish/archive/unpublish, deal status (restricted by operation), delete (admin only) | inline (subagents rate-limited) | ✅ | `6db2a46` |
 | T6 | Images manager: upload (15 MB limits), reorder, delete, cover badge | delegated | ⬜ | |
 | T7 | ROADMAP + docs close-out; manual e2e against the local back | inline | ⬜ | |
 
@@ -83,6 +83,13 @@
 - Route: the delegated writer stopped on the weekly subagent rate limit after the pure module; the parent finished inline. Subagents are unavailable until the limit resets (2026-10-03).
 - RED: form (missing module), actions (missing modules), pages (missing modules). GREEN: 339 tests passed. Lint 0 errors. Build OK.
 
+### T5 — lifecycle actions (strict TDD)
+
+- Pure `src/lib/properties/lifecycle.ts`: transitions per status (mirrors the back), `dealStatusOptions` (sold only for sale, rented only for rent; keeps an out-of-rule current value visible), `canDeleteProperty` (admin + never published).
+- `[id]/lifecycle-actions.ts`: publish/archive/unpublish (from the pressed button), deal status, delete → `/admin/propiedades?eliminada=1`; shared mapping 401 → login, 404 → not found, 400/403 → Spanish explanations, network/5xx → retry hint.
+- `PropertyStatusPanel`: publication card, commercial status card, delete behind a `<details>` confirmation (no JS dialogs); hint for admins explaining published properties must be archived. Editor order: Estado y acciones → (Fotos, T6) → Datos.
+- RED: lifecycle, actions, panel (missing modules), page (2 failing), list notice (1 failing). GREEN: 366 tests passed. Lint 0 errors. Build OK.
+
 ## Next step
 
-T5.
+T6.
