@@ -1,7 +1,17 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { buildWhatsAppLink, WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_PHONE } from "@/lib/whatsapp";
+import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
 import styles from "./WhatsAppButton.module.css";
 
+/** Property pages have their own WhatsApp actions and a bottom bar this would cover. */
+const PROPERTY_PAGE = /^\/propiedades\/[^/]+$/;
+
 export default function WhatsAppButton() {
+  const pathname = usePathname();
+  if (PROPERTY_PAGE.test(pathname)) return null;
+
   const href = buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE);
 
   return (
@@ -12,16 +22,7 @@ export default function WhatsAppButton() {
       aria-label="Escribinos por WhatsApp"
       className={styles.button}
     >
-      <svg
-        viewBox="0 0 32 32"
-        width="30"
-        height="30"
-        fill="currentColor"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.34.653 4.527 1.786 6.393L4 29l7.8-1.75A11.94 11.94 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm0 21.8c-1.98 0-3.83-.55-5.41-1.5l-.39-.23-4.63 1.04 1.02-4.5-.25-.4A9.75 9.75 0 0 1 5.2 15c0-5.96 4.85-10.8 10.8-10.8S26.8 9.04 26.8 15 21.96 24.8 16.004 24.8Zm5.94-8.1c-.32-.16-1.9-.94-2.2-1.04-.3-.11-.51-.16-.73.16-.21.32-.84 1.04-1.03 1.25-.19.21-.38.24-.7.08-.32-.16-1.35-.5-2.57-1.6-.95-.85-1.59-1.9-1.78-2.22-.19-.32-.02-.49.14-.65.14-.14.32-.38.48-.56.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.73-1.76-1-2.41-.26-.63-.53-.55-.73-.56h-.62c-.21 0-.56.08-.85.4-.29.32-1.11 1.09-1.11 2.65 0 1.56 1.14 3.07 1.3 3.28.16.21 2.24 3.42 5.42 4.8.76.33 1.35.53 1.81.68.76.24 1.45.21 2 .13.61-.09 1.9-.78 2.17-1.53.27-.75.27-1.4.19-1.53-.08-.13-.29-.21-.61-.37Z" />
-      </svg>
+      <WhatsAppIcon />
     </a>
   );
 }
