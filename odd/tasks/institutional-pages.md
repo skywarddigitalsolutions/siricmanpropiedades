@@ -32,7 +32,7 @@ Strict TDD on (global config). Runner: `npm test` (Vitest + Testing Library). RE
 
 ## Tasks
 
-- [ ] T1 Contact data + `MapEmbed` + `/contacto` page with contact form + sitemap entry. Route: delegated writer (4+ files).
+- [x] T1 Contact data + `MapEmbed` + `/contacto` page with contact form + sitemap entry. Route: delegated writer (4+ files).
 - [ ] T2 `/tasaciones` page with appraisal form + sitemap entry. Route: delegated writer.
 - [ ] T3 `/nosotros` page + sitemap entry. Route: delegated writer.
 - [ ] T4 Property detail "Ubicación" uses `MapEmbed`. Route: delegated writer.
@@ -40,8 +40,8 @@ Strict TDD on (global config). Runner: `npm test` (Vitest + Testing Library). RE
 
 ## Progress
 
-(none yet)
+- T1 done on `feat/contact-page` (`5f4f2f0`, `9fcf863`, `fef3300`). Office data constants in `src/lib/contact.ts` (footer reuses them); `buildMapEmbedUrl` in `src/lib/maps.ts` (z=16 exact / z=14 approximate) + `MapEmbed`; `/contacto` with `ContactForm` + `sendContactAction` (`contact` lead, single "Teléfono o email" field split by `@`, topic required, message optional). RED observed per behavior (missing modules / undefined constants / sitemap length). `npm test` 87 files / 571 tests (parent spot check re-ran: same), lint 0 errors (1 pre-existing warning), build green (`/contacto` static). ~1,180 lines incl. ~450 tests/CSS: exceeds the 400 heuristic because the form, map and page form one reviewable behavior.
 
 ## Next step
 
-T1.
+T2 `/tasaciones`.
