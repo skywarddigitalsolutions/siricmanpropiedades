@@ -50,22 +50,15 @@
   max-height: 420px;
   overflow: hidden;
   border-radius: var(--radius-2xl);
-  background: var(--color-navy);
+  background: var(--color-white);
+  box-shadow: var(--shadow-card);
 }
 
-/* Crops the JPG white margin so the mark sits cleanly on the navy tile. */
-.logoCrop {
-  width: 72%;
-  aspect-ratio: 1;
-  overflow: hidden;
-}
-
+/* Transparent emblem on a soft tile (never a navy box behind the logo). */
 .logoImg {
   display: block;
-  width: 133.9%;
-  max-width: none;
+  width: 58%;
   height: auto;
-  margin: -2% 0 0 -16%;
 }
 
 .pillars {

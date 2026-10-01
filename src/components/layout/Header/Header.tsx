@@ -39,16 +39,14 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.inner}>
         <Link href="/" className={styles.brand}>
-          <span className={styles.logoBox}>
-            <Image
-              src="/logo-siricman.jpg"
-              alt="Siricman Propiedades"
-              width={56}
-              height={47.6}
-              className={styles.logoImg}
-              priority
-            />
-          </span>
+          <Image
+            src="/brand/logo-emblem.png"
+            alt="Siricman Propiedades"
+            width={256}
+            height={242}
+            className={styles.logoImg}
+            priority
+          />
           <span className={styles.wordmark}>
             <span className={styles.brandName}>SIRICMAN</span>
             <span className={styles.brandSub}>PROPIEDADES</span>

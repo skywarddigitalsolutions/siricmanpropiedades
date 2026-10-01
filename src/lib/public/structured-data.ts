@@ -44,7 +44,7 @@ export function agencyJsonLd(siteUrl: string) {
     "@type": "RealEstateAgent",
     name: "Siricman Propiedades",
     url: siteUrl,
-    logo: `${siteUrl}/logo-siricman.jpg`,
+    logo: `${siteUrl}/brand/logo-full.png`,
     telephone: `+${WHATSAPP_PHONE}`,
     areaServed: "Ciudad Autónoma de Buenos Aires",
     address: {

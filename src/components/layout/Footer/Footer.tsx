@@ -21,15 +21,13 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.inner}>
         <div className={styles.brand}>
-          <span className={styles.logoBox}>
-            <Image
-              src="/logo-siricman.jpg"
-              alt=""
-              width={73}
-              height={62}
-              className={styles.logoImg}
-            />
-          </span>
+          <Image
+            src="/brand/logo-emblem.png"
+            alt=""
+            width={256}
+            height={242}
+            className={styles.logoImg}
+          />
           <span className={styles.wordmark}>
             <span className={styles.brandName}>SIRICMAN</span>
             <span className={styles.brandSub}>PROPIEDADES</span>
