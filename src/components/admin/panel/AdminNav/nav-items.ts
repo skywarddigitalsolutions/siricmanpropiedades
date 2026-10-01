@@ -10,4 +10,5 @@ export type AdminNavItem = {
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { label: "Propiedades", href: "/admin/propiedades" },
   { label: "Consultas", href: "/admin/consultas" },
+  { label: "Clientes", href: "/admin/clientes" },
 ];

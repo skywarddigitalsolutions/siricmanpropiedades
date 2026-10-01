@@ -1,0 +1,195 @@
+/* Mobile first: every row is a card; the table layout starts at 960px. */
+.table,
+.table tbody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.head {
+  /* Visually hidden on phones, still announced as column headers. */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  box-shadow: var(--shadow-card);
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  font-weight: inherit;
+}
+
+.name {
+  font: 700 16px var(--font-body), sans-serif;
+  color: var(--color-text);
+}
+
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  min-height: 32px;
+  font: 500 14px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  overflow-wrap: anywhere;
+}
+
+.cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  font: 500 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+}
+
+.cell::before {
+  content: attr(data-label);
+  flex: 0 0 100%;
+  font: 700 11px var(--font-body), sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+
+.actions,
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.action,
+.chip,
+.more {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  font: 700 13px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  background: var(--color-white);
+}
+
+.whatsapp {
+  color: var(--color-white);
+  border-color: var(--color-whatsapp-dark);
+  background: var(--color-whatsapp-dark);
+}
+
+.chip {
+  background: #f3ecdb;
+  border-color: transparent;
+}
+
+.more {
+  border-color: transparent;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.count,
+.relative {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.absolute,
+.muted {
+  color: var(--color-text-muted);
+}
+
+.action:focus-visible,
+.chip:focus-visible,
+.more:focus-visible,
+.email:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+@media (min-width: 960px) {
+  .table {
+    display: table;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+
+  .table tbody {
+    display: table-row-group;
+  }
+
+  .head {
+    position: static;
+    display: table-header-group;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    background: var(--color-bg);
+  }
+
+  .head th {
+    padding: 12px 16px;
+    text-align: left;
+    font: 700 12px var(--font-body), sans-serif;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .row {
+    display: table-row;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .row > * {
+    display: table-cell;
+    padding: 14px 16px;
+    vertical-align: top;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .cell::before {
+    content: none;
+  }
+
+  .actions,
+  .chips {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

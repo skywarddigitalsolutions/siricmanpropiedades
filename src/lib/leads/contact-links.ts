@@ -29,7 +29,7 @@ export function leadContactLinks(lead: ContactLead): {
         }
       : {}),
     ...(lead.email
-      ? { email: `mailto:${lead.email}?subject=${encodeURIComponent(subject)}` }
+      ? { email: `mailto:${lead.email.replace(/[?&]/g, "")}?subject=${encodeURIComponent(subject)}` }
       : {}),
   };
 }

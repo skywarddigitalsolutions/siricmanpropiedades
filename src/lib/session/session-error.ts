@@ -18,3 +18,14 @@ export function handleSessionError(error: unknown): never {
   }
   throw error;
 }
+
+/**
+ * Like `handleSessionError`, but a network failure (`status: 0`) or a 5xx
+ * returns so the page can render an "unavailable" message instead of the
+ * error boundary. A 401 still redirects; anything else is rethrown.
+ */
+export function handleUnlessUnavailable(error: unknown): void {
+  const status = (error as { status?: number } | null)?.status;
+  if (status === 0 || (status !== undefined && status >= 500)) return;
+  handleSessionError(error);
+}

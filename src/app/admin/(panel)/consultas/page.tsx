@@ -6,7 +6,7 @@ import {
   type InboxStatus,
 } from "@/lib/leads/inbox-params";
 import { getSessionToken } from "@/lib/session/dal";
-import { handleSessionError } from "@/lib/session/session-error";
+import { handleUnlessUnavailable } from "@/lib/session/session-error";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
 import FormNotice from "@/components/admin/forms/FormNotice/FormNotice";
 import Pagination from "@/components/admin/panel/Pagination/Pagination";
@@ -76,11 +76,4 @@ export default async function LeadsInboxPage({ searchParams }: LeadsInboxPagePro
       )}
     </div>
   );
-}
-
-/** 401 → login; network/5xx → "unavailable" message; anything else bubbles up. */
-function handleUnlessUnavailable(error: unknown): void {
-  const status = (error as { status?: number } | null)?.status;
-  if (status === 0 || (status !== undefined && status >= 500)) return;
-  handleSessionError(error);
 }
