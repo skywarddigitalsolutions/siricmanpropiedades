@@ -41,7 +41,7 @@
 | T1 | Public catalog client (cached, server-only), results URL params, card view-model (price label, specs) | front | inline | ✅ | `9ab11f6` |
 | T2 | `PropertyCard` + home page | front | inline | ✅ | `a6fccda` |
 | T3 | Results page: filter bar, filters sheet, quick chips, sort, grid, pagination, empty state | front | inline | ✅ | `a22e0ef` |
-| T4 | Property detail page: gallery, facts, chips, description, services, location, WhatsApp, bottom bar | front | inline | ⬜ | |
+| T4 | Property detail page: gallery, facts, chips, description, services, location, WhatsApp, bottom bar | front | inline | ✅ | `4b7e254` |
 | T5 | SEO: `SITE_URL`/metadataBase, per-page metadata, JSON-LD, sitemap, robots; deploy env docs | both | inline | ⬜ | |
 | T6 | Browser walkthrough (375 / 1280), ROADMAP close-out | front | inline | ⬜ | |
 
@@ -78,6 +78,14 @@
 - Bug caught by tests: `buildSearchHref` resets the page, so page 2 looked non-canonical → `canonicalHref(state)` keeps the page.
 - RED: helpers (missing functions), filter components, page (missing modules), canonical page. GREEN: 451 tests. Lint 0 errors. Build OK.
 
+### T4 — property page (strict TDD)
+
+- `/propiedades/[slug]` (`force-dynamic`, React `cache()` shares one fetch between `generateMetadata` and the page): `notFound()` on 404 → friendly `not-found.tsx`; `(site)/error.tsx` boundary with retry.
+- `PropertyDetailView`: back link to the same operation's results, code chip, `PropertyGallery` (scroll snap, counter synced on scroll, prev/next buttons, first photo `priority`, alt "title, foto n de N"), status note (reserved/closed copy), price + expenses + h1 + location (exact only when public), facts list, conditions, description paragraphs, services, location card (map deferred to feature 9), sticky inquiry aside with WhatsApp (prefilled message), fixed bottom bar on phones (hidden ≥960 px).
+- Floating WhatsApp button hides on property pages (client `usePathname`), icon extracted to `WhatsAppIcon`.
+- Metadata: "title · price", 160-char summary, canonical, Open Graph image (first photo).
+- RED: WhatsApp button (1 failing), gallery, page, boundaries (missing modules). GREEN: 466 tests. Lint 0 errors. Build OK.
+
 ## Next step
 
-T4.
+T5.
