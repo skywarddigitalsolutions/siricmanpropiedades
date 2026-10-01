@@ -147,6 +147,17 @@ describe("EditPropertyPage", () => {
     expect(screen.getByRole("button", { name: "Publicar" })).toBeDisabled();
   });
 
+  it("links the last step to the public-listing preview", async () => {
+    getProperty.mockResolvedValue(makePropertyDetail());
+
+    render(await renderPage({ paso: "vista-previa" }));
+
+    expect(screen.getByRole("link", { name: /Abrir la vista previa/ })).toHaveAttribute(
+      "href",
+      "/admin/propiedades/p1/vista-previa",
+    );
+  });
+
   it("lets a ready property be published", async () => {
     getProperty.mockResolvedValue(
       makePropertyDetail({ images: [IMAGE], description: "x".repeat(80) }),

@@ -147,6 +147,12 @@ export default async function EditPropertyPage({
           <h2 id="property-status-heading" className={styles.sectionTitle}>
             Publicación y estado
           </h2>
+          <Link
+            href={`/admin/propiedades/${property.id}/vista-previa`}
+            className={styles.previewLink}
+          >
+            Abrir la vista previa: así la verán tus clientes
+          </Link>
           <PropertyStatusPanel
             propertyId={property.id}
             readiness={readiness}

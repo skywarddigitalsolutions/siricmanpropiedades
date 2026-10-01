@@ -30,12 +30,21 @@ const STATUS_COPY = {
 
 type PropertyDetailViewProps = {
   property: PublicPropertyDetail;
-  /** Sends the inquiry form (bound to this property by the page). */
-  inquiryAction: (prev: InquiryState, formData: FormData) => Promise<InquiryState>;
+  /** Sends the inquiry form (bound to this property by the page). Not needed in preview. */
+  inquiryAction?: (prev: InquiryState, formData: FormData) => Promise<InquiryState>;
+  /**
+   * Admin preview of an unpublished listing: same layout and data, but inert,
+   * with no inquiry form, no WhatsApp bar and no links out to the public site.
+   */
+  preview?: boolean;
 };
 
 /** Property page body (presentational): gallery, data, inquiry aside and the phone bottom bar. */
-export default function PropertyDetailView({ property, inquiryAction }: PropertyDetailViewProps) {
+export default function PropertyDetailView({
+  property,
+  inquiryAction,
+  preview = false,
+}: PropertyDetailViewProps) {
   const price = propertyPriceLabel(property);
   const expenses = expensesLabel(property);
   const location = propertyLocation(property);
@@ -53,13 +62,17 @@ export default function PropertyDetailView({ property, inquiryAction }: Property
   return (
     <main className={styles.main}>
       <div className={styles.topRow}>
-        <Link
-          href={buildSearchHref(EMPTY_SEARCH, { operation: property.operation })}
-          className={styles.back}
-        >
-          <ChevronLeft aria-hidden size={18} />
-          Ver más propiedades
-        </Link>
+        {preview ? (
+          <span />
+        ) : (
+          <Link
+            href={buildSearchHref(EMPTY_SEARCH, { operation: property.operation })}
+            className={styles.back}
+          >
+            <ChevronLeft aria-hidden size={18} />
+            Ver más propiedades
+          </Link>
+        )}
         <span className={styles.code}>Cód. {property.code}</span>
       </div>
 
@@ -167,14 +180,22 @@ export default function PropertyDetailView({ property, inquiryAction }: Property
           <h2 id="detail-inquiry" className={styles.asideTitle}>
             Consultá por esta propiedad
           </h2>
-          <PropertyInquiryForm
-            action={inquiryAction}
-            defaultMessage={inquiry.message}
-            whatsappHref={inquiry.href}
-          />
+          {preview || !inquiryAction ? (
+            <p className={styles.muted}>
+              En la vista previa no se envían consultas. Acá van a ver el
+              formulario y el botón de WhatsApp.
+            </p>
+          ) : (
+            <PropertyInquiryForm
+              action={inquiryAction}
+              defaultMessage={inquiry.message}
+              whatsappHref={inquiry.href}
+            />
+          )}
         </aside>
       </div>
 
+      {!preview && (
       <div className={styles.bottomBar}>
         <div className={styles.bottomPrice}>
           <span className={styles.bottomAmount}>{price}</span>
@@ -193,6 +214,7 @@ export default function PropertyDetailView({ property, inquiryAction }: Property
           Consultar
         </a>
       </div>
+      )}
     </main>
   );
 }
