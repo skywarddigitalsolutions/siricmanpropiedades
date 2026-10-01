@@ -37,7 +37,7 @@
 | T3 | Property list page: filters (q, status, operation, type), pagination, cards → table | delegated | ✅ | `50f23e3` |
 | T4 | Create/edit form with server actions and field error mapping | delegated → inline (writer hit the weekly subagent limit mid-task) | ✅ | `de77621`, `d6b92c0` |
 | T5 | Lifecycle actions: publish/archive/unpublish, deal status (restricted by operation), delete (admin only) | inline (subagents rate-limited) | ✅ | `6db2a46` |
-| T6 | Images manager: upload (15 MB limits), reorder, delete, cover badge | delegated | ⬜ | |
+| T6 | Images manager: upload (15 MB limits), reorder, delete, cover badge | inline (subagents rate-limited) | ✅ | `c7c6c77` |
 | T7 | ROADMAP + docs close-out; manual e2e against the local back | inline | ⬜ | |
 
 ## Acceptance criteria
@@ -90,6 +90,14 @@
 - `PropertyStatusPanel`: publication card, commercial status card, delete behind a `<details>` confirmation (no JS dialogs); hint for admins explaining published properties must be archived. Editor order: Estado y acciones → (Fotos, T6) → Datos.
 - RED: lifecycle, actions, panel (missing modules), page (2 failing), list notice (1 failing). GREEN: 366 tests passed. Lint 0 errors. Build OK.
 
+### T6 — photos manager (strict TDD)
+
+- `next.config.ts`: `experimental.serverActions.bodySizeLimit` and `experimental.proxyClientMaxBodySize` set to 16 MB (keys verified in Next 16.3.6 `config-shared.d.ts`; defaults 1 MB and 10 MB).
+- Pure `src/lib/properties/images.ts`: back limits (30 photos, 15 MB, JPG/PNG/WebP), `validateImageFile`, `moveItem`, `moveToFront`.
+- `[id]/image-actions.ts`: upload (server-side re-validation), reorder, delete (404 = already gone → success); Spanish messages for quota, invalid image, 413, 429, network.
+- `PropertyImagesManager`: one upload request per file with progress, client validation report, optimistic reorder with rollback, cover = first (badge + "usar como portada"), delete with inline confirmation, 2/3/4-column grid, `next/image` `unoptimized` (no remotePatterns needed; the back already serves WebP renditions). Syncs from props without remounting so a batch keeps its state across revalidations.
+- RED: helpers, actions, manager (missing modules), page (1 failing). GREEN: 394 tests passed. Lint 0 errors. Build OK.
+
 ## Next step
 
-T6.
+T7: manual e2e against the local back, ROADMAP close-out.
