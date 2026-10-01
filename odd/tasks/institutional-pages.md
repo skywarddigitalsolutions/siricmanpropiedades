@@ -33,7 +33,7 @@ Strict TDD on (global config). Runner: `npm test` (Vitest + Testing Library). RE
 ## Tasks
 
 - [x] T1 Contact data + `MapEmbed` + `/contacto` page with contact form + sitemap entry. Route: delegated writer (4+ files).
-- [ ] T2 `/tasaciones` page with appraisal form + sitemap entry. Route: delegated writer.
+- [x] T2 `/tasaciones` page with appraisal form + sitemap entry. Route: delegated writer.
 - [ ] T3 `/nosotros` page + sitemap entry. Route: delegated writer.
 - [ ] T4 Property detail "Ubicación" uses `MapEmbed`. Route: delegated writer.
 - [ ] T5 Docs: ROADMAP (feature 9 done, map decision checked). Route: inline.
@@ -42,6 +42,9 @@ Strict TDD on (global config). Runner: `npm test` (Vitest + Testing Library). RE
 
 - T1 done on `feat/contact-page` (`5f4f2f0`, `9fcf863`, `fef3300`). Office data constants in `src/lib/contact.ts` (footer reuses them); `buildMapEmbedUrl` in `src/lib/maps.ts` (z=16 exact / z=14 approximate) + `MapEmbed`; `/contacto` with `ContactForm` + `sendContactAction` (`contact` lead, single "Teléfono o email" field split by `@`, topic required, message optional). RED observed per behavior (missing modules / undefined constants / sitemap length). `npm test` 87 files / 571 tests (parent spot check re-ran: same), lint 0 errors (1 pre-existing warning), build green (`/contacto` static). ~1,180 lines incl. ~450 tests/CSS: exceeds the 400 heuristic because the form, map and page form one reviewable behavior.
 
+- T1 merged: PR #33 (`15cd8aa`).
+- T2 done on `feat/appraisal-page` (`24b5243`, `cfd3fe3`, `8d3dc45`). `appraisal-form.ts` (delegates name/phone/message to `parseInquiryForm`, maps `details.*` errors), `sendAppraisalAction` (`appraisal` lead, topic sell/rent, integer rooms/area), `AppraisalForm` (radio-group Vender/Alquilar, 7 property types via `PROPERTY_TYPE_LABELS`), `/tasaciones` page, sitemap (monthly, 0.7). Address and property type required; phone required (no email field, as designed); decimals in rooms/area rejected (back `@IsInt`). RED observed per behavior. `npm test` 91 files / 597 tests (parent spot check: same), lint 0 errors, build green, `tsc --noEmit` clean. ~1,140 lines, mostly tests/CSS.
+
 ## Next step
 
-T2 `/tasaciones`.
+T3 `/nosotros`.
