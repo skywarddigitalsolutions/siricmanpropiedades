@@ -214,7 +214,8 @@
 
 /* "Indistinto" needs more room than the digits. */
 .pill:first-child {
-  flex: 2.4 1 0;
+  flex: 0 0 auto;
+  padding: 0 14px;
 }
 
 .pill:has(.radio:checked) {
