@@ -26,6 +26,21 @@ describe("AdminShell", () => {
     ).toBeGreaterThan(0);
   });
 
+  it("passes nav badges to the sidebar navigation", () => {
+    usePathname.mockReturnValue("/admin/propiedades");
+    render(
+      <AdminShell
+        userName="gabriel"
+        logout={<button>Cerrar sesión</button>}
+        navBadges={{ "/admin/consultas": 2 }}
+      >
+        <p>contenido</p>
+      </AdminShell>,
+    );
+
+    expect(screen.getByRole("link", { name: "Consultas, 2 nuevas" })).toBeInTheDocument();
+  });
+
   it("renders the page content passed as children", () => {
     usePathname.mockReturnValue("/admin/propiedades");
     render(

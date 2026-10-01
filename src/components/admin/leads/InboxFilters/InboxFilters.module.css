@@ -1,0 +1,64 @@
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* Tabs scroll sideways on narrow phones instead of wrapping. */
+.tabs,
+.chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs {
+  padding: 4px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.tab {
+  flex: none;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  font: 700 13px var(--font-body), sans-serif;
+  color: var(--color-text);
+}
+
+.tab[aria-current="page"] {
+  color: var(--color-white);
+  background: var(--color-navy);
+}
+
+.chip {
+  flex: none;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 13px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  font: 600 13px var(--font-body), sans-serif;
+  color: var(--color-text);
+  background: var(--color-white);
+}
+
+.chip[aria-current="page"] {
+  border-color: var(--color-gold);
+  background: #f3ecdb;
+}
+
+.tab:focus-visible,
+.chip:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}

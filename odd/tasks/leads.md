@@ -34,7 +34,7 @@
 | B1 | Leads domain: entity + migration, public create (validation, honeypot, throttle), admin list/detail/update/delete, audit | back | inline (subagents rate-limited) | ✅ | back #24 |
 | B2 | Lead notifier port: log adapter + SMTP adapter (nodemailer), config, deploy docs | back | inline | ✅ | back #25 |
 | T1 | Leads API client (public + admin) and the inquiry form on the property page | front | inline | ✅ | `2842f50` |
-| T2 | Admin inbox: "Consultas" nav with new-leads badge, list with filters and pagination | front | inline | ⬜ | |
+| T2 | Admin inbox: "Consultas" nav with new-leads badge, list with filters and pagination | front | inline | ✅ | `92c050e` |
 | T3 | Admin lead detail: contact actions, status, notes, admin-only delete | front | inline | ⬜ | |
 | T4 | Browser walkthrough (375 / 1280), ROADMAP close-out | both | inline | ⬜ | |
 
@@ -67,6 +67,14 @@
 - `PropertyInquiryForm` in the property aside: labelled name/phone/email/message (message prefilled), off-screen `aria-hidden` honeypot, WhatsApp button, pending state, thanks message (focused, `role="status"`), errors next to fields and kept values.
 - RED: each module (missing), page wiring (1 failing). GREEN: 501 tests. Lint 0 errors. Build OK.
 
+### T2 — admin inbox (strict TDD)
+
+- Nav: "Consultas" added to `ADMIN_NAV_ITEMS`; `AdminNav` shows a gold count badge announced as ", N nuevas"; the panel layout loads it best-effort (`loadNavBadges`, one-item `status=new` query; failures show no badge). Layouts don't re-render on client navigation, so T3's actions revalidate the layout.
+- `/admin/consultas`: Spanish URL state (`estado`, `tipo`, `pagina`; default "Nuevas"), status tabs + type chips as links with `aria-current`, `LeadList` (name, BA-time date, property/topic summary, 2-line preview, status badge; new leads with a gold edge), per-tab empty messages, unavailable alert on network/5xx, 401 → login.
+- Refactor: generic `Pagination` (labels and hrefs as props); `PropertyPagination` now wraps it (its tests unchanged and green).
+- Gotcha: `beforeEach(() => mock.mockReset())` returns the mock and Vitest runs a returned function as cleanup — it called the rejecting mock after the test. Use a block body.
+- RED: params, nav badge (3 failing), loader, shell, page (missing). GREEN: 518 tests. Lint 0 errors. Build OK.
+
 ## Next step
 
-T2.
+T3.

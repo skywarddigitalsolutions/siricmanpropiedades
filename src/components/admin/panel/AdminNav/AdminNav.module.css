@@ -28,3 +28,17 @@
   color: var(--color-navy);
   background: var(--color-border-soft);
 }
+
+.badge {
+  min-width: 22px;
+  height: 22px;
+  margin-left: auto;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  font: 800 12px var(--font-body), sans-serif;
+  color: var(--color-navy-dark);
+  background: var(--color-gold);
+}

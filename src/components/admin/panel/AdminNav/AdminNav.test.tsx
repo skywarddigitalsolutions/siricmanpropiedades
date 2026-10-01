@@ -24,6 +24,26 @@ describe("AdminNav", () => {
     }
   });
 
+  it("includes the leads inbox", () => {
+    expect(ADMIN_NAV_ITEMS).toContainEqual({ label: "Consultas", href: "/admin/consultas" });
+  });
+
+  it("shows a badge with the count of new items, announced in words", () => {
+    usePathname.mockReturnValue("/admin/propiedades");
+    render(<AdminNav badges={{ "/admin/consultas": 3 }} />);
+
+    const link = screen.getByRole("link", { name: "Consultas, 3 nuevas" });
+    expect(link).toHaveTextContent("3");
+    expect(screen.getByRole("link", { name: "Propiedades" })).toBeInTheDocument();
+  });
+
+  it("shows no badge for zero", () => {
+    usePathname.mockReturnValue("/admin/propiedades");
+    render(<AdminNav badges={{ "/admin/consultas": 0 }} />);
+
+    expect(screen.getByRole("link", { name: "Consultas" })).toBeInTheDocument();
+  });
+
   it("marks the link matching the current pathname with aria-current=page", () => {
     usePathname.mockReturnValue("/admin/propiedades");
     render(<AdminNav />);
