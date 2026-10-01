@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, Building2, ChartLine, House, KeyRound } from "lucide-react";
+import { Building2, ChartLine, House, KeyRound } from "lucide-react";
 import { PROPERTY_TYPES, type PropertyType } from "@/lib/properties/enums";
 import { EMPTY_SEARCH, buildSearchHref } from "@/lib/public/search-params";
-import type { PublicPropertyListItem } from "@/lib/public/types";
-import PropertyCard from "../../PropertyCard/PropertyCard";
 import styles from "./HomeSections.module.css";
 
 const TYPE_CHIP_LABELS: Record<PropertyType, string> = {
@@ -20,6 +18,7 @@ const TYPE_CHIP_LABELS: Record<PropertyType, string> = {
 export function TypeChips() {
   return (
     <nav aria-label="Tipos de propiedad" className={styles.chipsSection}>
+      {/* Edge fades hint that the row scrolls. */}
       <ul className={styles.chips}>
         {PROPERTY_TYPES.map((type) => (
           <li key={type}>
@@ -30,35 +29,6 @@ export function TypeChips() {
         ))}
       </ul>
     </nav>
-  );
-}
-
-type PropertyCarouselProps = {
-  title: string;
-  properties: PublicPropertyListItem[];
-};
-
-/** Scroll-snap row of cards with a "Ver todas" link to the full results. */
-export function PropertyCarousel({ title, properties }: PropertyCarouselProps) {
-  return (
-    <section aria-labelledby="home-carousel-title" className={styles.carouselSection}>
-      <div className={styles.carouselHeader}>
-        <h2 id="home-carousel-title" className={styles.sectionTitle}>
-          {title}
-        </h2>
-        <Link href="/propiedades" className={styles.seeAll}>
-          Ver todas
-          <ArrowRight aria-hidden size={16} />
-        </Link>
-      </div>
-      <ul className={styles.carousel}>
-        {properties.map((property) => (
-          <li key={property.id} className={styles.slide}>
-            <PropertyCard property={property} sizes="(min-width: 640px) 360px, 82vw" />
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }
 
@@ -107,37 +77,6 @@ export function ServicesGrid() {
           </li>
         ))}
       </ul>
-    </section>
-  );
-}
-
-export function PersonalQuote() {
-  return (
-    <section aria-label="Atención personal" className={styles.section}>
-      <figure className={styles.quoteCard}>
-        <div className={styles.portrait} aria-hidden>
-          <span className={styles.monogram}>GS</span>
-        </div>
-        <div className={styles.quoteBody}>
-          <span className={styles.eyebrow}>Atención personal</span>
-          <blockquote className={styles.quote}>
-            <p>
-              “Quiero que cada cliente se sienta cuidado y asesorado de principio a
-              fin. Por eso me encargo personalmente de cada operación.”
-            </p>
-          </blockquote>
-          <figcaption className={styles.author}>
-            <span className={styles.authorName}>Gabriel Siricman</span>
-            <span className={styles.authorRole}>
-              Martillero Público y Corredor Inmobiliario
-            </span>
-          </figcaption>
-          <ul className={styles.pills}>
-            <li className={styles.pill}>+11 años en CABA</li>
-            <li className={styles.pill}>Un solo interlocutor</li>
-          </ul>
-        </div>
-      </figure>
     </section>
   );
 }

@@ -1,13 +1,14 @@
 import { getPublicNeighborhoods, listPublicProperties } from "@/lib/api/public-catalog";
+import type { Operation } from "@/lib/properties/enums";
+import { SHOWCASE_SIZE, needsFallback, pickShowcase } from "@/lib/public/featured";
 import { agencyJsonLd } from "@/lib/public/structured-data";
 import type { PublicNeighborhood, PublicPropertyListItem } from "@/lib/public/types";
 import { getSiteUrl } from "@/lib/site-url";
 import JsonLd from "@/components/site/JsonLd/JsonLd";
+import FeaturedSection from "@/components/site/home/FeaturedSection/FeaturedSection";
 import HeroSearch from "@/components/site/home/HeroSearch/HeroSearch";
 import {
   AppraisalCta,
-  PersonalQuote,
-  PropertyCarousel,
   ServicesGrid,
   TypeChips,
 } from "@/components/site/home/HomeSections/HomeSections";
@@ -16,38 +17,48 @@ import {
 // the Docker build never needs the API.
 export const dynamic = "force-dynamic";
 
-const CAROUSEL_SIZE = 6;
-
-/** Featured properties, or the newest ones while nothing is featured. */
-async function loadCarousel(): Promise<{ title: string; items: PublicPropertyListItem[] }> {
-  const featured = await listPublicProperties({ featured: true, limit: CAROUSEL_SIZE });
-  if (featured.items.length > 0) return { title: "Destacadas", items: featured.items };
-  const newest = await listPublicProperties({ limit: CAROUSEL_SIZE });
-  return { title: "Recién publicadas", items: newest.items };
+/** Featured properties of an operation, completed with its latest published ones. */
+async function loadShowcase(operation: Operation): Promise<PublicPropertyListItem[]> {
+  const featured = await listPublicProperties({ operation, featured: true, limit: SHOWCASE_SIZE });
+  if (!needsFallback(featured.items.length)) return pickShowcase(featured.items, []);
+  const latest = await listPublicProperties({ operation, limit: SHOWCASE_SIZE });
+  return pickShowcase(featured.items, latest.items);
 }
 
 /**
  * Home. The catalog is optional here: if the API is down the page still
- * renders the search and the institutional sections.
+ * renders the search and the institutional sections, and a failing
+ * operation only hides its own section.
  */
 export default async function Home() {
-  const [carousel, neighborhoods] = await Promise.allSettled([
-    loadCarousel(),
+  const [sale, rent, neighborhoods] = await Promise.allSettled([
+    loadShowcase("sale"),
+    loadShowcase("rent"),
     getPublicNeighborhoods(),
   ]);
   const barrios: PublicNeighborhood[] =
     neighborhoods.status === "fulfilled" ? neighborhoods.value : [];
-  const showcase =
-    carousel.status === "fulfilled" && carousel.value.items.length > 0 ? carousel.value : null;
 
   return (
     <main>
       <JsonLd data={agencyJsonLd(getSiteUrl())} />
       <HeroSearch neighborhoods={barrios} />
       <TypeChips />
-      {showcase && <PropertyCarousel title={showcase.title} properties={showcase.items} />}
+      <FeaturedSection
+        operation="sale"
+        eyebrow="En venta"
+        title="Destacadas en venta"
+        subtitle="Propiedades seleccionadas para comprar en CABA."
+        properties={sale.status === "fulfilled" ? sale.value : []}
+      />
+      <FeaturedSection
+        operation="rent"
+        eyebrow="En alquiler"
+        title="Destacadas en alquiler"
+        subtitle="Opciones para alquilar con contratos claros."
+        properties={rent.status === "fulfilled" ? rent.value : []}
+      />
       <ServicesGrid />
-      <PersonalQuote />
       <AppraisalCta />
     </main>
   );
