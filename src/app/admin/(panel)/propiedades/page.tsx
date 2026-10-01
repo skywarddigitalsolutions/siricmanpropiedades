@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Plus } from "lucide-react";
 import { listNeighborhoods, listProperties } from "@/lib/api/properties";
 import type {
   PropertyListItem,
@@ -14,6 +14,7 @@ import {
   parsePropertyListParams,
   type RawSearchParams,
 } from "@/lib/properties/list-params";
+import { ButtonLink } from "@/components/admin/ui/Button/Button";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import PropertyFilters from "@/components/admin/properties/PropertyFilters/PropertyFilters";
 import PropertyStatusTabs from "@/components/admin/properties/PropertyStatusTabs/PropertyStatusTabs";
@@ -80,9 +81,12 @@ export default async function AdminPropertiesPage({
       <PageHeader
         title="Propiedades"
         actions={
-          <Link href="/admin/propiedades/nueva" className={styles.newButton}>
+          <ButtonLink
+            href="/admin/propiedades/nueva"
+            icon={<Plus aria-hidden size={18} />}
+          >
             Nueva propiedad
-          </Link>
+          </ButtonLink>
         }
       />
 

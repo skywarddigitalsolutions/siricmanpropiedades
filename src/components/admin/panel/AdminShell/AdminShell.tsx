@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import AdminNav from "../AdminNav/AdminNav";
+import UserCard from "../UserCard/UserCard";
 import styles from "./AdminShell.module.css";
 
 /** Sidebar/top-bar brand: transparent emblem plus a Manrope wordmark. */
@@ -19,6 +20,8 @@ function Brand() {
 
 type AdminShellProps = {
   userName: string;
+  /** Roles of the signed-in user: drives the role label and the admin-only nav items. */
+  roles?: string[];
   logout: ReactNode;
   /** Counts shown in the nav, keyed by href (e.g. new leads). */
   navBadges?: Record<string, number>;
@@ -37,10 +40,12 @@ const DRAWER_ID = "admin-nav-drawer";
  */
 export default function AdminShell({
   userName,
+  roles = [],
   logout,
   navBadges,
   children,
 }: AdminShellProps) {
+  const isAdmin = roles.includes("admin");
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -76,9 +81,9 @@ export default function AdminShell({
 
       <aside className={styles.sidebar}>
         <Brand />
-        <AdminNav className={styles.sidebarNav} badges={navBadges} />
+        <AdminNav className={styles.sidebarNav} badges={navBadges} isAdmin={isAdmin} />
         <div className={styles.sidebarFooter}>
-          <span className={styles.userName}>{userName}</span>
+          <UserCard userName={userName} roles={roles} tone="dark" />
           {logout}
         </div>
       </aside>
@@ -103,10 +108,15 @@ export default function AdminShell({
             </button>
           </div>
 
-          <AdminNav className={styles.drawerNav} onNavigate={closeMenu} badges={navBadges} />
+          <AdminNav
+            className={styles.drawerNav}
+            onNavigate={closeMenu}
+            badges={navBadges}
+            isAdmin={isAdmin}
+          />
 
           <div className={styles.drawerFooter}>
-            <span className={styles.userName}>{userName}</span>
+            <UserCard userName={userName} roles={roles} />
             {logout}
           </div>
         </div>

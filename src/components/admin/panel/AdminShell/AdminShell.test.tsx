@@ -41,6 +41,40 @@ describe("AdminShell", () => {
     expect(screen.getByRole("link", { name: "Consultas, 2 nuevas" })).toBeInTheDocument();
   });
 
+  it("shows a user card with initials and the role label", () => {
+    usePathname.mockReturnValue("/admin");
+    render(
+      <AdminShell
+        userName="maria.lopez"
+        roles={["manager"]}
+        logout={<button>Cerrar sesión</button>}
+      >
+        <p>Contenido</p>
+      </AdminShell>,
+    );
+
+    expect(screen.getAllByText("ML").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Gerente").length).toBeGreaterThan(0);
+  });
+
+  it("shows Usuarios in the nav only for admins", () => {
+    usePathname.mockReturnValue("/admin");
+    const { unmount } = render(
+      <AdminShell userName="a" roles={["manager"]} logout={<button>Cerrar sesión</button>}>
+        <p>x</p>
+      </AdminShell>,
+    );
+    expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
+    unmount();
+
+    render(
+      <AdminShell userName="a" roles={["admin"]} logout={<button>Cerrar sesión</button>}>
+        <p>x</p>
+      </AdminShell>,
+    );
+    expect(screen.getAllByRole("link", { name: "Usuarios" }).length).toBeGreaterThan(0);
+  });
+
   it("renders the page content passed as children", () => {
     usePathname.mockReturnValue("/admin/propiedades");
     render(

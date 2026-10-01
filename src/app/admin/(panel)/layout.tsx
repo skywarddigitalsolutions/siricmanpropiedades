@@ -24,6 +24,7 @@ export default async function AdminPanelLayout({
   return (
     <AdminShell
       userName={user.userName}
+      roles={user.roles}
       navBadges={navBadges}
       logout={<LogoutButton action={logoutAction} />}
     >

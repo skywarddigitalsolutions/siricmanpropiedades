@@ -7,6 +7,7 @@
 .link {
   display: flex;
   align-items: center;
+  gap: 12px;
   min-height: 44px;
   padding: 10px 14px;
   border-radius: var(--radius-sm);
@@ -22,6 +23,10 @@
 .link:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
+}
+
+.icon {
+  flex: none;
 }
 
 .linkActive {

@@ -24,6 +24,20 @@ function DeferredForm({
 }
 
 describe("SubmitButton", () => {
+  it("supports the ghost variant with an icon", () => {
+    render(
+      <form action={async () => {}}>
+        <SubmitButton pendingLabel="..." variant="ghost" icon={<svg data-testid="i" />}>
+          Salir
+        </SubmitButton>
+      </form>,
+    );
+
+    const button = screen.getByRole("button", { name: "Salir" });
+    expect(button).toHaveAttribute("data-variant", "ghost");
+    expect(screen.getByTestId("i")).toBeInTheDocument();
+  });
+
   it("renders its label and is enabled while idle", () => {
     render(
       <DeferredForm

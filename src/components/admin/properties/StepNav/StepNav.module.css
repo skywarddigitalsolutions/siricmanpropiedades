@@ -35,6 +35,8 @@
   border-color: var(--color-navy);
 }
 
-.next:hover {
+.next:hover,
+.next:active {
+  color: var(--color-white);
   background: var(--color-navy-dark);
 }

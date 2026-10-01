@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import type { PublicationStatus } from "@/lib/properties/enums";
 import type { ActionFeedback } from "@/lib/forms/action-feedback";
+import Button from "@/components/admin/ui/Button/Button";
 import styles from "./PropertyQuickActions.module.css";
 
 type PropertyQuickActionsProps = {
@@ -38,17 +39,17 @@ export default function PropertyQuickActions({
 
   return (
     <form action={submit} className={styles.form}>
-      <button
+      <Button
         type="submit"
         name="transition"
         value={isPublished ? "unpublish" : "publish"}
-        className={isPublished ? styles.secondary : styles.primary}
+        variant={isPublished ? "secondary" : "primary"}
         disabled={pending || blocked}
         title={blocked ? publishBlockedReason : undefined}
         aria-label={`${isPublished ? "Retirar" : "Publicar"} ${title}`}
       >
         {isPublished ? "Retirar" : "Publicar"}
-      </button>
+      </Button>
       {blocked && <p className={styles.note}>{publishBlockedReason}</p>}
       {state.error && (
         <p role="alert" className={styles.error}>

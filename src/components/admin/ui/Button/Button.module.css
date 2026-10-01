@@ -1,0 +1,106 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font: 700 14px var(--font-body), sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.button svg {
+  flex: none;
+}
+
+.button[data-full] {
+  width: 100%;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/*
+ * Each variant restates its text color for every state: links would otherwise
+ * pick up the global `a:hover` (gold), which is unreadable on navy.
+ */
+.button[data-variant="primary"],
+.button[data-variant="primary"]:visited,
+.button[data-variant="primary"]:hover,
+.button[data-variant="primary"]:focus,
+.button[data-variant="primary"]:active {
+  color: var(--color-white);
+}
+
+.button[data-variant="primary"] {
+  background: var(--color-navy);
+}
+
+.button[data-variant="primary"]:hover:not(:disabled) {
+  background: var(--color-navy-dark);
+}
+
+.button[data-variant="primary"]:active:not(:disabled) {
+  background: #0d1440;
+}
+
+.button[data-variant="secondary"],
+.button[data-variant="secondary"]:visited,
+.button[data-variant="secondary"]:hover,
+.button[data-variant="secondary"]:focus,
+.button[data-variant="secondary"]:active {
+  color: var(--color-navy);
+}
+
+.button[data-variant="secondary"] {
+  background: var(--color-white);
+  border-color: var(--color-border-strong);
+}
+
+.button[data-variant="secondary"]:hover:not(:disabled) {
+  background: var(--color-bg);
+  border-color: var(--color-navy);
+}
+
+.button[data-variant="secondary"]:active:not(:disabled) {
+  background: var(--color-border-soft);
+}
+
+/* Ghost reads its colors from custom properties so a dark container (the sidebar) can retheme it. */
+.button[data-variant="ghost"],
+.button[data-variant="ghost"]:visited,
+.button[data-variant="ghost"]:focus {
+  color: var(--btn-ghost-fg, var(--color-text-muted-2));
+}
+
+.button[data-variant="ghost"]:hover,
+.button[data-variant="ghost"]:active {
+  color: var(--btn-ghost-hover-fg, var(--color-navy));
+}
+
+.button[data-variant="ghost"] {
+  background: transparent;
+}
+
+.button[data-variant="ghost"]:hover:not(:disabled) {
+  background: var(--btn-ghost-hover-bg, var(--color-border-soft));
+}
+
+.button[data-variant="ghost"]:active:not(:disabled) {
+  background: var(--btn-ghost-active-bg, var(--color-border));
+}

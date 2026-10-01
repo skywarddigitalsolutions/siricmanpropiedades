@@ -1,24 +1,24 @@
 import type { PublicationStatus } from "@/lib/properties/enums";
 import { PUBLICATION_STATUS_LABELS } from "@/lib/properties/labels";
-import styles from "./PublicationStatusBadge.module.css";
+import StatusBadge, { type Tone } from "@/components/admin/ui/StatusBadge/StatusBadge";
 
 type PublicationStatusBadgeProps = {
   status: PublicationStatus;
 };
 
-const VARIANT_BY_STATUS: Record<PublicationStatus, string> = {
-  draft: styles.draft,
-  published: styles.published,
-  archived: styles.archived,
+const TONE_BY_STATUS: Record<PublicationStatus, Tone> = {
+  draft: "warning",
+  published: "success",
+  archived: "neutral",
 };
 
-/** Accessible publication-status pill — the label text itself conveys the status, not color alone. */
+/** Publication-status pill: published = green, draft = amber, archived = grey. */
 export default function PublicationStatusBadge({
   status,
 }: PublicationStatusBadgeProps) {
   return (
-    <span className={`${styles.badge} ${VARIANT_BY_STATUS[status]}`}>
+    <StatusBadge tone={TONE_BY_STATUS[status]}>
       {PUBLICATION_STATUS_LABELS[status]}
-    </span>
+    </StatusBadge>
   );
 }

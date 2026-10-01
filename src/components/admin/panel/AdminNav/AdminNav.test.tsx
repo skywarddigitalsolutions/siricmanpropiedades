@@ -14,7 +14,7 @@ afterEach(() => {
 describe("AdminNav", () => {
   it("renders every item from the nav data array with its href", () => {
     usePathname.mockReturnValue("/admin/propiedades");
-    render(<AdminNav />);
+    render(<AdminNav isAdmin />);
 
     for (const item of ADMIN_NAV_ITEMS) {
       expect(screen.getByRole("link", { name: item.label })).toHaveAttribute(
@@ -25,12 +25,16 @@ describe("AdminNav", () => {
   });
 
   it("includes the leads inbox", () => {
-    expect(ADMIN_NAV_ITEMS).toContainEqual({ label: "Consultas", href: "/admin/consultas" });
+    expect(ADMIN_NAV_ITEMS).toContainEqual(
+      expect.objectContaining({ label: "Consultas", href: "/admin/consultas" }),
+    );
   });
 
   it("includes the clients view after the inbox", () => {
     const hrefs = ADMIN_NAV_ITEMS.map((item) => item.href);
-    expect(ADMIN_NAV_ITEMS).toContainEqual({ label: "Clientes", href: "/admin/clientes" });
+    expect(ADMIN_NAV_ITEMS).toContainEqual(
+      expect.objectContaining({ label: "Clientes", href: "/admin/clientes" }),
+    );
     expect(hrefs.indexOf("/admin/clientes")).toBe(hrefs.indexOf("/admin/consultas") + 1);
   });
 
@@ -75,6 +79,49 @@ describe("AdminNav", () => {
     expect(
       screen.getByRole("link", { name: "Propiedades" }),
     ).not.toHaveAttribute("aria-current");
+  });
+
+  it("lists the sections in order: Inicio, Propiedades, Consultas, Clientes, Usuarios, Mi cuenta", () => {
+    usePathname.mockReturnValue("/admin");
+    render(<AdminNav isAdmin />);
+
+    const labels = screen.getAllByRole("link").map((link) => link.textContent);
+    expect(labels).toEqual([
+      "Inicio",
+      "Propiedades",
+      "Consultas",
+      "Clientes",
+      "Usuarios",
+      "Mi cuenta",
+    ]);
+  });
+
+  it("gives every item an icon", () => {
+    usePathname.mockReturnValue("/admin");
+    render(<AdminNav isAdmin />);
+
+    for (const link of screen.getAllByRole("link")) {
+      expect(link.querySelector("svg")).not.toBeNull();
+    }
+  });
+
+  it("hides Usuarios from non-admins", () => {
+    usePathname.mockReturnValue("/admin");
+    render(<AdminNav />);
+
+    expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/admin/cuenta");
+  });
+
+  it("marks Inicio current only on /admin exactly", () => {
+    usePathname.mockReturnValue("/admin");
+    const { unmount } = render(<AdminNav />);
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
+    unmount();
+
+    usePathname.mockReturnValue("/admin/propiedades");
+    render(<AdminNav />);
+    expect(screen.getByRole("link", { name: "Inicio" })).not.toHaveAttribute("aria-current");
   });
 
   it("calls onNavigate when a link is clicked", async () => {
