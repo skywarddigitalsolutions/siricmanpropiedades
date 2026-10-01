@@ -35,7 +35,7 @@
 | T1 | BFF transport (PATCH/PUT/DELETE, multipart) + typed properties/images/neighborhoods API + Spanish labels | delegated (writer trigger: 2+ files) | ✅ | `d9390e4`, `0f47d3f` |
 | T2 | Form primitives (SelectField, TextareaField, CheckboxField) + mobile-first panel shell with nav; `/admin` → `/admin/propiedades` | delegated | ✅ | `3c38c7a`, `c38221d` |
 | T3 | Property list page: filters (q, status, operation, type), pagination, cards → table | delegated | ✅ | `50f23e3` |
-| T4 | Create/edit form with server actions and field error mapping | delegated | ⬜ | |
+| T4 | Create/edit form with server actions and field error mapping | delegated → inline (writer hit the weekly subagent limit mid-task) | ✅ | `de77621`, `d6b92c0` |
 | T5 | Lifecycle actions: publish/archive/unpublish, deal status (restricted by operation), delete (admin only) | delegated | ⬜ | |
 | T6 | Images manager: upload (15 MB limits), reorder, delete, cover badge | delegated | ⬜ | |
 | T7 | ROADMAP + docs close-out; manual e2e against the local back | inline | ⬜ | |
@@ -74,6 +74,15 @@
 - 400 from the back renders an empty list with a notice; other errors reach `error.tsx`.
 - RED: 14 new tests failing. GREEN: 279 tests passed. Lint 0 errors. Build OK.
 
+### T4 — create/edit form (strict TDD)
+
+- Pure `src/lib/properties/property-form.ts`: DTO-mirroring validation with Spanish messages, es-AR numbers (comma = decimal; dots followed by groups of 3 = thousands; otherwise the last dot is the decimal point), checkbox absent → false, `mapApiErrorToFields` (first token of a Nest message = field), `toFormValues`, `extractFormValues`.
+- PATCH clearing: the back's `update()` skips only `undefined`, so the edit form sends `null` for an emptied description/expenses (`UpdatePropertyInput`).
+- `PropertyForm` (client): 8 labelled fieldsets, numeric keyboards, sticky submit bar on phones, remounts after each action result so selects keep the submitted value.
+- Routes `/admin/propiedades/nueva` (→ `/[id]?creada=1`) and `/admin/propiedades/[id]` (badges, notices, `notFound` on 400/404, 401 → login). Shared `toPropertyFormErrorState` and `FormNotice` (role="status"); test fixture `src/test/fixtures/property.ts`.
+- Route: the delegated writer stopped on the weekly subagent rate limit after the pure module; the parent finished inline. Subagents are unavailable until the limit resets (2026-10-03).
+- RED: form (missing module), actions (missing modules), pages (missing modules). GREEN: 339 tests passed. Lint 0 errors. Build OK.
+
 ## Next step
 
-T4.
+T5.

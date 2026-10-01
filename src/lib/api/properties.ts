@@ -116,6 +116,23 @@ export type CreatePropertyInput = {
   hasInternet?: boolean;
 };
 
+/**
+ * Body for `PATCH /api/admin/properties/:id`. Same as a partial
+ * `CreatePropertyInput`, except `description`/`expenses` additionally accept
+ * an explicit `null` to clear them — the back's `update()` only skips a key
+ * that is `undefined`, so omitting the key leaves the stored value
+ * untouched, while `null` passes `class-validator`'s `@IsOptional()` and is
+ * assigned as-is (verified against `properties.service.ts`'s `update()`,
+ * feature 6 T4).
+ */
+export type UpdatePropertyInput = Omit<
+  Partial<CreatePropertyInput>,
+  "description" | "expenses"
+> & {
+  description?: string | null;
+  expenses?: number | null;
+};
+
 /** Query filters for `GET /api/admin/properties`. */
 export type PropertyFilters = {
   publicationStatus?: PublicationStatus;
@@ -175,7 +192,7 @@ export function createProperty(
 export function updateProperty(
   token: string,
   id: string,
-  input: Partial<CreatePropertyInput>,
+  input: UpdatePropertyInput,
 ): Promise<Property> {
   return apiFetch<Property>(`/admin/properties/${id}`, {
     method: "PATCH",
