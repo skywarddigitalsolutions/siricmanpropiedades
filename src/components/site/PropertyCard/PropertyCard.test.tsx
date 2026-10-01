@@ -46,3 +46,12 @@ describe("PropertyCard", () => {
     expect(screen.getByRole("heading", { level: 2 })).toBeInTheDocument();
   });
 });
+
+describe("PropertyCard favorite heart", () => {
+  it("has a heart toggle that is not nested inside the title link", () => {
+    render(<PropertyCard property={makePublicProperty()} />);
+    const card = screen.getByRole("article");
+    const heart = within(card).getByRole("button", { name: "Guardar en favoritos" });
+    expect(heart.closest("a")).toBeNull();
+  });
+});

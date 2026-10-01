@@ -10,6 +10,7 @@ import {
   tagLabel,
 } from "@/lib/public/property-view";
 import type { PublicPropertyListItem } from "@/lib/public/types";
+import FavoriteToggle from "../FavoriteToggle/FavoriteToggle";
 import PropertyIcon from "../PropertyIcon/PropertyIcon";
 import styles from "./PropertyCard.module.css";
 
@@ -53,6 +54,19 @@ export default function PropertyCard({
         <div className={styles.badges}>
           <span className={styles.badge}>{OPERATION_LABELS[property.operation]}</span>
           {tag && <span className={`${styles.badge} ${styles.tag}`}>{tag}</span>}
+        </div>
+        <div className={styles.favorite}>
+          <FavoriteToggle
+            property={{
+              slug: property.slug,
+              title: property.title,
+              price: property.price,
+              currency: property.currency,
+              operation: property.operation,
+              cover: property.coverImage,
+              neighborhood: property.neighborhood.name,
+            }}
+          />
         </div>
       </div>
 

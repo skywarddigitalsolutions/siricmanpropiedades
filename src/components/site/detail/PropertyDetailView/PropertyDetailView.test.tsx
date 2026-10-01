@@ -67,3 +67,15 @@ describe("PropertyDetailView preview mode", () => {
     expect(container.querySelector("form")).not.toBeNull();
   });
 });
+
+describe("PropertyDetailView favorites", () => {
+  it("offers a labeled Guardar toggle, hidden in preview", () => {
+    const { rerender } = render(
+      <PropertyDetailView property={makePublicPropertyDetail()} inquiryAction={inquiryAction} />,
+    );
+    expect(screen.getByRole("button", { name: "Guardar en favoritos" })).toHaveTextContent("Guardar");
+
+    rerender(<PropertyDetailView property={makePublicPropertyDetail()} preview />);
+    expect(screen.queryByRole("button", { name: /favoritos/ })).toBeNull();
+  });
+});
