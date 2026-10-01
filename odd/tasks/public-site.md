@@ -39,7 +39,7 @@
 |----|------|------|-------|--------|-------------|
 | B1 | Public catalog: `featured` + `code` filters, unavailable last, public read throttle (catalog + neighborhoods GET) | back | inline (subagents rate-limited) | ✅ | back #21 |
 | T1 | Public catalog client (cached, server-only), results URL params, card view-model (price label, specs) | front | inline | ✅ | `9ab11f6` |
-| T2 | `PropertyCard` + home page | front | inline | ⬜ | |
+| T2 | `PropertyCard` + home page | front | inline | ✅ | `a6fccda` |
 | T3 | Results page: filter bar, filters sheet, quick chips, sort, grid, pagination, empty state | front | inline | ⬜ | |
 | T4 | Property detail page: gallery, facts, chips, description, services, location, WhatsApp, bottom bar | front | inline | ⬜ | |
 | T5 | SEO: `SITE_URL`/metadataBase, per-page metadata, JSON-LD, sitemap, robots; deploy env docs | both | inline | ⬜ | |
@@ -65,6 +65,12 @@
 - Client-safe `src/lib/public/types.ts`, `search-params.ts` (Spanish URL ⇄ state ⇄ API filters, effective currency for price sort/range, stable hrefs, active filter count, results title), `property-view.ts` (price `/mes`, expenses, specs with a11y labels, tag, status notice, location privacy, facts, conditions, services, WhatsApp inquiry). Fixture `src/test/fixtures/public-property.ts`.
 - RED: client (revalidate), public client, search params, view model (missing modules). GREEN: 423 tests passed. Lint 0 errors (1 pre-existing warning). Build OK.
 
+### T2 — card + home (strict TDD)
+
+- `PropertyCard`: stretched title link (one tap target, one name), cover via `next/image` `unoptimized` or "Sin fotos", operation/tag badges, status band (reserved gold, sold/rented navy + dimmed photo), price + code, expenses, type · barrio, specs with sr-only labels. `PropertyIcon` maps semantic icons to lucide. Global `.sr-only` utility.
+- Home (`force-dynamic`): `HeroSearch` (GET form to `/propiedades`, operation radios as pills, barrio/tipo/ambientes selects, code lookup in a `<details>`), type chips, carousel "Destacadas" (falls back to "Recién publicadas"), services, personal quote (monogram instead of the missing portrait), appraisal CTA. API failures degrade to the static sections.
+- RED: card (missing module), home (5 failing on the placeholder). GREEN: 432 tests. Lint 0 errors. Build OK.
+
 ## Next step
 
-T2.
+T3.
