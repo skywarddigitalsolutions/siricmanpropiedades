@@ -34,7 +34,7 @@
 |----|------|-------|--------|-------------|
 | T1 | BFF transport (PATCH/PUT/DELETE, multipart) + typed properties/images/neighborhoods API + Spanish labels | delegated (writer trigger: 2+ files) | ✅ | `d9390e4`, `0f47d3f` |
 | T2 | Form primitives (SelectField, TextareaField, CheckboxField) + mobile-first panel shell with nav; `/admin` → `/admin/propiedades` | delegated | ✅ | `3c38c7a`, `c38221d` |
-| T3 | Property list page: filters (q, status, operation, type), pagination, cards → table | delegated | ⬜ | |
+| T3 | Property list page: filters (q, status, operation, type), pagination, cards → table | delegated | ✅ | `50f23e3` |
 | T4 | Create/edit form with server actions and field error mapping | delegated | ⬜ | |
 | T5 | Lifecycle actions: publish/archive/unpublish, deal status (restricted by operation), delete (admin only) | delegated | ⬜ | |
 | T6 | Images manager: upload (15 MB limits), reorder, delete, cover badge | delegated | ⬜ | |
@@ -67,6 +67,13 @@
 - `/admin` redirects to `/admin/propiedades`; `openspec/specs/admin-session/spec.md` landing requirement updated.
 - RED: 7 files failed (missing modules; old landing page). GREEN: 226 tests passed. Lint 0 errors. Build OK.
 
+### T3 — property list (strict TDD)
+
+- `/admin/propiedades`: GET filter form (q always visible; status, operation, type, deal status, barrio in a `<details>` with active count), cards on phones / table from 960 px, text badges, pagination preserving filters, two empty states, `loading.tsx` skeleton.
+- Pure `src/lib/properties/list-params.ts` (parse/clamp/drop unknown enums, href builder). `handleSessionError` extracted to `src/lib/session/session-error.ts` (401 → login `?reason=expired`), reused by `dal.ts`.
+- 400 from the back renders an empty list with a notice; other errors reach `error.tsx`.
+- RED: 14 new tests failing. GREEN: 279 tests passed. Lint 0 errors. Build OK.
+
 ## Next step
 
-T3.
+T4.
