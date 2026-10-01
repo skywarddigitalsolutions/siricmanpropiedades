@@ -12,8 +12,8 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-const { getLead } = vi.hoisted(() => ({ getLead: vi.fn() }));
-vi.mock("@/lib/api/leads", () => ({ getLead }));
+const { getLead, listLeads } = vi.hoisted(() => ({ getLead: vi.fn(), listLeads: vi.fn() }));
+vi.mock("@/lib/api/leads", () => ({ getLead, listLeads }));
 
 const { getSessionToken, getCurrentUser } = vi.hoisted(() => ({
   getSessionToken: vi.fn(),
@@ -54,6 +54,7 @@ beforeEach(() => {
   getSessionToken.mockResolvedValue("jwt");
   getCurrentUser.mockResolvedValue({ id: "u1", userName: "maria", isActive: true, roles: ["manager"] });
   getLead.mockResolvedValue(makeLead());
+  listLeads.mockResolvedValue({ items: [], total: 1 });
 });
 
 describe("LeadDetailPage", () => {
@@ -87,6 +88,56 @@ describe("LeadDetailPage", () => {
       "href",
       expect.stringContaining("mailto:ana@mail.com"),
     );
+  });
+
+  it("answers by WhatsApp with one primary button", async () => {
+    render(await LeadDetailPage(params()));
+
+    expect(screen.getByRole("link", { name: "Responder por WhatsApp" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("https://wa.me/5491138967363"),
+    );
+  });
+
+  it("links to the other inquiries of the same person (by email) when there are more", async () => {
+    listLeads.mockResolvedValue({ items: [], total: 3 });
+
+    render(await LeadDetailPage(params()));
+
+    expect(listLeads).toHaveBeenCalledWith("jwt", { q: "ana@mail.com", limit: 1 });
+    expect(screen.getByRole("link", { name: "Ver 3 consultas de esta persona" })).toHaveAttribute(
+      "href",
+      "/admin/consultas?estado=todas&q=ana%40mail.com",
+    );
+  });
+
+  it("falls back to the phone when the lead has no email", async () => {
+    getLead.mockResolvedValue(makeLead({ email: null }));
+    listLeads.mockResolvedValue({ items: [], total: 2 });
+
+    render(await LeadDetailPage(params()));
+
+    expect(listLeads).toHaveBeenCalledWith("jwt", { q: "11 3896-7363", limit: 1 });
+    expect(screen.getByRole("link", { name: "Ver 2 consultas de esta persona" })).toHaveAttribute(
+      "href",
+      "/admin/consultas?estado=todas&q=11+3896-7363",
+    );
+  });
+
+  it("shows no link when it is the only inquiry, the lookup fails or there is no contact", async () => {
+    render(await LeadDetailPage(params()));
+    expect(screen.queryByRole("link", { name: /de esta persona/ })).toBeNull();
+    cleanup();
+
+    listLeads.mockRejectedValue(new ApiError(0, "down"));
+    render(await LeadDetailPage(params()));
+    expect(screen.queryByRole("link", { name: /de esta persona/ })).toBeNull();
+    cleanup();
+
+    listLeads.mockClear();
+    getLead.mockResolvedValue(makeLead({ email: null, phone: null }));
+    render(await LeadDetailPage(params()));
+    expect(listLeads).not.toHaveBeenCalled();
   });
 
   it("links the property to the editor and the public page", async () => {

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { CheckCheck } from "lucide-react";
-import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import type { LeadStatus } from "@/lib/leads/labels";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
+import { useMarkContacted, type UpdateLeadAction } from "../use-mark-contacted";
 import styles from "./LeadQuickActions.module.css";
 
 type LeadQuickActionsProps = {
@@ -12,7 +11,7 @@ type LeadQuickActionsProps = {
   /** Prefilled chat link; absent when the lead left no phone. */
   whatsappHref?: string;
   /** `updateLeadAction` bound to the lead id. */
-  updateAction: (prev: ActionFeedback, formData: FormData) => Promise<ActionFeedback>;
+  updateAction: UpdateLeadAction;
 };
 
 /**
@@ -25,17 +24,7 @@ export default function LeadQuickActions({
   whatsappHref,
   updateAction,
 }: LeadQuickActionsProps) {
-  const [error, setError] = useState<string>();
-  const [pending, startTransition] = useTransition();
-
-  function markContacted() {
-    const formData = new FormData();
-    formData.set("status", "contacted");
-    startTransition(async () => {
-      const result = await updateAction({}, formData);
-      setError(result.error);
-    });
-  }
+  const { markContacted, pending, error } = useMarkContacted(updateAction);
 
   return (
     <div className={styles.actions}>

@@ -1,7 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
-import { CheckCheck } from "lucide-react";
+import { useActionState, useOptimistic, useState, useTransition } from "react";
 import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import { LEAD_STATUSES, LEAD_STATUS_LABELS, type LeadStatus } from "@/lib/leads/labels";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
@@ -24,8 +23,9 @@ function Feedback({ state }: { state: ActionFeedback }) {
 }
 
 /**
- * Follow-up block of a lead: one-tap "contacted", status + internal notes,
- * and the admin-only delete behind a confirmation step.
+ * Follow-up block of a lead: the status as a 3-option segmented control that
+ * saves on change (optimistic, rolled back on error), internal notes, and the
+ * admin-only delete behind a confirmation step.
  */
 export default function LeadManagePanel({
   status,
@@ -34,46 +34,50 @@ export default function LeadManagePanel({
   updateAction,
   deleteAction,
 }: LeadManagePanelProps) {
-  const [quickState, submitQuick, quickPending] = useActionState(updateAction, {});
-  const [saveState, submitSave, savePending] = useActionState(updateAction, {});
+  // Optimistic status: shows the pick at once and falls back to the saved
+  // `status` prop when the action fails (or once the refreshed page arrives).
+  const [shownStatus, setShownStatus] = useOptimistic(status);
+  const [statusFeedback, setStatusFeedback] = useState<ActionFeedback>({});
+  const [, startTransition] = useTransition();
+  const [notesState, submitNotes, notesPending] = useActionState(updateAction, {});
   const [deleteState, submitDelete, deletePending] = useActionState(deleteAction, {});
+
+  function changeStatus(next: LeadStatus) {
+    const formData = new FormData();
+    formData.set("status", next);
+    startTransition(async () => {
+      setShownStatus(next);
+      const result = await updateAction({}, formData);
+      setStatusFeedback(result.error ? { error: result.error } : { message: "Estado actualizado." });
+    });
+  }
 
   return (
     <div className={styles.panel}>
-      {status === "new" && (
-        <form action={submitQuick} className={styles.quick}>
-          <input type="hidden" name="status" value="contacted" />
-          <button type="submit" className={styles.primary} disabled={quickPending}>
-            <CheckCheck aria-hidden size={18} />
-            Marcar como contactada
-          </button>
-        </form>
-      )}
-      {/* Outside the form: a successful one-tap change makes the lead
-          "contacted", which removes the form, but the confirmation stays. */}
-      <Feedback state={quickState} />
-
-      <form action={submitSave} className={styles.card}>
-        <h2 className={styles.title}>Seguimiento</h2>
-        <div className={styles.field}>
-          <label htmlFor="lead-status" className={styles.label}>
-            Estado
-          </label>
-          {/* Keyed by the saved status so the select follows server updates. */}
-          <select
-            key={status}
-            id="lead-status"
-            name="status"
-            defaultValue={status}
-            className={styles.input}
-          >
-            {LEAD_STATUSES.map((value) => (
-              <option key={value} value={value}>
-                {LEAD_STATUS_LABELS[value]}
-              </option>
-            ))}
-          </select>
+      <section aria-labelledby="lead-status-label" className={styles.card}>
+        <h2 id="lead-status-label" className={styles.title}>
+          Estado
+        </h2>
+        <div role="radiogroup" aria-labelledby="lead-status-label" className={styles.segmented}>
+          {LEAD_STATUSES.map((value) => (
+            <label key={value} className={styles.segment}>
+              <input
+                type="radio"
+                name="status"
+                value={value}
+                checked={shownStatus === value}
+                onChange={() => changeStatus(value)}
+                className={styles.radio}
+              />
+              <span className={styles.segmentLabel}>{LEAD_STATUS_LABELS[value]}</span>
+            </label>
+          ))}
         </div>
+        <Feedback state={statusFeedback} />
+      </section>
+
+      <form action={submitNotes} className={styles.card}>
+        <input type="hidden" name="status" value={shownStatus} />
         <div className={styles.field}>
           <label htmlFor="lead-notes" className={styles.label}>
             Notas internas
@@ -89,10 +93,10 @@ export default function LeadManagePanel({
           />
           <p className={styles.hint}>Solo las ve el equipo.</p>
         </div>
-        <button type="submit" className={styles.secondary} disabled={savePending}>
-          Guardar
+        <button type="submit" className={styles.secondary} disabled={notesPending}>
+          Guardar notas
         </button>
-        <Feedback state={saveState} />
+        <Feedback state={notesState} />
       </form>
 
       {canDelete && (

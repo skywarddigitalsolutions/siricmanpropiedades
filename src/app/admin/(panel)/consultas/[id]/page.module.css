@@ -83,17 +83,6 @@
   border-color: var(--color-gold);
 }
 
-.whatsapp {
-  border-color: var(--color-whatsapp);
-  color: var(--color-white);
-  background: var(--color-whatsapp);
-}
-
-.whatsapp:hover {
-  color: var(--color-white);
-  background: var(--color-whatsapp-dark);
-}
-
 .contact:focus-visible,
 .back:focus-visible {
   outline: 2px solid var(--color-gold);
@@ -162,4 +151,27 @@
     grid-template-columns: minmax(0, 1fr) 360px;
     align-items: start;
   }
+}
+
+.person {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 10px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  background: var(--color-white);
+}
+
+.person:hover {
+  border-color: var(--color-gold);
+}
+
+.person:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
 }
