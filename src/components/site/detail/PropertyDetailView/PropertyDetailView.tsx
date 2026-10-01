@@ -13,10 +13,12 @@ import {
   whatsappInquiry,
 } from "@/lib/public/property-view";
 import { EMPTY_SEARCH, buildSearchHref } from "@/lib/public/search-params";
+import type { InquiryState } from "@/lib/leads/inquiry-form";
 import type { PublicPropertyDetail } from "@/lib/public/types";
 import PropertyIcon from "../../PropertyIcon/PropertyIcon";
 import WhatsAppIcon from "../../WhatsAppIcon/WhatsAppIcon";
 import PropertyGallery from "../PropertyGallery/PropertyGallery";
+import PropertyInquiryForm from "../PropertyInquiryForm/PropertyInquiryForm";
 import styles from "./PropertyDetailView.module.css";
 
 const STATUS_COPY = {
@@ -24,8 +26,14 @@ const STATUS_COPY = {
   closed: "Esta propiedad ya no está disponible. Escribinos y te mostramos opciones similares.",
 };
 
+type PropertyDetailViewProps = {
+  property: PublicPropertyDetail;
+  /** Sends the inquiry form (bound to this property by the page). */
+  inquiryAction: (prev: InquiryState, formData: FormData) => Promise<InquiryState>;
+};
+
 /** Property page body (presentational): gallery, data, inquiry aside and the phone bottom bar. */
-export default function PropertyDetailView({ property }: { property: PublicPropertyDetail }) {
+export default function PropertyDetailView({ property, inquiryAction }: PropertyDetailViewProps) {
   const price = propertyPriceLabel(property);
   const expenses = expensesLabel(property);
   const location = propertyLocation(property);
@@ -154,18 +162,11 @@ export default function PropertyDetailView({ property }: { property: PublicPrope
           <h2 id="detail-inquiry" className={styles.asideTitle}>
             Consultá por esta propiedad
           </h2>
-          <p className={styles.muted}>
-            Te respondo personalmente. Escribime por WhatsApp con el mensaje ya armado.
-          </p>
-          <a
-            href={inquiry.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.whatsapp}
-          >
-            <WhatsAppIcon size={22} />
-            Consultar por WhatsApp
-          </a>
+          <PropertyInquiryForm
+            action={inquiryAction}
+            defaultMessage={inquiry.message}
+            whatsappHref={inquiry.href}
+          />
         </aside>
       </div>
 

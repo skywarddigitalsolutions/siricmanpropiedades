@@ -10,6 +10,7 @@ vi.mock("next/navigation", () => ({
 
 const { getPublicProperty } = vi.hoisted(() => ({ getPublicProperty: vi.fn() }));
 vi.mock("@/lib/api/public-catalog", () => ({ getPublicProperty }));
+vi.mock("./actions", () => ({ sendInquiryAction: vi.fn() }));
 
 import { ApiError } from "@/lib/api/client";
 import { whatsappInquiry } from "@/lib/public/property-view";
@@ -60,6 +61,16 @@ describe("PropertyPage", () => {
     expect(links.length).toBeGreaterThan(0);
     for (const link of links) expect(link).toHaveAttribute("href", href);
     expect(screen.getByRole("link", { name: "Consultar" })).toHaveAttribute("href", "#consulta");
+  });
+
+  it("offers the inquiry form prefilled with the property", async () => {
+    render(await PropertyPage(params()));
+
+    const aside = screen.getByRole("complementary", { name: "Consultá por esta propiedad" });
+    expect(within(aside).getByLabelText("Mensaje")).toHaveValue(
+      whatsappInquiry(makePublicPropertyDetail()).message,
+    );
+    expect(within(aside).getByRole("button", { name: "Enviar consulta" })).toBeInTheDocument();
   });
 
   it("hides the exact address when the owner chose to", async () => {

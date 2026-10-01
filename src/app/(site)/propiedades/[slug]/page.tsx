@@ -10,6 +10,7 @@ import type { PublicPropertyDetail } from "@/lib/public/types";
 import { getSiteUrl } from "@/lib/site-url";
 import JsonLd from "@/components/site/JsonLd/JsonLd";
 import PropertyDetailView from "@/components/site/detail/PropertyDetailView/PropertyDetailView";
+import { sendInquiryAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +62,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   return (
     <>
       <JsonLd data={propertyJsonLd(property, getSiteUrl())} />
-      <PropertyDetailView property={property} />
+      <PropertyDetailView
+        property={property}
+        inquiryAction={sendInquiryAction.bind(null, property.id)}
+      />
     </>
   );
 }

@@ -235,23 +235,6 @@
   font: 800 17px var(--font-body), sans-serif;
 }
 
-.whatsapp {
-  min-height: 52px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  border-radius: var(--radius-pill);
-  font: 800 15px var(--font-body), sans-serif;
-  color: var(--color-white);
-  background: var(--color-whatsapp);
-}
-
-.whatsapp:hover {
-  color: var(--color-white);
-  background: var(--color-whatsapp-dark);
-}
-
 /* Phones: fixed bar with price and the two inquiry actions. */
 .bottomBar {
   position: fixed;
@@ -317,7 +300,6 @@
 }
 
 .back:focus-visible,
-.whatsapp:focus-visible,
 .bottomWhatsapp:focus-visible,
 .bottomCta:focus-visible {
   outline: 2px solid var(--color-gold);
