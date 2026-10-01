@@ -40,15 +40,16 @@ describe("sitemap", () => {
 
     expect(listPublicProperties).toHaveBeenNthCalledWith(1, { limit: 50, offset: 0 });
     expect(listPublicProperties).toHaveBeenNthCalledWith(2, { limit: 50, offset: 50 });
-    expect(entries.map((entry) => entry.url).slice(0, 5)).toEqual([
+    expect(entries.map((entry) => entry.url).slice(0, 6)).toEqual([
       "https://siricman.com.ar/",
       "https://siricman.com.ar/propiedades",
       "https://siricman.com.ar/propiedades?operacion=venta",
       "https://siricman.com.ar/propiedades?operacion=alquiler",
+      "https://siricman.com.ar/tasaciones",
       "https://siricman.com.ar/contacto",
     ]);
-    expect(entries).toHaveLength(5 + 51);
-    expect(entries[5]).toMatchObject({
+    expect(entries).toHaveLength(6 + 51);
+    expect(entries[6]).toMatchObject({
       url: "https://siricman.com.ar/propiedades/p-0",
       lastModified: "2026-09-01T00:00:00.000Z",
     });
@@ -57,7 +58,7 @@ describe("sitemap", () => {
   it("still serves the landing pages when the catalog is unavailable", async () => {
     listPublicProperties.mockRejectedValue(new ApiError(0, "down"));
 
-    expect(await sitemap()).toHaveLength(5);
+    expect(await sitemap()).toHaveLength(6);
   });
 });
 
