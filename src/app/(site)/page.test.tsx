@@ -69,6 +69,13 @@ describe("Home page", () => {
     );
   });
 
+  it("describes the agency as schema.org JSON-LD", async () => {
+    const { container } = render(await Home());
+
+    const script = container.querySelector('script[type="application/ld+json"]');
+    expect(JSON.parse(script!.textContent!)).toMatchObject({ "@type": "RealEstateAgent" });
+  });
+
   it("links the property types to filtered results", async () => {
     render(await Home());
 

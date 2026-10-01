@@ -5,7 +5,10 @@ import { ApiError } from "@/lib/api/client";
 import { getPublicProperty } from "@/lib/api/public-catalog";
 import { OPERATION_LABELS, PROPERTY_TYPE_LABELS } from "@/lib/properties/labels";
 import { propertyPriceLabel, propertySpecs } from "@/lib/public/property-view";
+import { propertyJsonLd } from "@/lib/public/structured-data";
 import type { PublicPropertyDetail } from "@/lib/public/types";
+import { getSiteUrl } from "@/lib/site-url";
+import JsonLd from "@/components/site/JsonLd/JsonLd";
 import PropertyDetailView from "@/components/site/detail/PropertyDetailView/PropertyDetailView";
 
 export const dynamic = "force-dynamic";
@@ -55,5 +58,10 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
 /** `/propiedades/[slug]` — property page. */
 export default async function PropertyPage({ params }: PropertyPageProps) {
   const property = await loadProperty((await params).slug);
-  return <PropertyDetailView property={property} />;
+  return (
+    <>
+      <JsonLd data={propertyJsonLd(property, getSiteUrl())} />
+      <PropertyDetailView property={property} />
+    </>
+  );
 }

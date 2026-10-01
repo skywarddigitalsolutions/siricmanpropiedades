@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { rootMetadata } from "@/lib/seo/root-metadata";
 import { Bodoni_Moda, Manrope } from "next/font/google";
 import "./globals.css";
 
@@ -15,11 +15,10 @@ const manrope = Manrope({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-export const metadata: Metadata = {
-  title: "Siricman Propiedades",
-  description:
-    "Venta y alquiler de propiedades en CABA, con asesoramiento personal de principio a fin.",
-};
+// A function (not a constant) so SITE_URL is read at runtime, not at build.
+export function generateMetadata() {
+  return rootMetadata();
+}
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

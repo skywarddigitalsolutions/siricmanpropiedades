@@ -42,7 +42,7 @@
 | T2 | `PropertyCard` + home page | front | inline | ✅ | `a6fccda` |
 | T3 | Results page: filter bar, filters sheet, quick chips, sort, grid, pagination, empty state | front | inline | ✅ | `a22e0ef` |
 | T4 | Property detail page: gallery, facts, chips, description, services, location, WhatsApp, bottom bar | front | inline | ✅ | `4b7e254` |
-| T5 | SEO: `SITE_URL`/metadataBase, per-page metadata, JSON-LD, sitemap, robots; deploy env docs | both | inline | ⬜ | |
+| T5 | SEO: `SITE_URL`/metadataBase, per-page metadata, JSON-LD, sitemap, robots; deploy env docs | both | inline | ✅ | `de59d68`, back #22 |
 | T6 | Browser walkthrough (375 / 1280), ROADMAP close-out | front | inline | ⬜ | |
 
 ## Acceptance criteria
@@ -86,6 +86,15 @@
 - Metadata: "title · price", 160-char summary, canonical, Open Graph image (first photo).
 - RED: WhatsApp button (1 failing), gallery, page, boundaries (missing modules). GREEN: 466 tests. Lint 0 errors. Build OK.
 
+### T5 — SEO (strict TDD)
+
+- `getSiteUrl()`/`absoluteUrl()` (runtime `SITE_URL`, fallback localhost); root `generateMetadata()` → `rootMetadata()`: `metadataBase`, title template `%s | Siricman Propiedades`, es_AR Open Graph defaults.
+- JSON-LD (`serializeJsonLd` escapes `<`): `RealEstateListing` + `Offer` (Sell/LeaseOut, InStock/SoldOut, street address only when public) on property pages; `RealEstateAgent` on the home.
+- `robots.ts` (disallow `/admin`, sitemap link) and `sitemap.ts` (landings + every published property, paged by 50, landings only if the API fails), both `force-dynamic`.
+- Deploy (back #22): `SITE_URL: https://${SITE_DOMAIN}` on `web`; README section 8 (rollout order, checks, throttle rationale). Front README documents `SITE_URL`.
+- Gotcha: this shell layer collapses `\` to `\` in commands, so escaped strings were written via `chr(92)`/the Write tool.
+- RED: helpers (missing modules), SEO routes (missing modules), JSON-LD on pages (2 failing). GREEN: 479 tests. Lint 0 errors. Build OK.
+
 ## Next step
 
-T5.
+T6.

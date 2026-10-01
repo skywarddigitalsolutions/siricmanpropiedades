@@ -50,7 +50,8 @@ its implementation, CSS Module, and test co-located
 
 | Variable | Required | Notes |
 |---|---|---|
-| `API_INTERNAL_URL` | Yes, for the admin panel | Server-only base URL of the internal API (e.g. `http://api:3000` in production, via Docker's internal network). It has no `NEXT_PUBLIC_` prefix, so it is never inlined into the client bundle, and it is read from `process.env` at request time, not at build time. For local dev, point it at the local API instance — e.g. `API_INTERNAL_URL=http://localhost:3001` when the API runs with `PORT=3001` (since `next dev` already takes port 3000). |
+| `API_INTERNAL_URL` | Yes (admin panel and public catalog) | Server-only base URL of the internal API (e.g. `http://api:3000` in production, via Docker's internal network). It has no `NEXT_PUBLIC_` prefix, so it is never inlined into the client bundle, and it is read from `process.env` at request time, not at build time. For local dev, point it at the local API instance — e.g. `API_INTERNAL_URL=http://localhost:3001` when the API runs with `PORT=3001` (since `next dev` already takes port 3000). |
+| `SITE_URL` | Yes, in production | Public origin of the site, e.g. `https://siricmanpropiedades.com.ar`. Used for canonical URLs, Open Graph, JSON-LD, `robots.txt` and `sitemap.xml`. Read at runtime (falls back to `http://localhost:3000`), so one image serves any domain. The production compose sets it from `SITE_DOMAIN`. |
 
 There is no `JWT_SECRET` in this repository. The front never verifies or
 issues JWTs; it only forwards the bearer token it receives from the API in
