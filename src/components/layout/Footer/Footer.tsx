@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import {
   CONTACT_EMAIL,
   OFFICE_ADDRESS,
@@ -74,13 +75,15 @@ export default function Footer() {
 
         <div className={styles.professional}>
           <span>Gabriel Siricman · Martillero Público y Corredor Inmobiliario</span>
-          <span className={styles.matricula}>Mat. CUCICBA N° [a completar]</span>
         </div>
       </div>
 
       <div className={styles.bottomBar}>
         <span>© {year} Siricman Propiedades</span>
-        <span>Términos y condiciones · Privacidad</span>
+        <nav aria-label="Legales" className={styles.legal}>
+          <Link href="/terminos">Términos y condiciones</Link>
+          <Link href="/privacidad">Privacidad</Link>
+        </nav>
       </div>
     </footer>
   );

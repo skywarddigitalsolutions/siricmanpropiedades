@@ -40,4 +40,19 @@ describe("Footer", () => {
       "https://www.instagram.com/gabrielsiricman/",
     );
   });
+
+  it("links the legal pages and shows no placeholder registration", () => {
+    render(<Footer />);
+
+    expect(screen.getByRole("link", { name: "Términos y condiciones" })).toHaveAttribute(
+      "href",
+      "/terminos",
+    );
+    expect(screen.getByRole("link", { name: "Privacidad" })).toHaveAttribute(
+      "href",
+      "/privacidad",
+    );
+    expect(screen.queryByText(/a completar/i)).toBeNull();
+    expect(screen.queryByText(/CUCICBA/)).toBeNull();
+  });
 });

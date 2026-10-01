@@ -26,6 +26,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/tasaciones"), changeFrequency: "monthly", priority: 0.7 },
     { url: absoluteUrl("/nosotros"), changeFrequency: "yearly", priority: 0.5 },
     { url: absoluteUrl("/contacto"), changeFrequency: "yearly", priority: 0.5 },
+    { url: absoluteUrl("/terminos"), changeFrequency: "yearly", priority: 0.2 },
+    { url: absoluteUrl("/privacidad"), changeFrequency: "yearly", priority: 0.2 },
   ];
 
   let properties: PublicPropertyListItem[] = [];
