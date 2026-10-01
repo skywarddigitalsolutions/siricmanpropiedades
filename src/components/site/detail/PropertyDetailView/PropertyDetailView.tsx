@@ -7,6 +7,7 @@ import {
   expensesLabel,
   propertyFacts,
   propertyLocation,
+  propertyMap,
   propertyPriceLabel,
   serviceLabels,
   tagLabel,
@@ -15,6 +16,7 @@ import {
 import { EMPTY_SEARCH, buildSearchHref } from "@/lib/public/search-params";
 import type { InquiryState } from "@/lib/leads/inquiry-form";
 import type { PublicPropertyDetail } from "@/lib/public/types";
+import MapEmbed from "../../MapEmbed/MapEmbed";
 import PropertyIcon from "../../PropertyIcon/PropertyIcon";
 import WhatsAppIcon from "../../WhatsAppIcon/WhatsAppIcon";
 import PropertyGallery from "../PropertyGallery/PropertyGallery";
@@ -37,6 +39,7 @@ export default function PropertyDetailView({ property, inquiryAction }: Property
   const price = propertyPriceLabel(property);
   const expenses = expensesLabel(property);
   const location = propertyLocation(property);
+  const map = propertyMap(property);
   const status = dealStatusNotice(property);
   const tag = tagLabel(property);
   const conditions = conditionLabels(property);
@@ -146,10 +149,12 @@ export default function PropertyDetailView({ property, inquiryAction }: Property
             <h2 id="detail-location" className={styles.cardTitle}>
               Ubicación
             </h2>
-            <p className={styles.locationCard}>
-              <MapPin aria-hidden size={18} className={styles.pin} />
-              {location.label}
-            </p>
+            <MapEmbed
+              query={map.query}
+              precision={map.precision}
+              label={map.label}
+              title="Mapa de la ubicación"
+            />
             {!location.exact && (
               <p className={styles.muted}>
                 Te compartimos la dirección exacta cuando coordinemos la visita.

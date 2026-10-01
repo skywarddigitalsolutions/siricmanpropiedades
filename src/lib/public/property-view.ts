@@ -1,5 +1,6 @@
 import { DEAL_STATUS_LABELS, MARKETING_TAG_LABELS, formatPrice } from "@/lib/properties/labels";
 import { WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
+import type { MapPrecision } from "@/lib/maps";
 import type { PublicProperty } from "./types";
 
 /**
@@ -82,6 +83,18 @@ export function propertyLocation(property: PublicProperty): { label: string; exa
   return property.address
     ? { label: `${property.address} · ${area}`, exact: true }
     : { label: `${area} · zona aproximada`, exact: false };
+}
+
+export function propertyMap(property: PublicProperty): {
+  query: string;
+  precision: MapPrecision;
+  label: string;
+} {
+  const barrio = property.neighborhood.name;
+  const address = property.address?.trim();
+  return address
+    ? { query: `${address}, ${barrio}, CABA`, precision: "exact", label: `${address}, ${barrio}` }
+    : { query: `${barrio}, CABA`, precision: "approximate", label: `Zona aproximada · ${barrio}` };
 }
 
 export function propertyFacts(
