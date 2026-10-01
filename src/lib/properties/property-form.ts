@@ -24,7 +24,13 @@
  * `CreatePropertyInput`'s plain `?: string`/`?: number` optionality.
  */
 import { CURRENCIES, MARKETING_TAGS, OPERATIONS, PROPERTY_TYPES } from "./enums";
-import type { CreatePropertyInput, Property } from "@/lib/api/properties";
+import type {
+  CreatePropertyInput,
+  Property,
+  UpdatePropertyInput,
+} from "@/lib/api/properties";
+
+type FormField = keyof CreatePropertyInput;
 
 export type PropertyFormMode = "create" | "edit";
 
@@ -79,7 +85,7 @@ export type PropertyFormValues = {
   hasInternet: boolean;
 };
 
-/** Defaults for a brand-new create form (no `initialValues` supplied). */
+/** Defaults for a brand-new create form (no `initialValues` supplied); currency starts in USD. */
 export const DEFAULT_FORM_VALUES: PropertyFormValues = {
   operation: "",
   type: "",
@@ -88,7 +94,7 @@ export const DEFAULT_FORM_VALUES: PropertyFormValues = {
   neighborhoodId: "",
   address: "",
   showExactAddress: false,
-  currency: "",
+  currency: "USD",
   price: "",
   expenses: "",
   rooms: "",
@@ -297,6 +303,14 @@ function validateEnumField<T extends string>(
 
 export function parsePropertyForm(
   formData: FormData,
+  options: { mode: "edit"; only: readonly FormField[] },
+): { input: UpdatePropertyInput } | { fieldErrors: PropertyFieldErrors };
+export function parsePropertyForm(
+  formData: FormData,
+  options: { mode: "create"; only: readonly FormField[] },
+): { input: CreatePropertyInput } | { fieldErrors: PropertyFieldErrors };
+export function parsePropertyForm(
+  formData: FormData,
   options: { mode: "edit" },
 ): { input: UpdatePropertyFormInput } | { fieldErrors: PropertyFieldErrors };
 export function parsePropertyForm(
@@ -305,11 +319,13 @@ export function parsePropertyForm(
 ): { input: CreatePropertyInput } | { fieldErrors: PropertyFieldErrors };
 export function parsePropertyForm(
   formData: FormData,
-  options: { mode?: PropertyFormMode } = {},
+  options: { mode?: PropertyFormMode; only?: readonly FormField[] } = {},
 ):
-  | { input: CreatePropertyInput | UpdatePropertyFormInput }
+  | { input: CreatePropertyInput | UpdatePropertyFormInput | UpdatePropertyInput }
   | { fieldErrors: PropertyFieldErrors } {
   const mode = options.mode ?? "create";
+  const only = options.only ? new Set<FormField>(options.only) : undefined;
+  // Per-step saves validate everything below but only report/send their own fields.
   const fieldErrors: PropertyFieldErrors = {};
 
   const operation = validateEnumField(formData, "operation", OPERATIONS, "una operación");
@@ -414,6 +430,11 @@ export function parsePropertyForm(
   );
   if (marketingTag.error) fieldErrors.marketingTag = marketingTag.error;
 
+  if (only) {
+    for (const key of Object.keys(fieldErrors) as (keyof PropertyFieldErrors)[]) {
+      if (key === "general" || !only.has(key)) delete fieldErrors[key];
+    }
+  }
   if (Object.keys(fieldErrors).length > 0) {
     return { fieldErrors };
   }
@@ -446,19 +467,28 @@ export function parsePropertyForm(
     hasInternet: getChecked(formData, "hasInternet"),
   };
 
+  let result: CreatePropertyInput | UpdatePropertyFormInput;
   if (mode === "edit") {
-    const editInput: UpdatePropertyFormInput = {
+    result = {
       ...input,
       description: description.value ?? null,
       expenses: expenses.value ?? null,
     };
-    return { input: editInput };
+  } else {
+    if (description.value !== undefined) input.description = description.value;
+    if (expenses.value !== undefined) input.expenses = expenses.value;
+    result = input;
   }
 
-  if (description.value !== undefined) input.description = description.value;
-  if (expenses.value !== undefined) input.expenses = expenses.value;
+  if (only) {
+    const picked: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(result)) {
+      if (only.has(key as FormField)) picked[key] = value;
+    }
+    return { input: picked as UpdatePropertyInput };
+  }
 
-  return { input };
+  return { input: result };
 }
 
 /**

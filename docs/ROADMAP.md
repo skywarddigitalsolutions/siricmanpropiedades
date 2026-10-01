@@ -21,7 +21,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 13 | UX quick wins: custom selects, WhatsApp icon, tags, admin login redesign, footer + legal pages (`odd/tasks/ux-quick-wins.md`) | front | ODD | ✅ Done |
 | 14 | Home: typeahead location search, hero photo, featured sale/rent sections | front | ODD | ✅ Done |
 | 15 | Admin: clients view (deduped by email) + friendlier leads inbox | both | ODD | ✅ Done |
-| 16 | Admin: property list (thumbnails, search, sort) + editor (steps, validated address + map, photos, preview) | both | ODD | ⬜ |
+| 16 | Admin: property list (thumbnails, search, sort) + editor (steps, validated address + map, photos, preview) | both | ODD | ✅ Done |
 | 17 | Public favorites (browser-stored) | front | ODD | ⬜ |
 | 18 | Admin home, my account (password, backup codes), users management | both | ODD | ⬜ |
 | 19 | Results, property detail redesign, forms and accessibility | front | ODD | ⬜ |

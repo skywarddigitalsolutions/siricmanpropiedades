@@ -2,7 +2,19 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ActionFeedback } from "@/lib/forms/action-feedback";
+import { computeReadiness } from "@/lib/properties/readiness";
 import PropertyStatusPanel from "./PropertyStatusPanel";
+
+const READY = computeReadiness({
+  imageCount: 2,
+  description: "x".repeat(60),
+  price: 1000,
+});
+const NOT_READY = computeReadiness({
+  imageCount: 0,
+  description: "",
+  price: 1000,
+});
 
 type Action = (prev: ActionFeedback, formData: FormData) => Promise<ActionFeedback>;
 
@@ -12,6 +24,8 @@ type PanelProps = Parameters<typeof PropertyStatusPanel>[0];
 
 function renderPanel(overrides: Partial<PanelProps> = {}) {
   const props = {
+    propertyId: "p1",
+    readiness: READY,
     publicationStatus: "draft" as const,
     dealStatus: "available" as const,
     operation: "sale" as const,
@@ -90,5 +104,29 @@ describe("PropertyStatusPanel", () => {
 
     expect(screen.queryByText("Eliminar propiedad")).toBeNull();
     expect(screen.getByText(/ya fue publicada/)).toBeInTheDocument();
+  });
+
+  it("blocks Publicar with the checklist while the property is not ready", () => {
+    renderPanel({ readiness: NOT_READY });
+
+    const publish = screen.getByRole("button", { name: "Publicar" });
+    expect(publish).toBeDisabled();
+    expect(publish).toHaveAccessibleDescription(/Falta: Al menos una foto/);
+    expect(screen.getByText("Al menos una foto")).toBeInTheDocument();
+    // Archivar stays available.
+    expect(screen.getByRole("button", { name: "Archivar" })).toBeEnabled();
+  });
+
+  it("enables Publicar when the checklist is complete", () => {
+    renderPanel({ readiness: READY });
+
+    expect(screen.getByRole("button", { name: "Publicar" })).toBeEnabled();
+    expect(screen.getByText("Lista para publicar")).toBeInTheDocument();
+  });
+
+  it("does not gate unpublishing a published property", () => {
+    renderPanel({ publicationStatus: "published", readiness: NOT_READY });
+
+    expect(screen.getByRole("button", { name: "Pasar a borrador" })).toBeEnabled();
   });
 });

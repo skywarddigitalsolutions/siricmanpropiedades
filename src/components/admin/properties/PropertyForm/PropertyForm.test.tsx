@@ -65,87 +65,130 @@ function makeValues(overrides: Partial<PropertyFormValues> = {}): PropertyFormVa
   return { ...DEFAULT_FORM_VALUES, ...overrides };
 }
 
-describe("PropertyForm", () => {
-  it("groups the fields in labelled fieldsets", () => {
-    const action: Action = vi.fn(async () => ({}));
-    render(
-      <PropertyForm mode="create" action={action} neighborhoods={NEIGHBORHOODS} />,
-    );
+const noop: Action = vi.fn(async () => ({}));
+
+function renderForm(props: Partial<Parameters<typeof PropertyForm>[0]> = {}) {
+  return render(
+    <PropertyForm
+      mode="create"
+      step="datos"
+      action={noop}
+      neighborhoods={NEIGHBORHOODS}
+      {...props}
+    />,
+  );
+}
+
+describe("PropertyForm step datos", () => {
+  it("groups the required fields: operation and type, location, price, rooms and areas, title", () => {
+    renderForm();
 
     for (const legend of [
       "Operación y tipo",
       "Ubicación",
       "Precio",
-      "Características",
-      "Servicios",
-      "Condiciones",
-      "Destaque",
-      "Descripción",
+      "Ambientes y superficies",
+      "Título del aviso",
     ]) {
       expect(screen.getByRole("group", { name: legend })).toBeInTheDocument();
     }
+    // Services, conditions and description belong to step 3.
+    expect(screen.queryByRole("group", { name: "Descripción" })).toBeNull();
+    expect(screen.queryByLabelText("Admite mascotas")).toBeNull();
   });
 
   it("lists the fetched neighborhoods in the barrio select", () => {
-    const action: Action = vi.fn(async () => ({}));
-    render(
-      <PropertyForm mode="create" action={action} neighborhoods={NEIGHBORHOODS} />,
-    );
+    renderForm();
 
     expect(screen.getByText("Palermo")).toBeInTheDocument();
     expect(screen.getByText("Belgrano")).toBeInTheDocument();
   });
 
-  it("shows the create submit label and switches to the edit label", () => {
-    const action: Action = vi.fn(async () => ({}));
-    const { rerender } = render(
-      <PropertyForm mode="create" action={action} neighborhoods={NEIGHBORHOODS} />,
-    );
+  it("shows Guardar y continuar when creating and Guardar cambios when editing", () => {
+    const { rerender } = renderForm();
     expect(
-      screen.getByRole("button", { name: "Crear propiedad" }),
+      screen.getByRole("button", { name: "Guardar y continuar" }),
     ).toBeInTheDocument();
 
     rerender(
-      <PropertyForm mode="edit" action={action} neighborhoods={NEIGHBORHOODS} />,
+      <PropertyForm
+        mode="edit"
+        step="datos"
+        action={noop}
+        neighborhoods={NEIGHBORHOODS}
+      />,
     );
     expect(
       screen.getByRole("button", { name: "Guardar cambios" }),
     ).toBeInTheDocument();
   });
 
-  it("prefills every field from initialValues (edit mode defaults)", () => {
-    const action: Action = vi.fn(async () => ({}));
+  it("starts a new property in USD", () => {
+    renderForm();
 
-    render(
-      <PropertyForm
-        mode="edit"
-        action={action}
-        neighborhoods={NEIGHBORHOODS}
-        initialValues={toFormValues(PROPERTY)}
-      />,
+    expect(screen.getByLabelText("Moneda")).toHaveValue("USD");
+  });
+
+  it("switches the currency to ARS for rent until the user picks one manually", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.selectOptions(screen.getByLabelText("Operación"), "rent");
+    expect(screen.getByLabelText("Moneda")).toHaveValue("ARS");
+
+    await user.selectOptions(screen.getByLabelText("Operación"), "sale");
+    expect(screen.getByLabelText("Moneda")).toHaveValue("USD");
+
+    await user.selectOptions(screen.getByLabelText("Moneda"), "ARS");
+    await user.selectOptions(screen.getByLabelText("Operación"), "rent");
+    await user.selectOptions(screen.getByLabelText("Operación"), "sale");
+    expect(screen.getByLabelText("Moneda")).toHaveValue("ARS");
+  });
+
+  it("suggests the title from type, rooms and barrio, and stops once the user edits it", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.selectOptions(screen.getByLabelText("Tipo de propiedad"), "apartment");
+    await user.selectOptions(screen.getByLabelText("Barrio"), "n1");
+    await user.type(screen.getByLabelText("Ambientes"), "3");
+    expect(screen.getByLabelText("Título")).toHaveValue(
+      "Departamento 3 ambientes en Palermo",
     );
+
+    await user.type(screen.getByLabelText("Título"), " luminoso");
+    await user.selectOptions(screen.getByLabelText("Barrio"), "n2");
+    expect(screen.getByLabelText("Título")).toHaveValue(
+      "Departamento 3 ambientes en Palermo luminoso",
+    );
+  });
+
+  it("does not suggest a title when editing an existing property", () => {
+    renderForm({
+      mode: "edit",
+      initialValues: toFormValues(PROPERTY),
+    });
+
+    expect(screen.getByLabelText("Título")).toHaveValue("Casa en Palermo");
+  });
+
+  it("prefills every step-1 field from initialValues (edit mode)", () => {
+    renderForm({ mode: "edit", initialValues: toFormValues(PROPERTY) });
 
     expect(screen.getByLabelText("Título")).toHaveValue("Casa en Palermo");
     expect(screen.getByLabelText("Dirección")).toHaveValue("Av. Siempre Viva 123");
     expect(screen.getByLabelText("Precio")).toHaveValue("150000");
     expect(screen.getByLabelText("Expensas")).toHaveValue("25000");
     expect(screen.getByLabelText("Tiene cochera")).toBeChecked();
-    expect(screen.getByLabelText("Admite mascotas")).toBeChecked();
+    expect(screen.getByLabelText("Barrio")).toHaveValue("n1");
   });
 
   it("submits the form data to the action", async () => {
     const action: Action = vi.fn(async () => ({}));
     const user = userEvent.setup();
-    render(
-      <PropertyForm
-        mode="create"
-        action={action}
-        neighborhoods={NEIGHBORHOODS}
-        initialValues={toFormValues(PROPERTY)}
-      />,
-    );
+    renderForm({ action, initialValues: toFormValues(PROPERTY) });
 
-    await user.click(screen.getByRole("button", { name: "Crear propiedad" }));
+    await user.click(screen.getByRole("button", { name: "Guardar y continuar" }));
 
     expect(action).toHaveBeenCalled();
     const [, formData] = (action as ReturnType<typeof vi.fn>).mock.calls[0] as [
@@ -153,8 +196,10 @@ describe("PropertyForm", () => {
       FormData,
     ];
     expect(formData.get("title")).toBe("Casa en Palermo");
+    expect(formData.get("address")).toBe("Av. Siempre Viva 123");
+    expect(formData.get("neighborhoodId")).toBe("n1");
     expect(formData.get("hasGarage")).toBe("on");
-    expect(formData.get("featured")).toBeNull();
+    expect(formData.get("currency")).toBe("USD");
   });
 
   it("shows field errors next to the right field and a general FormAlert", async () => {
@@ -163,16 +208,9 @@ describe("PropertyForm", () => {
       values: makeValues({ address: "Av. Corrientes 1000", operation: "rent" }),
     }));
     const user = userEvent.setup();
-    render(
-      <PropertyForm
-        mode="create"
-        action={action}
-        neighborhoods={NEIGHBORHOODS}
-        initialValues={toFormValues(PROPERTY)}
-      />,
-    );
+    renderForm({ action, initialValues: toFormValues(PROPERTY) });
 
-    await user.click(screen.getByRole("button", { name: "Crear propiedad" }));
+    await user.click(screen.getByRole("button", { name: "Guardar y continuar" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Revisá el formulario.",
@@ -184,5 +222,74 @@ describe("PropertyForm", () => {
     await waitFor(() => expect(screen.getByLabelText("Título")).toHaveFocus());
     // Selects keep the submitted choice too (the form remounts with the returned values).
     expect(screen.getByLabelText("Operación")).toHaveValue("rent");
+  });
+});
+
+describe("PropertyForm step extras", () => {
+  it("shows the description and collapsible optional groups", () => {
+    renderForm({ mode: "edit", step: "extras" });
+
+    expect(screen.getByRole("group", { name: "Descripción" })).toBeInTheDocument();
+    for (const summary of ["Servicios", "Condiciones", "Destacar el aviso"]) {
+      expect(screen.getByText(summary).closest("details")).not.toBeNull();
+    }
+    // Step 1 fields are not part of this form.
+    expect(screen.queryByLabelText("Precio")).toBeNull();
+    expect(screen.queryByLabelText("Título")).toBeNull();
+  });
+
+  it("keeps the optional groups collapsed unless something is set, and opens them when it is", () => {
+    const { unmount } = renderForm({
+      mode: "edit",
+      step: "extras",
+      initialValues: makeValues(),
+    });
+    expect(screen.getByText("Servicios").closest("details")).not.toHaveAttribute("open");
+    unmount();
+
+    renderForm({
+      mode: "edit",
+      step: "extras",
+      initialValues: toFormValues(PROPERTY),
+    });
+    expect(screen.getByText("Servicios").closest("details")).toHaveAttribute("open");
+    expect(screen.getByText("Condiciones").closest("details")).toHaveAttribute("open");
+  });
+
+  it("counts description characters and says how many are missing to publish", async () => {
+    const user = userEvent.setup();
+    renderForm({ mode: "edit", step: "extras", initialValues: makeValues() });
+
+    expect(screen.getByText("0 / 5000")).toBeInTheDocument();
+    expect(screen.getByText(/Te faltan 50 caracteres para poder publicar/)).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText("Descripción"), "x".repeat(20));
+    expect(screen.getByText("20 / 5000")).toBeInTheDocument();
+    expect(screen.getByText(/Te faltan 30 caracteres/)).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText("Descripción"), "x".repeat(30));
+    expect(screen.queryByText(/Te faltan/)).toBeNull();
+  });
+
+  it("submits the extras fields", async () => {
+    const action: Action = vi.fn(async () => ({}));
+    const user = userEvent.setup();
+    renderForm({
+      mode: "edit",
+      step: "extras",
+      action,
+      initialValues: toFormValues(PROPERTY),
+    });
+
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    const [, formData] = (action as ReturnType<typeof vi.fn>).mock.calls[0] as [
+      PropertyFormState,
+      FormData,
+    ];
+    expect(formData.get("description")).toBe("Hermosa casa");
+    expect(formData.get("petsAllowed")).toBe("on");
+    expect(formData.get("featured")).toBeNull();
+    expect(formData.get("marketingTag")).toBe("none");
   });
 });

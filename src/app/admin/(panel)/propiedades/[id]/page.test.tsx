@@ -57,8 +57,20 @@ beforeEach(() => {
   ]);
 });
 
+const IMAGE = {
+  id: "img-1",
+  position: 0,
+  url: "https://media.test/1.webp",
+  width: 1600,
+  height: 1200,
+  thumbnailUrl: "https://media.test/1-thumb.webp",
+  thumbnailWidth: 480,
+  thumbnailHeight: 360,
+  createdAt: "2024-01-01",
+};
+
 describe("EditPropertyPage", () => {
-  it("shows the property heading, code, statuses and the prefilled form", async () => {
+  it("shows the property heading, code, statuses, the stepper and the datos step by default", async () => {
     getProperty.mockResolvedValue(
       makePropertyDetail({ publicationStatus: "published", dealStatus: "reserved" }),
     );
@@ -73,74 +85,116 @@ describe("EditPropertyPage", () => {
     expect(screen.getByText("Publicada")).toBeInTheDocument();
     expect(screen.getByText("Reservada", { ignore: "option" })).toBeInTheDocument();
     expect(screen.getByLabelText("Título")).toHaveValue("Casa en Palermo");
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Datos/ })).toHaveAttribute(
+      "aria-current",
+      "step",
+    );
     expect(screen.getByRole("link", { name: /Volver al listado/ })).toHaveAttribute(
       "href",
       "/admin/propiedades",
     );
   });
 
-  it("confirms a fresh creation and a saved edit", async () => {
+  it("falls back to the datos step for an unknown paso", async () => {
     getProperty.mockResolvedValue(makePropertyDetail());
 
-    render(await renderPage({ creada: "1" }));
-    expect(screen.getByText(/Propiedad creada/)).toHaveAttribute("role", "status");
+    render(await renderPage({ paso: "xyz" }));
+
+    expect(screen.getByLabelText("Título")).toBeInTheDocument();
+  });
+
+  it("confirms a fresh creation and a saved edit with an auto-hiding status banner", async () => {
+    getProperty.mockResolvedValue(makePropertyDetail());
+
+    render(await renderPage({ creada: "1", paso: "fotos" }));
+    expect(screen.getByText(/Borrador creado/)).toHaveAttribute("role", "status");
     cleanup();
 
     render(await renderPage({ guardada: "1" }));
     expect(screen.getByText(/Cambios guardados/)).toHaveAttribute("role", "status");
   });
 
-  it("shows the status and actions section", async () => {
-    getProperty.mockResolvedValue(makePropertyDetail());
+  it("shows the photos step with the current photos", async () => {
+    getProperty.mockResolvedValue(makePropertyDetail({ images: [IMAGE] }));
 
-    render(await renderPage());
-
-    expect(
-      screen.getByRole("heading", { level: 2, name: "Estado y acciones" }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Publicar" })).toBeInTheDocument();
-  });
-
-  it("shows the photos section with the current photos", async () => {
-    getProperty.mockResolvedValue(
-      makePropertyDetail({
-        images: [
-          {
-            id: "img-1",
-            position: 0,
-            url: "https://media.test/1.webp",
-            width: 1600,
-            height: 1200,
-            thumbnailUrl: "https://media.test/1-thumb.webp",
-            thumbnailWidth: 480,
-            thumbnailHeight: 360,
-            createdAt: "2024-01-01",
-          },
-        ],
-      }),
-    );
-
-    render(await renderPage());
+    render(await renderPage({ paso: "fotos" }));
 
     expect(screen.getByRole("heading", { level: 2, name: "Fotos" })).toBeInTheDocument();
     expect(screen.getByAltText("Foto 1 (portada)")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Título")).toBeNull();
+  });
+
+  it("shows the description and extras step", async () => {
+    getProperty.mockResolvedValue(makePropertyDetail({ description: "Una descripción" }));
+
+    render(await renderPage({ paso: "descripcion" }));
+
+    expect(screen.getByLabelText("Descripción")).toHaveValue("Una descripción");
+    expect(screen.getByText("Servicios")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Título")).toBeNull();
+  });
+
+  it("shows the checklist and blocks Publicar on the last step while the property is not ready", async () => {
+    getProperty.mockResolvedValue(makePropertyDetail({ images: [], description: null }));
+
+    render(await renderPage({ paso: "vista-previa" }));
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Publicación y estado" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Faltan 2 requisitos para publicar/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Publicar" })).toBeDisabled();
+  });
+
+  it("links the last step to the public-listing preview", async () => {
+    getProperty.mockResolvedValue(makePropertyDetail());
+
+    render(await renderPage({ paso: "vista-previa" }));
+
+    expect(screen.getByRole("link", { name: /Abrir la vista previa/ })).toHaveAttribute(
+      "href",
+      "/admin/propiedades/p1/vista-previa",
+    );
+  });
+
+  it("lets a ready property be published", async () => {
+    getProperty.mockResolvedValue(
+      makePropertyDetail({ images: [IMAGE], description: "x".repeat(80) }),
+    );
+
+    render(await renderPage({ paso: "vista-previa" }));
+
+    expect(screen.getByText("Lista para publicar")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Publicar" })).toBeEnabled();
   });
 
   it("offers delete only to admins on never-published properties", async () => {
     getProperty.mockResolvedValue(makePropertyDetail({ firstPublishedAt: null }));
-    render(await renderPage());
+    render(await renderPage({ paso: "vista-previa" }));
     expect(screen.queryByText("Eliminar propiedad")).toBeNull();
     cleanup();
 
     getCurrentUser.mockResolvedValue({ id: "u1", userName: "gabriel", isActive: true, roles: ["admin"] });
-    render(await renderPage());
+    render(await renderPage({ paso: "vista-previa" }));
     expect(screen.getByText("Eliminar propiedad")).toBeInTheDocument();
     cleanup();
 
     getProperty.mockResolvedValue(makePropertyDetail({ firstPublishedAt: "2024-02-01" }));
-    render(await renderPage());
+    render(await renderPage({ paso: "vista-previa" }));
     expect(screen.queryByText("Eliminar propiedad")).toBeNull();
     expect(screen.getByText(/ya fue publicada/)).toBeInTheDocument();
+  });
+
+  it("links the steps and offers previous/next navigation", async () => {
+    getProperty.mockResolvedValue(makePropertyDetail());
+
+    render(await renderPage({ paso: "fotos" }));
+
+    expect(screen.getByRole("link", { name: /Siguiente: Descripción y extras/ })).toHaveAttribute(
+      "href",
+      "/admin/propiedades/p1?paso=descripcion",
+    );
   });
 
   it.each([404, 400])("renders not found when the back answers %i", async (status) => {

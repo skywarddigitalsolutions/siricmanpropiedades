@@ -10,6 +10,8 @@ import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
 import FormNotice from "@/components/admin/forms/FormNotice/FormNotice";
 import SelectField from "@/components/admin/forms/SelectField/SelectField";
+import ReadinessChecklist from "@/components/admin/properties/ReadinessChecklist/ReadinessChecklist";
+import type { Readiness } from "@/lib/properties/readiness";
 import styles from "./PropertyStatusPanel.module.css";
 
 type FeedbackAction = (
@@ -18,6 +20,9 @@ type FeedbackAction = (
 ) => Promise<ActionFeedback>;
 
 type PropertyStatusPanelProps = {
+  propertyId: string;
+  /** Photos, description and price: Publicar stays disabled until it is ready. */
+  readiness: Readiness;
   publicationStatus: PublicationStatus;
   dealStatus: DealStatus;
   operation: Operation;
@@ -48,6 +53,8 @@ function Feedback({ state }: { state: ActionFeedback }) {
  * admin-only delete behind an explicit confirmation step.
  */
 export default function PropertyStatusPanel({
+  propertyId,
+  readiness,
   publicationStatus,
   dealStatus,
   operation,
@@ -61,6 +68,9 @@ export default function PropertyStatusPanel({
     useActionState(publicationAction, {});
   const [dealState, submitDeal, dealPending] = useActionState(dealStatusAction, {});
   const [deleteState, submitDelete, deletePending] = useActionState(deleteAction, {});
+  // Only publishing needs the checklist; an already published property is just shown as live.
+  const showChecklist = publicationStatus !== "published";
+  const publishBlocked = showChecklist && !readiness.ready;
 
   return (
     <div className={styles.panel}>
@@ -68,18 +78,31 @@ export default function PropertyStatusPanel({
         <fieldset className={styles.fieldset} disabled={publicationPending}>
           <legend className={styles.legend}>Publicación</legend>
           <p className={styles.hint}>{STATUS_HINTS[publicationStatus]}</p>
+          {showChecklist && (
+            <ReadinessChecklist readiness={readiness} propertyId={propertyId} />
+          )}
+          {publishBlocked && (
+            <p id="publish-blocked" className="sr-only">
+              Falta: {readiness.missing.join("; ")}.
+            </p>
+          )}
           <div className={styles.buttons}>
-            {publicationTransitions(publicationStatus).map(({ transition, label }) => (
-              <button
-                key={transition}
-                type="submit"
-                name="transition"
-                value={transition}
-                className={transition === "publish" ? styles.primary : styles.secondary}
-              >
-                {label}
-              </button>
-            ))}
+            {publicationTransitions(publicationStatus).map(({ transition, label }) => {
+              const blocked = transition === "publish" && publishBlocked;
+              return (
+                <button
+                  key={transition}
+                  type="submit"
+                  name="transition"
+                  value={transition}
+                  className={transition === "publish" ? styles.primary : styles.secondary}
+                  disabled={blocked}
+                  aria-describedby={blocked ? "publish-blocked" : undefined}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
           <Feedback state={publicationState} />
         </fieldset>

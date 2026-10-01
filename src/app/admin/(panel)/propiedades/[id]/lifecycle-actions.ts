@@ -6,6 +6,7 @@ import { ApiError } from "@/lib/api/client";
 import {
   archiveProperty,
   deleteProperty,
+  getProperty,
   publishProperty,
   unpublishProperty,
   updateDealStatus,
@@ -13,6 +14,7 @@ import {
 import { DEAL_STATUSES, type DealStatus } from "@/lib/properties/enums";
 import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import type { PublicationTransition } from "@/lib/properties/lifecycle";
+import { computeReadiness } from "@/lib/properties/readiness";
 import { getSessionToken } from "@/lib/session/dal";
 import { handleSessionError } from "@/lib/session/session-error";
 
@@ -65,6 +67,19 @@ export async function changePublicationAction(
 
   const token = await getSessionToken();
   try {
+    // The back does not require photos or a description, so the panel does:
+    // publishing is blocked until the readiness checklist is complete.
+    if (transition === "publish") {
+      const property = await getProperty(token, id);
+      const { ready, missing } = computeReadiness({
+        imageCount: property.images.length,
+        description: property.description,
+        price: property.price,
+      });
+      if (!ready) {
+        return { error: `Todavía no se puede publicar. Falta: ${missing.join("; ")}.` };
+      }
+    }
     await run(token, id);
   } catch (error) {
     return toFeedback(error, {

@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { expectRedirect, RedirectError } from "@/test/next-server";
-import { makeProperty } from "@/test/fixtures/property";
+import { makeProperty, makePropertyDetail } from "@/test/fixtures/property";
 
 vi.mock("next/navigation", () => ({
   redirect: vi.fn((url: string) => {
@@ -16,6 +16,7 @@ const { revalidatePath } = vi.hoisted(() => ({ revalidatePath: vi.fn() }));
 vi.mock("next/cache", () => ({ revalidatePath }));
 
 const api = vi.hoisted(() => ({
+  getProperty: vi.fn(),
   publishProperty: vi.fn(),
   archiveProperty: vi.fn(),
   unpublishProperty: vi.fn(),
@@ -40,9 +41,18 @@ function formDataFor(fields: Record<string, string> = {}): FormData {
   return formData;
 }
 
+function readyDetail(overrides = {}) {
+  return makePropertyDetail({
+    description: "x".repeat(80),
+    images: [{ id: "i1" } as never],
+    ...overrides,
+  });
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   getSessionToken.mockResolvedValue("jwt-1");
+  api.getProperty.mockResolvedValue(readyDetail());
 });
 
 describe("changePublicationAction", () => {
@@ -63,6 +73,36 @@ describe("changePublicationAction", () => {
     expect(state).toEqual({ message });
     expect(revalidatePath).toHaveBeenCalledWith("/admin/propiedades");
     expect(revalidatePath).toHaveBeenCalledWith("/admin/propiedades/p1");
+  });
+
+  it("refuses to publish while the property is not ready and says what is missing", async () => {
+    api.getProperty.mockResolvedValue(
+      readyDetail({ description: "corta", images: [] }),
+    );
+
+    const state = await changePublicationAction(
+      "p1",
+      {},
+      formDataFor({ transition: "publish" }),
+    );
+
+    expect(api.publishProperty).not.toHaveBeenCalled();
+    expect(state.error).toContain("Al menos una foto");
+    expect(state.error).toContain("Descripción de 50 caracteres o más");
+  });
+
+  it("does not gate archive or unpublish on readiness", async () => {
+    api.getProperty.mockResolvedValue(readyDetail({ images: [] }));
+    api.unpublishProperty.mockResolvedValue(makeProperty());
+
+    const state = await changePublicationAction(
+      "p1",
+      {},
+      formDataFor({ transition: "unpublish" }),
+    );
+
+    expect(state.message).toBeDefined();
+    expect(api.getProperty).not.toHaveBeenCalled();
   });
 
   it("rejects an unknown transition without calling the API", async () => {

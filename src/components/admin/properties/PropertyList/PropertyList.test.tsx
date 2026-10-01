@@ -1,13 +1,15 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
-import type { Property } from "@/lib/api/properties";
+import type { PropertyListItem } from "@/lib/api/properties";
 import PropertyList from "./PropertyList";
 
 afterEach(() => {
   cleanup();
 });
 
-function makeProperty(overrides: Partial<Property> = {}): Property {
+function makeProperty(
+  overrides: Partial<PropertyListItem> = {},
+): PropertyListItem {
   return {
     id: "p1",
     code: "SP-0001",
@@ -49,9 +51,13 @@ function makeProperty(overrides: Partial<Property> = {}): Property {
     firstPublishedAt: "2024-02-01",
     createdAt: "2024-01-15",
     updatedAt: "2024-02-01",
+    coverThumbnailUrl: "https://media.test/p1-thumb.webp",
+    imageCount: 3,
     ...overrides,
   };
 }
+
+const publicationAction = vi.fn();
 
 describe("PropertyList", () => {
   it("renders each property's title, code, operation/type, neighborhood, price and badges", () => {
@@ -59,6 +65,7 @@ describe("PropertyList", () => {
       <PropertyList
         properties={[makeProperty()]}
         hasActiveFilters={false}
+        publicationAction={publicationAction}
       />,
     );
 
@@ -75,17 +82,22 @@ describe("PropertyList", () => {
       <PropertyList
         properties={[makeProperty({ id: "p42" })]}
         hasActiveFilters={false}
+        publicationAction={publicationAction}
       />,
     );
 
-    const links = screen.getAllByRole("link", { name: /Casa en Palermo/ });
+    const links = screen.getAllByRole("link", { name: "Casa en Palermo" });
     for (const link of links) {
       expect(link).toHaveAttribute("href", "/admin/propiedades/p42");
     }
   });
 
   it("shows the empty-catalog message with a create CTA when there are no filters", () => {
-    render(<PropertyList properties={[]} hasActiveFilters={false} />);
+    render(<PropertyList
+        properties={[]}
+        hasActiveFilters={false}
+        publicationAction={publicationAction}
+      />);
 
     expect(
       screen.getByText(/[Tt]odavía no hay propiedades/),
@@ -96,7 +108,11 @@ describe("PropertyList", () => {
   });
 
   it("shows the no-results message with a clear-filters CTA when filters are active", () => {
-    render(<PropertyList properties={[]} hasActiveFilters={true} />);
+    render(<PropertyList
+        properties={[]}
+        hasActiveFilters={true}
+        publicationAction={publicationAction}
+      />);
 
     expect(
       screen.getByText(/No se encontraron propiedades/),
@@ -104,5 +120,88 @@ describe("PropertyList", () => {
     expect(
       screen.getByRole("link", { name: "Limpiar filtros" }),
     ).toHaveAttribute("href", "/admin/propiedades");
+  });
+
+  it("shows the cover thumbnail on the cards and the table, with a photo count badge", () => {
+    render(
+      <PropertyList
+        properties={[makeProperty({ imageCount: 5 })]}
+        hasActiveFilters={false}
+        publicationAction={publicationAction}
+      />,
+    );
+
+    expect(
+      document.querySelectorAll('img[src="https://media.test/p1-thumb.webp"]'),
+    ).toHaveLength(2);
+    expect(screen.getAllByText("5 fotos").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Sin fotos")).not.toBeInTheDocument();
+  });
+
+  it("shows a 'Sin fotos' chip instead of an image when there are no photos", () => {
+    render(
+      <PropertyList
+        properties={[makeProperty({ imageCount: 0, coverThumbnailUrl: null })]}
+        hasActiveFilters={false}
+        publicationAction={publicationAction}
+      />,
+    );
+
+    expect(document.querySelector("img")).toBeNull();
+    expect(screen.getAllByText("Sin fotos").length).toBeGreaterThan(0);
+  });
+
+  it("offers 'Ver en el sitio' only for published properties", () => {
+    render(
+      <PropertyList
+        properties={[
+          makeProperty({ id: "a", slug: "pub", publicationStatus: "published" }),
+          makeProperty({ id: "b", slug: "draft", publicationStatus: "draft" }),
+        ]}
+        hasActiveFilters={false}
+        publicationAction={publicationAction}
+      />,
+    );
+
+    const links = screen.getAllByRole("link", { name: /Ver en el sitio/ });
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      expect(link).toHaveAttribute("href", "/propiedades/pub");
+      expect(link).toHaveAttribute("target", "_blank");
+    }
+  });
+
+  it("offers Retirar for published and Publicar for drafts via the lifecycle action", () => {
+    render(
+      <PropertyList
+        properties={[
+          makeProperty({ id: "a", title: "Uno", publicationStatus: "published" }),
+          makeProperty({ id: "b", title: "Dos", publicationStatus: "draft" }),
+        ]}
+        hasActiveFilters={false}
+        publicationAction={publicationAction}
+      />,
+    );
+
+    expect(
+      screen.getAllByRole("button", { name: "Retirar Uno" }).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole("button", { name: "Publicar Dos" }).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("does not nest interactive controls inside the title link", () => {
+    render(
+      <PropertyList
+        properties={[makeProperty()]}
+        hasActiveFilters={false}
+        publicationAction={publicationAction}
+      />,
+    );
+
+    for (const link of screen.getAllByRole("link")) {
+      expect(link.querySelector("button, a")).toBeNull();
+    }
   });
 });

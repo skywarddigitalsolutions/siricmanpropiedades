@@ -1,17 +1,20 @@
+"use client";
+
+import { useState, type ChangeEvent } from "react";
 import Link from "next/link";
 import TextField from "@/components/admin/forms/TextField/TextField";
 import SelectField from "@/components/admin/forms/SelectField/SelectField";
+import CheckboxField from "@/components/admin/forms/CheckboxField/CheckboxField";
 import {
+  CURRENCIES,
   DEAL_STATUSES,
   OPERATIONS,
   PROPERTY_TYPES,
-  PUBLICATION_STATUSES,
 } from "@/lib/properties/enums";
 import {
   DEAL_STATUS_LABELS,
   OPERATION_LABELS,
   PROPERTY_TYPE_LABELS,
-  PUBLICATION_STATUS_LABELS,
 } from "@/lib/properties/labels";
 import type { Neighborhood } from "@/lib/api/properties";
 import type { PropertyListFilters } from "@/lib/properties/list-params";
@@ -23,9 +26,9 @@ type PropertyFiltersProps = {
   activeFilterCount: number;
 };
 
-const PUBLICATION_STATUS_OPTIONS = PUBLICATION_STATUSES.map((value) => ({
+const CURRENCY_OPTIONS = CURRENCIES.map((value) => ({
   value,
-  label: PUBLICATION_STATUS_LABELS[value],
+  label: value === "USD" ? "Dólares (USD)" : "Pesos (ARS)",
 }));
 const OPERATION_OPTIONS = OPERATIONS.map((value) => ({
   value,
@@ -41,16 +44,44 @@ const DEAL_STATUS_OPTIONS = DEAL_STATUSES.map((value) => ({
 }));
 
 /**
- * Plain GET `<form>` for `/admin/propiedades` (feature 6 T3): works without
- * JS and the resulting URL is shareable. The search field stays always
- * visible; the rest live in a `<details>` so phones keep the list visible
- * without scrolling past every filter first.
+ * GET `<form>` for `/admin/propiedades` (feature 6 T3, feature 16 T1): still
+ * works without JS (Aplicar) and the URL is the only state, but selects and
+ * the "Sin fotos" toggle submit on change. Search and sort stay visible; the
+ * rest live in a `<details>`. The publication status is a tab above the list
+ * and travels here as a hidden input.
  */
 export default function PropertyFilters({
   filters,
   neighborhoods,
   activeFilterCount,
 }: PropertyFiltersProps) {
+  const [currency, setCurrency] = useState<string>(filters.currency ?? "");
+  const priceSortBlocked = currency === "";
+  const sortOptions = [
+    { value: "recientes", label: "Más recientes" },
+    { value: "editadas", label: "Última edición" },
+    {
+      value: "precio-asc",
+      label: "Precio: menor a mayor",
+      disabled: priceSortBlocked,
+    },
+    {
+      value: "precio-desc",
+      label: "Precio: mayor a menor",
+      disabled: priceSortBlocked,
+    },
+  ];
+
+  function applyOnChange(event: ChangeEvent<HTMLFormElement>) {
+    const target = event.target;
+    if (
+      target instanceof HTMLSelectElement ||
+      (target instanceof HTMLInputElement && target.type === "checkbox")
+    ) {
+      event.currentTarget.requestSubmit();
+    }
+  }
+
   const neighborhoodOptions = neighborhoods.map((neighborhood) => ({
     value: neighborhood.id,
     label: neighborhood.name,
@@ -62,14 +93,35 @@ export default function PropertyFilters({
       role="search"
       aria-label="Filtrar propiedades"
       className={styles.form}
+      onChange={applyOnChange}
     >
+      {filters.publicationStatus && (
+        <input
+          type="hidden"
+          name="publicationStatus"
+          value={filters.publicationStatus}
+        />
+      )}
       <TextField
         id="property-q"
         name="q"
         label="Buscar"
         type="search"
         defaultValue={filters.q ?? ""}
-        placeholder="Título o código"
+        placeholder="Código, título o dirección"
+      />
+
+      <SelectField
+        id="property-orden"
+        name="orden"
+        label="Ordenar por"
+        defaultValue={filters.orden ?? "recientes"}
+        options={sortOptions}
+        hint={
+          priceSortBlocked
+            ? "Elegí una moneda para ordenar por precio."
+            : undefined
+        }
       />
 
       <details className={styles.details} open={activeFilterCount > 0}>
@@ -78,12 +130,13 @@ export default function PropertyFilters({
         </summary>
         <div className={styles.grid}>
           <SelectField
-            id="property-publicationStatus"
-            name="publicationStatus"
-            label="Estado de publicación"
-            placeholder="Todos"
-            defaultValue={filters.publicationStatus ?? ""}
-            options={PUBLICATION_STATUS_OPTIONS}
+            id="property-currency"
+            name="currency"
+            label="Moneda"
+            placeholder="Todas"
+            value={currency}
+            onChange={(event) => setCurrency(event.target.value)}
+            options={CURRENCY_OPTIONS}
           />
           <SelectField
             id="property-operation"
@@ -118,6 +171,13 @@ export default function PropertyFilters({
             options={neighborhoodOptions}
           />
         </div>
+        <CheckboxField
+          id="property-hasImages"
+          name="hasImages"
+          value="false"
+          label="Sin fotos"
+          defaultChecked={filters.hasImages === false}
+        />
       </details>
 
       <div className={styles.actions}>

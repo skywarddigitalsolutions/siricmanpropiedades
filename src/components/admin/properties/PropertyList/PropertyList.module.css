@@ -6,14 +6,9 @@
 }
 
 .cardItem {
-  display: block;
-}
-
-.card {
+  position: relative;
   display: grid;
-  gap: 4px;
-  min-height: 44px;
-  padding: 14px 16px;
+  overflow: hidden;
   background: var(--color-white);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -21,11 +16,106 @@
   color: var(--color-text);
 }
 
-.card:hover {
+.cardItem:hover {
   border-color: var(--color-border-strong);
 }
 
-.card:focus-visible {
+.cardItem:focus-within {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* 16:10 cover; the stretched title link makes the whole card clickable. */
+.cardCover {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  background: var(--color-border-soft);
+}
+
+.rowCover {
+  position: relative;
+  display: block;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-border-soft);
+}
+
+.coverImage {
+  object-fit: cover;
+}
+
+.noPhotos {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 12px var(--font-body), sans-serif;
+  color: #8a5a1a;
+  background: rgba(198, 160, 82, 0.16);
+}
+
+.countBadge {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font: 700 11px var(--font-body), sans-serif;
+  color: var(--color-white);
+  background: rgba(19, 28, 77, 0.78);
+}
+
+.rowCover .countBadge {
+  display: none;
+}
+
+.cardBody {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px 16px;
+}
+
+.cardTitle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.cardTitle:focus-visible {
+  outline: none;
+}
+
+.rowActions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.siteLink {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-white);
+}
+
+.siteLink:hover {
+  border-color: var(--color-navy);
+}
+
+.siteLink:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }

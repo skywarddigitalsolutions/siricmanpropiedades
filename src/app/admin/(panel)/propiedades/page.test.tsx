@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { RedirectError, expectRedirect } from "@/test/next-server";
-import type { Property } from "@/lib/api/properties";
+import type { PropertyListItem } from "@/lib/api/properties";
 
 vi.mock("next/navigation", () => ({
   redirect: vi.fn((url: string) => {
@@ -15,13 +15,19 @@ const { listProperties, listNeighborhoods } = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/api/properties", () => ({ listProperties, listNeighborhoods }));
 
+vi.mock("@/app/admin/(panel)/propiedades/[id]/lifecycle-actions", () => ({
+  changePublicationAction: vi.fn(),
+}));
+
 const { getSessionToken } = vi.hoisted(() => ({ getSessionToken: vi.fn() }));
 vi.mock("@/lib/session/dal", () => ({ getSessionToken }));
 
 import { ApiError } from "@/lib/api/client";
 import AdminPropertiesPage from "./page";
 
-function makeProperty(overrides: Partial<Property> = {}): Property {
+function makeProperty(
+  overrides: Partial<PropertyListItem> = {},
+): PropertyListItem {
   return {
     id: "p1",
     code: "SP-0001",
@@ -63,9 +69,13 @@ function makeProperty(overrides: Partial<Property> = {}): Property {
     firstPublishedAt: "2024-02-01",
     createdAt: "2024-01-15",
     updatedAt: "2024-02-01",
+    coverThumbnailUrl: null,
+    imageCount: 0,
     ...overrides,
   };
 }
+
+const COUNTS = { draft: 2, published: 5, archived: 1 };
 
 function searchParamsOf(
   params: Record<string, string | string[] | undefined>,
@@ -87,7 +97,7 @@ describe("AdminPropertiesPage", () => {
   });
 
   it("forwards parsed filters, limit and offset to listProperties with the session token", async () => {
-    listProperties.mockResolvedValue({ items: [makeProperty()], total: 1 });
+    listProperties.mockResolvedValue({ items: [makeProperty()], total: 1, counts: COUNTS });
 
     await AdminPropertiesPage({
       searchParams: searchParamsOf({ q: "casa", operation: "sale", page: "2" }),
@@ -101,8 +111,39 @@ describe("AdminPropertiesPage", () => {
     });
   });
 
+  it("forwards currency, hasImages and the mapped sort to listProperties", async () => {
+    listProperties.mockResolvedValue({ items: [], total: 0, counts: COUNTS });
+
+    await AdminPropertiesPage({
+      searchParams: searchParamsOf({
+        currency: "USD",
+        hasImages: "false",
+        orden: "precio-asc",
+      }),
+    });
+
+    expect(listProperties).toHaveBeenCalledWith("jwt-admin", {
+      currency: "USD",
+      hasImages: false,
+      sort: "price",
+      order: "asc",
+      limit: 20,
+      offset: 0,
+    });
+  });
+
+  it("shows the status chips with the counts from the back", async () => {
+    listProperties.mockResolvedValue({ items: [], total: 0, counts: COUNTS });
+
+    const page = await AdminPropertiesPage({ searchParams: searchParamsOf({}) });
+    render(page);
+
+    expect(screen.getByRole("link", { name: "Publicadas 5" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Todas 8" })).toBeInTheDocument();
+  });
+
   it("renders the fetched properties and the Nueva propiedad action", async () => {
-    listProperties.mockResolvedValue({ items: [makeProperty()], total: 1 });
+    listProperties.mockResolvedValue({ items: [makeProperty()], total: 1, counts: COUNTS });
 
     const page = await AdminPropertiesPage({ searchParams: searchParamsOf({}) });
     render(page);
@@ -117,7 +158,7 @@ describe("AdminPropertiesPage", () => {
   });
 
   it("passes the fetched neighborhoods into the filters' barrio select", async () => {
-    listProperties.mockResolvedValue({ items: [], total: 0 });
+    listProperties.mockResolvedValue({ items: [], total: 0, counts: COUNTS });
     listNeighborhoods.mockResolvedValue([
       { id: "n1", name: "Palermo", slug: "palermo", createdAt: "2024-01-01" },
     ]);
@@ -129,7 +170,7 @@ describe("AdminPropertiesPage", () => {
   });
 
   it("shows the empty-catalog state when there are no properties and no filters", async () => {
-    listProperties.mockResolvedValue({ items: [], total: 0 });
+    listProperties.mockResolvedValue({ items: [], total: 0, counts: COUNTS });
 
     const page = await AdminPropertiesPage({ searchParams: searchParamsOf({}) });
     render(page);
@@ -140,7 +181,7 @@ describe("AdminPropertiesPage", () => {
   });
 
   it("confirms a deletion when coming back from the editor", async () => {
-    listProperties.mockResolvedValue({ items: [], total: 0 });
+    listProperties.mockResolvedValue({ items: [], total: 0, counts: COUNTS });
 
     const page = await AdminPropertiesPage({
       searchParams: searchParamsOf({ eliminada: "1" }),

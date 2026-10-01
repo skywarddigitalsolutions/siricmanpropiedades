@@ -9,14 +9,42 @@
   color: var(--color-text-muted-2);
 }
 
+.control {
+  position: relative;
+  display: flex;
+}
+
+.chevron {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  translate: 0 -50%;
+  color: var(--color-text-faint);
+  pointer-events: none;
+}
+
 .select {
+  appearance: none;
+  width: 100%;
   min-height: 44px;
+  cursor: pointer;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   font: 500 15px var(--font-body), sans-serif;
   color: var(--color-text);
   background: var(--color-white);
+}
+
+/* 16px prevents the iOS zoom-on-focus (same as TextField). */
+.control .select {
+  padding-right: 42px;
+  font-size: 16px;
+}
+
+.select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .select:focus-visible {

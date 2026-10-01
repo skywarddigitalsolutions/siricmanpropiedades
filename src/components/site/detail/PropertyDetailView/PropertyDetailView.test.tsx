@@ -39,3 +39,31 @@ describe("PropertyDetailView location", () => {
     expect(container.innerHTML).not.toContain("Gorriti");
   });
 });
+
+describe("PropertyDetailView preview mode", () => {
+  it("renders no inquiry form or WhatsApp bar and no link out to the public site", () => {
+    const { container } = render(
+      <PropertyDetailView property={makePublicPropertyDetail()} preview />,
+    );
+
+    expect(container.querySelector("form")).toBeNull();
+    expect(screen.queryByLabelText("Consultar por WhatsApp")).toBeNull();
+    expect(screen.queryByRole("link", { name: /Ver más propiedades/ })).toBeNull();
+    expect(
+      screen.getByText(/En la vista previa no se envían consultas/),
+    ).toBeInTheDocument();
+    // The listing itself still renders as the public page does.
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Luminoso 3 ambientes con balcón al frente" }),
+    ).toBeInTheDocument();
+    expect(screen.getByTitle("Mapa de la ubicación")).toBeInTheDocument();
+  });
+
+  it("keeps the inquiry form on the public page", () => {
+    const { container } = render(
+      <PropertyDetailView property={makePublicPropertyDetail()} inquiryAction={inquiryAction} />,
+    );
+
+    expect(container.querySelector("form")).not.toBeNull();
+  });
+});

@@ -5,6 +5,7 @@ import {
   countSecondaryFilters,
   hasActiveFilters,
   parsePropertyListParams,
+  listOrderToApi,
 } from "./list-params";
 
 describe("parsePropertyListParams", () => {
@@ -156,5 +157,66 @@ describe("buildPropertyListHref", () => {
     expect(url.searchParams.get("type")).toBe("house");
     expect(url.searchParams.get("neighborhoodId")).toBe("n1");
     expect(url.searchParams.get("page")).toBe("3");
+  });
+});
+
+describe("list sort, currency and hasImages params", () => {
+  it("parses currency, hasImages=false and a known orden", () => {
+    const { filters } = parsePropertyListParams({
+      currency: "USD",
+      hasImages: "false",
+      orden: "precio-asc",
+    });
+
+    expect(filters).toEqual({
+      currency: "USD",
+      hasImages: false,
+      orden: "precio-asc",
+    });
+  });
+
+  it("drops price orden when no currency is chosen (the back would 400)", () => {
+    const { filters } = parsePropertyListParams({ orden: "precio-desc" });
+
+    expect(filters.orden).toBeUndefined();
+  });
+
+  it("ignores unknown orden, currency and hasImages values", () => {
+    const { filters } = parsePropertyListParams({
+      orden: "x",
+      currency: "EUR",
+      hasImages: "maybe",
+    });
+
+    expect(filters).toEqual({});
+  });
+
+  it("does not count orden as an active filter but counts currency and hasImages", () => {
+    expect(hasActiveFilters({ orden: "editadas" })).toBe(false);
+    expect(countSecondaryFilters({ currency: "ARS", hasImages: false })).toBe(2);
+  });
+
+  it("keeps the new params in hrefs", () => {
+    expect(
+      buildPropertyListHref(
+        { currency: "USD", hasImages: false, orden: "precio-asc" },
+        2,
+      ),
+    ).toBe(
+      "/admin/propiedades?currency=USD&hasImages=false&orden=precio-asc&page=2",
+    );
+  });
+
+  it("maps orden to the back's sort/order and skips the default", () => {
+    expect(listOrderToApi(undefined)).toEqual({});
+    expect(listOrderToApi("recientes")).toEqual({});
+    expect(listOrderToApi("editadas")).toEqual({
+      sort: "updatedAt",
+      order: "desc",
+    });
+    expect(listOrderToApi("precio-asc")).toEqual({
+      sort: "price",
+      order: "asc",
+    });
   });
 });

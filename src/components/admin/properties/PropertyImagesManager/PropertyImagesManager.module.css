@@ -210,3 +210,67 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* Drag handle: touch-action none so dragging it does not scroll the page. */
+.handle {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-white);
+  background: rgba(19, 28, 77, 0.72);
+  cursor: grab;
+  touch-action: none;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.handle:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 1px;
+}
+
+.tile[data-dragging] {
+  position: relative;
+  z-index: 2;
+  opacity: 0.85;
+  filter: drop-shadow(0 10px 18px rgba(8, 12, 40, 0.3));
+}
+
+/* Photos being compressed or uploaded. */
+.frame[data-state="compressing"] .photo,
+.frame[data-state="uploading"] .photo,
+.frame[data-state="waiting"] .photo {
+  opacity: 0.55;
+}
+
+.frame[data-state="error"] .photo {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+.uploadInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 44px;
+  justify-content: center;
+}
+
+.uploadStatus {
+  font: 600 13px var(--font-body), sans-serif;
+  color: var(--color-navy);
+}
+
+.uploadError {
+  font: 500 13px var(--font-body), sans-serif;
+  color: #a13d3d;
+  overflow-wrap: anywhere;
+}

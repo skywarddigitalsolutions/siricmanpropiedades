@@ -41,3 +41,26 @@
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
+
+.previewLink {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-gold);
+  background: var(--color-white);
+  font: 700 15px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  text-align: center;
+}
+
+.previewLink:hover {
+  background: var(--color-bg);
+}
+
+.previewLink:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
