@@ -4,7 +4,10 @@ import { useActionState } from "react";
 import type { FormState } from "@/app/admin/(auth)/login/actions";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
 import SubmitButton from "@/components/admin/forms/SubmitButton/SubmitButton";
+import PasswordField from "@/components/admin/forms/PasswordField/PasswordField";
 import TextField from "@/components/admin/forms/TextField/TextField";
+import { User } from "lucide-react";
+import AuthHeading from "../AuthHeading/AuthHeading";
 import { getAuthErrorMessage } from "../messages";
 import styles from "./LoginForm.module.css";
 
@@ -25,6 +28,7 @@ export default function LoginForm({ action, notice }: LoginFormProps) {
 
   return (
     <form action={formAction} className={styles.form}>
+      <AuthHeading title="Ingresá al panel">Usá tu usuario y contraseña para continuar.</AuthHeading>
       {notice && <FormAlert>{notice}</FormAlert>}
       {state.error && <FormAlert>{getAuthErrorMessage(state.error)}</FormAlert>}
 
@@ -32,15 +36,15 @@ export default function LoginForm({ action, notice }: LoginFormProps) {
         id="userName"
         name="userName"
         label="Usuario"
+        icon={<User aria-hidden size={18} />}
         autoComplete="username"
         defaultValue={state.fields?.userName}
         required
       />
-      <TextField
+      <PasswordField
         id="password"
         name="password"
         label="Contraseña"
-        type="password"
         autoComplete="current-password"
         required
       />

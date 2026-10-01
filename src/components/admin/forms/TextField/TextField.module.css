@@ -32,3 +32,40 @@
   font: 500 13px var(--font-body), sans-serif;
   color: #a13d3d;
 }
+
+.control {
+  position: relative;
+  display: flex;
+}
+
+.control .input {
+  width: 100%;
+  /* 16px prevents the iOS zoom-on-focus. */
+  font-size: 16px;
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  translate: 0 -50%;
+  display: flex;
+  color: var(--color-text-faint);
+  pointer-events: none;
+}
+
+.control .withIcon {
+  padding-left: 42px;
+}
+
+.control .withTrailing {
+  padding-right: 48px;
+}
+
+.trailing {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  translate: 0 -50%;
+  display: flex;
+}

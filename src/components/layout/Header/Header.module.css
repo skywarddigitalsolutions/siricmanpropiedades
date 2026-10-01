@@ -26,20 +26,11 @@
   color: inherit;
 }
 
-.logoBox {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: var(--color-navy);
-  flex: none;
-  display: block;
-}
-
+/* Transparent emblem: sits directly on the header, no tile behind it. */
 .logoImg {
-  width: 56px;
+  width: 48px;
   height: auto;
-  margin: -1px 0 0 -6.7px;
+  flex: none;
   display: block;
 }
 

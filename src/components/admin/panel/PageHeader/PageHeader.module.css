@@ -12,7 +12,8 @@
 }
 
 .title {
-  font: 500 26px var(--font-display), serif;
+  font: 700 26px var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
   color: var(--color-navy);
 }
 

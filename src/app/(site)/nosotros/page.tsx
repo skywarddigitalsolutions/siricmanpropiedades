@@ -46,16 +46,14 @@ export default function AboutPage() {
             </p>
           </div>
           <div className={styles.logoTile}>
-            <div className={styles.logoCrop}>
-              <Image
-                src="/logo-siricman.jpg"
-                alt="Logo Siricman Propiedades"
-                width={420}
-                height={357}
-                sizes="(min-width: 760px) 300px, 70vw"
-                className={styles.logoImg}
-              />
-            </div>
+            <Image
+              src="/brand/logo-emblem.png"
+              alt="Logo Siricman Propiedades"
+              width={256}
+              height={242}
+              sizes="(min-width: 760px) 240px, 55vw"
+              className={styles.logoImg}
+            />
           </div>
         </div>
 

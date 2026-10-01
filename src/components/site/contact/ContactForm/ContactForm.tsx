@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState, type InputHTMLAttributes } from "react";
 import type { ContactField, ContactState } from "@/lib/leads/contact-form";
 import { LEAD_TOPICS, LEAD_TOPIC_LABELS } from "@/lib/leads/labels";
+import Select from "../../Select/Select";
 import styles from "./ContactForm.module.css";
 
 type ContactFormProps = {
@@ -112,10 +113,9 @@ export default function ContactForm({ action }: ContactFormProps) {
         <label htmlFor="contact-topic" className={styles.label}>
           Motivo de consulta
         </label>
-        <select
+        <Select
           id="contact-topic"
           name="topic"
-          className={`${styles.input} ${styles.select}`}
           defaultValue={values.topic ?? LEAD_TOPICS[0]}
           aria-invalid={errors.topic ? true : undefined}
           aria-describedby={errors.topic ? "contact-topic-error" : undefined}
@@ -125,7 +125,7 @@ export default function ContactForm({ action }: ContactFormProps) {
               {TOPIC_OPTIONS[topic]}
             </option>
           ))}
-        </select>
+        </Select>
         <FieldError id="contact-topic" error={errors.topic} />
       </div>
       <div className={styles.field}>

@@ -82,8 +82,8 @@ export default function ResultsFilterBar({ state, neighborhoods }: ResultsFilter
             <AutoSubmitSelect
               id="results-barrio"
               name="barrio"
+              variant="bare"
               defaultValue={state.neighborhood ?? ""}
-              className={styles.barrioSelect}
             >
               {/* Short label: the bar is narrow on phones. */}
               <option value="">Barrio</option>

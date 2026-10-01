@@ -2,9 +2,20 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import AdminNav from "../AdminNav/AdminNav";
 import styles from "./AdminShell.module.css";
+
+/** Sidebar/top-bar brand: transparent emblem plus a Manrope wordmark. */
+function Brand() {
+  return (
+    <span className={styles.brand}>
+      <Image src="/brand/logo-emblem.png" alt="" width={256} height={242} className={styles.brandEmblem} />
+      Siricman <span className={styles.brandDot}>·</span> Panel
+    </span>
+  );
+}
 
 type AdminShellProps = {
   userName: string;
@@ -50,9 +61,7 @@ export default function AdminShell({
   return (
     <div className={styles.shell}>
       <header className={styles.topbar}>
-        <span className={styles.brand}>
-          Siricman <span className={styles.brandDot}>·</span> Panel
-        </span>
+        <Brand />
         <button
           type="button"
           className={styles.menuButton}
@@ -66,9 +75,7 @@ export default function AdminShell({
       </header>
 
       <aside className={styles.sidebar}>
-        <span className={styles.brand}>
-          Siricman <span className={styles.brandDot}>·</span> Panel
-        </span>
+        <Brand />
         <AdminNav className={styles.sidebarNav} badges={navBadges} />
         <div className={styles.sidebarFooter}>
           <span className={styles.userName}>{userName}</span>
@@ -85,9 +92,7 @@ export default function AdminShell({
           className={styles.drawer}
         >
           <div className={styles.drawerTop}>
-            <span className={styles.brand}>
-              Siricman <span className={styles.brandDot}>·</span> Panel
-            </span>
+            <Brand />
             <button
               type="button"
               aria-label="Cerrar menú"

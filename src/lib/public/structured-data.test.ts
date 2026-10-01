@@ -58,6 +58,10 @@ describe("agencyJsonLd", () => {
       areaServed: "Ciudad Autónoma de Buenos Aires",
     });
   });
+
+  it("points the logo at the transparent brand asset", () => {
+    expect(agencyJsonLd(SITE).logo).toBe(`${SITE}/brand/logo-full.png`);
+  });
 });
 
 describe("serializeJsonLd", () => {

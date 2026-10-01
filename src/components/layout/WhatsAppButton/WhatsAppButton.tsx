@@ -22,7 +22,10 @@ export default function WhatsAppButton() {
       aria-label="Escribinos por WhatsApp"
       className={styles.button}
     >
-      <WhatsAppIcon />
+      <WhatsAppIcon size={28} />
+      <span className={styles.label} aria-hidden="true">
+        Escribinos
+      </span>
     </a>
   );
 }

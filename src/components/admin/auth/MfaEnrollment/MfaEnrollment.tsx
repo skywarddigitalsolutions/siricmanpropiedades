@@ -9,6 +9,8 @@ import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
 import SubmitButton from "@/components/admin/forms/SubmitButton/SubmitButton";
 import TextField from "@/components/admin/forms/TextField/TextField";
 import BackupCodes from "@/components/admin/auth/BackupCodes/BackupCodes";
+import AuthHeading from "../AuthHeading/AuthHeading";
+import PasswordField from "@/components/admin/forms/PasswordField/PasswordField";
 import { getAuthErrorMessage, type AuthErrorCode } from "../messages";
 import styles from "./MfaEnrollment.module.css";
 
@@ -87,6 +89,7 @@ export default function MfaEnrollment({
   if (state.step === "scan" && state.qrSvgDataUri && state.secret) {
     return (
       <form action={handleConfirm} className={styles.form}>
+        <AuthHeading title="Activá la verificación en dos pasos" />
         <p className={styles.intro}>
           Escanee este código con su aplicación de autenticación.
         </p>
@@ -119,16 +122,16 @@ export default function MfaEnrollment({
 
   return (
     <form action={handleEnable} className={styles.form}>
+      <AuthHeading title="Activá la verificación en dos pasos" />
       <p className={styles.intro}>
         Vuelva a ingresar su contraseña para activar la verificación en dos
         pasos.
       </p>
       {state.error && <FormAlert>{getAuthErrorMessage(state.error)}</FormAlert>}
-      <TextField
+      <PasswordField
         id="password"
         name="password"
         label="Contraseña"
-        type="password"
         autoComplete="current-password"
         required
       />

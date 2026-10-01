@@ -8,6 +8,13 @@ afterEach(() => {
 });
 
 describe("Header", () => {
+  it("shows the transparent emblem as the brand logo", () => {
+    render(<Header />);
+
+    const logo = screen.getByRole("img", { name: "Siricman Propiedades" });
+    expect(logo.getAttribute("src")).toContain("logo-emblem");
+  });
+
   it("renders the desktop navigation links with the correct hrefs", () => {
     render(<Header />);
 

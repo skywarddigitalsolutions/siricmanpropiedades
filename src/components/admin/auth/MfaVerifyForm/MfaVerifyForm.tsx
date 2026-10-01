@@ -6,6 +6,7 @@ import type { FormState } from "@/app/admin/(auth)/mfa/actions";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
 import SubmitButton from "@/components/admin/forms/SubmitButton/SubmitButton";
 import TextField from "@/components/admin/forms/TextField/TextField";
+import AuthHeading from "../AuthHeading/AuthHeading";
 import { getAuthErrorMessage } from "../messages";
 import styles from "./MfaVerifyForm.module.css";
 
@@ -81,6 +82,9 @@ export default function MfaVerifyForm({ action }: MfaVerifyFormProps) {
 
   return (
     <form ref={formRef} action={formAction} className={styles.form}>
+      <AuthHeading title="Verificá tu identidad">
+        Ingresá el código de seguridad para terminar de iniciar sesión.
+      </AuthHeading>
       {state.error && <FormAlert>{getAuthErrorMessage(state.error)}</FormAlert>}
 
       <TextField

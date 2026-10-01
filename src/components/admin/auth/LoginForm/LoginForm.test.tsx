@@ -11,6 +11,18 @@ afterEach(() => {
 type Action = (prev: FormState, formData: FormData) => Promise<FormState>;
 
 describe("LoginForm", () => {
+  it("titles the screen, lets the user reveal the password and offers no password recovery", async () => {
+    const action: Action = vi.fn(async () => ({}));
+    const user = userEvent.setup();
+    render(<LoginForm action={action} />);
+
+    expect(screen.getByRole("heading", { level: 1, name: "Ingresá al panel" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Mostrar contraseña" }));
+    expect(screen.getByLabelText("Contraseña")).toHaveAttribute("type", "text");
+    expect(screen.queryByText(/olvid/i)).toBeNull();
+    expect(screen.queryByRole("link", { name: /olvid|recuper/i })).toBeNull();
+  });
+
   it("renders labeled username and password fields with the right autocomplete hints", () => {
     const action: Action = vi.fn(async () => ({}));
     render(<LoginForm action={action} />);

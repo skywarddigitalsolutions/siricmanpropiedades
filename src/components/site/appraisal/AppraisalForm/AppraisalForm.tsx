@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState, type InputHTMLAttributes }
 import type { AppraisalField, AppraisalOperation, AppraisalState } from "@/lib/leads/appraisal-form";
 import { PROPERTY_TYPES } from "@/lib/properties/enums";
 import { PROPERTY_TYPE_LABELS } from "@/lib/properties/labels";
+import Select from "../../Select/Select";
 import styles from "./AppraisalForm.module.css";
 
 type AppraisalFormProps = {
@@ -110,11 +111,10 @@ export default function AppraisalForm({ action }: AppraisalFormProps) {
         <label htmlFor="appraisal-propertyType" className={styles.label}>
           Tipo de propiedad
         </label>
-        <select
+        <Select
           id="appraisal-propertyType"
           name="propertyType"
           required
-          className={`${styles.input} ${styles.select}`}
           defaultValue={values.propertyType ?? ""}
           aria-invalid={errors.propertyType ? true : undefined}
           aria-describedby={errors.propertyType ? "appraisal-propertyType-error" : undefined}
@@ -127,7 +127,7 @@ export default function AppraisalForm({ action }: AppraisalFormProps) {
               {PROPERTY_TYPE_LABELS[type]}
             </option>
           ))}
-        </select>
+        </Select>
         <FieldError id="appraisal-propertyType" error={errors.propertyType} />
       </div>
 
