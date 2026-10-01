@@ -1,0 +1,8 @@
+.notice {
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font: 600 14px var(--font-body), sans-serif;
+  color: #1f5132;
+  background: #e8f4ec;
+  border: 1px solid #b9dcc5;
+}

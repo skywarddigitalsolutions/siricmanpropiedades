@@ -41,6 +41,13 @@ export type PropertyFieldErrors = Partial<
   Record<keyof CreatePropertyInput, string>
 > & { general?: string };
 
+/** `useActionState` state shared by the create/edit form and its Server Actions. */
+export type PropertyFormState = {
+  fieldErrors?: PropertyFieldErrors;
+  /** Raw submitted values, so a failed submission keeps what the user typed. */
+  values?: PropertyFormValues;
+};
+
 /** String/boolean representation of every form field, for `defaultValue`/`defaultChecked`. */
 export type PropertyFormValues = {
   operation: string;
