@@ -105,6 +105,12 @@ describe("LeadsInboxPage", () => {
     expect(screen.getByText("No hay consultas nuevas.")).toBeInTheDocument();
   });
 
+  it("confirms a deletion when coming back from a lead", async () => {
+    render(await LeadsInboxPage(query({ eliminada: "1" })));
+
+    expect(screen.getByRole("status")).toHaveTextContent("Consulta eliminada.");
+  });
+
   it("redirects to the login when the session expired", async () => {
     listLeads.mockRejectedValue(new ApiError(401, "Unauthorized"));
 

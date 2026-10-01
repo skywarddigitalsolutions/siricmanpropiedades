@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ActionFeedback } from "@/lib/properties/lifecycle";
+import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import PropertyStatusPanel from "./PropertyStatusPanel";
 
 type Action = (prev: ActionFeedback, formData: FormData) => Promise<ActionFeedback>;

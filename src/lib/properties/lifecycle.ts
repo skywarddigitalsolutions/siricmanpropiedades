@@ -46,6 +46,3 @@ export function canDeleteProperty(
 ): boolean {
   return roles.includes("admin") && property.firstPublishedAt === null;
 }
-
-/** `useActionState` result of a lifecycle action: a confirmation or an error to show. */
-export type ActionFeedback = { message?: string; error?: string };

@@ -5,8 +5,8 @@ import type { DealStatus, Operation, PublicationStatus } from "@/lib/properties/
 import {
   dealStatusOptions,
   publicationTransitions,
-  type ActionFeedback,
 } from "@/lib/properties/lifecycle";
+import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
 import FormNotice from "@/components/admin/forms/FormNotice/FormNotice";
 import SelectField from "@/components/admin/forms/SelectField/SelectField";

@@ -35,7 +35,7 @@
 | B2 | Lead notifier port: log adapter + SMTP adapter (nodemailer), config, deploy docs | back | inline | ✅ | back #25 |
 | T1 | Leads API client (public + admin) and the inquiry form on the property page | front | inline | ✅ | `2842f50` |
 | T2 | Admin inbox: "Consultas" nav with new-leads badge, list with filters and pagination | front | inline | ✅ | `92c050e` |
-| T3 | Admin lead detail: contact actions, status, notes, admin-only delete | front | inline | ⬜ | |
+| T3 | Admin lead detail: contact actions, status, notes, admin-only delete | front | inline | ✅ | `5246f3c` |
 | T4 | Browser walkthrough (375 / 1280), ROADMAP close-out | both | inline | ⬜ | |
 
 ## Acceptance criteria
@@ -75,6 +75,13 @@
 - Gotcha: `beforeEach(() => mock.mockReset())` returns the mock and Vitest runs a returned function as cleanup — it called the rejecting mock after the test. Use a block body.
 - RED: params, nav badge (3 failing), loader, shell, page (missing). GREEN: 518 tests. Lint 0 errors. Build OK.
 
+### T3 — lead detail (strict TDD)
+
+- `/admin/consultas/[id]`: back link, name + type + BA-time date, status badge; "Responder" card with tap-to-call, WhatsApp (greets by first name, mentions the property) and email (subject with the code) — `leadContactLinks`; message (pre-wrap), contact topic, appraisal details list; property card (edit in panel / see on site, or "ya no existe"); `notFound` on 400/404, 401 → login.
+- `LeadManagePanel`: one-tap "Marcar como contactada" for new leads, status + internal notes form, admin-only delete behind a `<details>` confirmation. Actions revalidate the panel layout so the nav badge updates; delete returns to the inbox with "Consulta eliminada.".
+- Refactor: `ActionFeedback` moved to `src/lib/forms/action-feedback.ts` (generic; property imports updated).
+- RED: contact links, actions, panel, page, inbox notice. GREEN: 542 tests. Lint 0 errors. Build OK.
+
 ## Next step
 
-T3.
+T4.

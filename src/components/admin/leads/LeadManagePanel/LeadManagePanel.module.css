@@ -1,0 +1,135 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  box-shadow: var(--shadow-card);
+}
+
+.title {
+  font: 500 20px var(--font-display), serif;
+  color: var(--color-navy);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font: 600 13px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+}
+
+.input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font: 500 15px / 1.45 var(--font-body), sans-serif;
+  color: var(--color-text);
+  background: var(--color-white);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 1px;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.primary,
+.secondary,
+.destructive {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 22px;
+  border-radius: var(--radius-pill);
+  font: 700 15px var(--font-body), sans-serif;
+  cursor: pointer;
+}
+
+.primary {
+  color: var(--color-white);
+  background: var(--color-navy);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--color-navy-dark);
+}
+
+.secondary {
+  align-self: flex-start;
+  color: var(--color-navy);
+  background: var(--color-white);
+  border: 1px solid var(--color-border-strong);
+}
+
+.secondary:hover:not(:disabled) {
+  border-color: var(--color-gold);
+}
+
+.danger {
+  border-color: #e6b8b8;
+}
+
+.summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font: 700 15px var(--font-body), sans-serif;
+  color: #a13d3d;
+}
+
+.destructive {
+  margin-top: 12px;
+  color: var(--color-white);
+  background: #a13d3d;
+}
+
+.panel :disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.primary:focus-visible,
+.secondary:focus-visible,
+.destructive:focus-visible,
+.summary:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 24px;
+  }
+
+  .primary {
+    align-self: flex-start;
+  }
+}

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { PropertyImage } from "@/lib/api/properties";
-import type { ActionFeedback } from "@/lib/properties/lifecycle";
+import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import PropertyImagesManager from "./PropertyImagesManager";
 
 afterEach(() => cleanup());

@@ -11,7 +11,7 @@ import {
   moveToFront,
   validateImageFile,
 } from "@/lib/properties/images";
-import type { ActionFeedback } from "@/lib/properties/lifecycle";
+import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
 import styles from "./PropertyImagesManager.module.css";
 
