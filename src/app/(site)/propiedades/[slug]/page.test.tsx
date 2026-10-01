@@ -90,6 +90,16 @@ describe("PropertyPage", () => {
     );
   });
 
+  it("embeds the listing as schema.org JSON-LD", async () => {
+    const { container } = render(await PropertyPage(params()));
+
+    const script = container.querySelector('script[type="application/ld+json"]');
+    expect(JSON.parse(script!.textContent!)).toMatchObject({
+      "@type": "RealEstateListing",
+      url: "http://localhost:3000/propiedades/luminoso-3-ambientes-con-balcon",
+    });
+  });
+
   it("renders the not-found page for an unknown slug", async () => {
     getPublicProperty.mockRejectedValue(new ApiError(404, "Not found"));
 

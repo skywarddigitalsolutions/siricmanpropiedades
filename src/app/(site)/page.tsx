@@ -1,5 +1,8 @@
 import { getPublicNeighborhoods, listPublicProperties } from "@/lib/api/public-catalog";
+import { agencyJsonLd } from "@/lib/public/structured-data";
 import type { PublicNeighborhood, PublicPropertyListItem } from "@/lib/public/types";
+import { getSiteUrl } from "@/lib/site-url";
+import JsonLd from "@/components/site/JsonLd/JsonLd";
 import HeroSearch from "@/components/site/home/HeroSearch/HeroSearch";
 import {
   AppraisalCta,
@@ -39,6 +42,7 @@ export default async function Home() {
 
   return (
     <main>
+      <JsonLd data={agencyJsonLd(getSiteUrl())} />
       <HeroSearch neighborhoods={barrios} />
       <TypeChips />
       {showcase && <PropertyCarousel title={showcase.title} properties={showcase.items} />}
