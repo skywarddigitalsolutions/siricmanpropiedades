@@ -31,9 +31,9 @@
 
 | ID | Task | Repo | Route | Status | Commit / PR |
 |----|------|------|-------|--------|-------------|
-| B1 | Leads domain: entity + migration, public create (validation, honeypot, throttle), admin list/detail/update/delete, audit | back | inline (subagents rate-limited) | ⬜ | |
-| B2 | Lead notifier port: log adapter + SMTP adapter (nodemailer), config, deploy docs | back | inline | ⬜ | |
-| T1 | Leads API client (public + admin) and the inquiry form on the property page | front | inline | ⬜ | |
+| B1 | Leads domain: entity + migration, public create (validation, honeypot, throttle), admin list/detail/update/delete, audit | back | inline (subagents rate-limited) | ✅ | back #24 |
+| B2 | Lead notifier port: log adapter + SMTP adapter (nodemailer), config, deploy docs | back | inline | ✅ | back #25 |
+| T1 | Leads API client (public + admin) and the inquiry form on the property page | front | inline | ✅ | `2842f50` |
 | T2 | Admin inbox: "Consultas" nav with new-leads badge, list with filters and pagination | front | inline | ⬜ | |
 | T3 | Admin lead detail: contact actions, status, notes, admin-only delete | front | inline | ⬜ | |
 | T4 | Browser walkthrough (375 / 1280), ROADMAP close-out | both | inline | ⬜ | |
@@ -48,8 +48,25 @@
 
 ## Progress / evidence
 
-(filled per task)
+### B1 — leads domain (strict TDD, Jest)
+
+- `src/leads`: entity (`CHK_leads_contact`, FK `ON DELETE SET NULL`, index status+created_at), `CreateLeadDto` (phone-or-email via `ValidateIf`, inquiry requires `propertyId`, nested appraisal details, honeypot), admin filters/update DTOs, `LeadsService` (honeypot → `null` without saving, published-property check, list newest first with property summary, update with audit `lead.updated`, admin delete `lead.deleted`), public controller (5/min throttle, same `{ received: true }` either way), admin controller (admin+manager, delete admin-only). Migration `CreateLeads1790700000000`.
+- Discovery: the local dev back runs with `DB_SYNCHRONIZE=true` and `nest start --watch`, so new migration files ran on the dev DB as soon as they were written, and synchronize then reshaped the table to the entity (dropped the CHECK, renamed the FK). The entity now declares the same constraint names as the migration, so dev and prod match.
+- RED: DTO, service, controllers (missing modules). GREEN: 427 tests. Smoke test on the local back: 201, honeypot 201 with nothing stored, 400 (no contact / unknown property), 429 on the 6th request per minute; the test row was deleted afterwards. Lint/build OK.
+
+### B2 — email notifications (strict TDD)
+
+- `LEAD_NOTIFIER` port; `SmtpLeadNotifier` (nodemailer 10, bundled types; Node 22) when `SMTP_HOST/USER/PASS` + `LEADS_NOTIFY_TO` are set, else `LogLeadNotifier` (id + type only). Spanish plain-text email, Reply-To = visitor, panel link via `PUBLIC_SITE_URL`. Fire-and-forget after saving; failures only logged.
+- Deploy: env example (optional SMTP block), compose `PUBLIC_SITE_URL: https://${SITE_DOMAIN}` for `api`, README section 9 (Google Workspace app password steps).
+- RED: notifications spec (missing modules), service (notify assertions). GREEN: 434 tests. Lint/build OK.
+
+### T1 — inquiry form + client (strict TDD)
+
+- `src/lib/api/leads.ts` (submit + admin list/get/update/delete), `src/lib/leads/labels.ts` (enums, Spanish labels, `whatsappToLead` with AR mobile normalization), `src/lib/leads/inquiry-form.ts` (validation mirroring the DTO, API error mapping, form state).
+- `sendInquiryAction` (bound to the property): 429 → "probá en un minuto", unpublished property, network → retry hint, API validation → fields.
+- `PropertyInquiryForm` in the property aside: labelled name/phone/email/message (message prefilled), off-screen `aria-hidden` honeypot, WhatsApp button, pending state, thanks message (focused, `role="status"`), errors next to fields and kept values.
+- RED: each module (missing), page wiring (1 failing). GREEN: 501 tests. Lint 0 errors. Build OK.
 
 ## Next step
 
-B1.
+T2.
