@@ -31,7 +31,8 @@ describe("Home page", () => {
     ).toBeInTheDocument();
     const form = screen.getByRole("search", { name: "Buscar propiedades" });
     expect(form).toHaveAttribute("action", "/propiedades");
-    expect(within(form).getByRole("option", { name: "Palermo" })).toHaveValue("palermo");
+    expect(within(form).getByRole("combobox", { name: "Ubicación" })).toBeInTheDocument();
+    expect(form.querySelector('input[type="hidden"][name="barrio"]')).toHaveValue("");
     expect(within(form).getByRole("radio", { name: "Comprar" })).toHaveAttribute("value", "venta");
   });
 

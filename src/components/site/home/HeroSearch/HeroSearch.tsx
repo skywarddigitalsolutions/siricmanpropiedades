@@ -1,8 +1,9 @@
-import { BedDouble, House, MapPin, Search } from "lucide-react";
+import { BedDouble, House, Search } from "lucide-react";
 import { PROPERTY_TYPES } from "@/lib/properties/enums";
 import { PROPERTY_TYPE_LABELS } from "@/lib/properties/labels";
 import { RESULTS_PATH, TYPE_SLUGS } from "@/lib/public/search-params";
 import type { PublicNeighborhood } from "@/lib/public/types";
+import LocationCombobox from "../../LocationCombobox/LocationCombobox";
 import styles from "./HeroSearch.module.css";
 
 const OPERATIONS = [
@@ -58,20 +59,14 @@ export default function HeroSearch({ neighborhoods }: { neighborhoods: PublicNei
           </fieldset>
 
           <div className={styles.panel}>
-            <label className={styles.field}>
-              <MapPin aria-hidden size={20} className={styles.icon} />
-              <span className={styles.fieldText}>
-                <span className={styles.caption}>Barrio</span>
-                <select name="barrio" defaultValue="" className={styles.select}>
-                  <option value="">Todos los barrios</option>
-                  {neighborhoods.map((neighborhood) => (
-                    <option key={neighborhood.slug} value={neighborhood.slug}>
-                      {neighborhood.name}
-                    </option>
-                  ))}
-                </select>
-              </span>
-            </label>
+            <div className={styles.location}>
+              <LocationCombobox
+                id="hero-barrio"
+                variant="field"
+                caption="Ubicación"
+                neighborhoods={neighborhoods}
+              />
+            </div>
             <label className={styles.field}>
               <House aria-hidden size={20} className={styles.icon} />
               <span className={styles.fieldText}>

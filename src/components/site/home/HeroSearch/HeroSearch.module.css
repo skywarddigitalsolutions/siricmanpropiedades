@@ -107,6 +107,11 @@
   outline: 2px solid var(--color-gold);
 }
 
+.location {
+  flex: 2 1 260px;
+  display: flex;
+}
+
 .narrow {
   flex-basis: 140px;
 }
