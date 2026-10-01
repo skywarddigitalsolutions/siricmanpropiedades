@@ -26,7 +26,8 @@ type LocationComboboxProps = {
   caption?: string;
   /** Submit the surrounding form as soon as a barrio is chosen or cleared. */
   autoSubmit?: boolean;
-  variant?: "field" | "bar";
+  /** `field`: grey box; `bar`: bordered pill; `plain`: no chrome, for a container that draws it. */
+  variant?: "field" | "bar" | "plain";
 };
 
 /** Splits the original name around the matched range, for highlighting. */

@@ -1,9 +1,30 @@
+/*
+ * Layout at 375px: title, segmented operation control, then one white card
+ * with the segments stacked (Ubicación, Tipo, Ambientes pills) separated by
+ * hairlines and a full-width Buscar button.
+ * At 1280px (>= 900px): the card becomes one row: Ubicación (wide) | Tipo |
+ * Ambientes | Buscar, with vertical dividers.
+ */
 .hero {
   position: relative;
-  overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(19, 28, 77, 0.25) 0%, rgba(19, 28, 77, 0.85) 100%),
-    repeating-linear-gradient(135deg, #27357a 0 14px, #223071 14px 28px);
+  isolation: isolate;
+  /* No overflow clipping: the barrio suggestions can extend past the hero. */
+  /* Fallback while the photo loads or if it fails. */
+  background: var(--color-navy-dark);
+}
+
+.photo {
+  z-index: -2;
+  object-fit: cover;
+  object-position: center 40%;
+}
+
+/* Navy wash keeps the white copy AA-contrast over any part of the photo. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(19, 28, 77, 0.55) 0%, rgba(19, 28, 77, 0.85) 100%);
 }
 
 .inner {
@@ -28,7 +49,7 @@
   max-width: 560px;
   font-size: clamp(16px, 2vw, 19px);
   line-height: 1.5;
-  color: #dfe3f5;
+  color: #eef0fb;
 }
 
 .form {
@@ -39,14 +60,15 @@
   align-items: center;
 }
 
+/* Operation: segmented control over the photo */
 .operations {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   padding: 5px;
-  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(6px);
+  background: rgba(19, 28, 77, 0.55);
+  backdrop-filter: blur(8px);
 }
 
 .operation {
@@ -54,17 +76,20 @@
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 22px;
   border-radius: var(--radius-pill);
   font: 700 14px var(--font-body), sans-serif;
   color: var(--color-white);
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 /* The radio covers its pill so the whole pill is the tap target. */
 .radio {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   margin: 0;
   opacity: 0;
   cursor: pointer;
@@ -75,45 +100,39 @@
   background: var(--color-white);
 }
 
-.operation:has(.radio:focus-visible) {
+.operation:has(.radio:focus-visible),
+.pill:has(.radio:focus-visible) {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
 
+/* Search card */
 .panel {
   width: 100%;
   margin-top: 12px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 10px;
+  flex-direction: column;
+  padding: 6px;
   border-radius: var(--radius-xl);
   background: var(--color-white);
   box-shadow: var(--shadow-lifted);
   text-align: left;
 }
 
-.field {
-  flex: 1 1 200px;
+.segment {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.segment:focus-within {
   border-radius: var(--radius-md);
-  background: var(--color-bg);
-}
-
-.field:focus-within {
   outline: 2px solid var(--color-gold);
-}
-
-.location {
-  flex: 2 1 260px;
-  display: flex;
-}
-
-.narrow {
-  flex-basis: 140px;
+  outline-offset: -2px;
 }
 
 .icon {
@@ -136,40 +155,105 @@
   color: var(--color-text-muted);
 }
 
-.select {
+.type select {
+  min-height: 28px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Rooms: compact segmented pills */
+.rooms {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.rooms:focus-within {
+  outline: 0;
+}
+
+.roomsLegend {
+  float: left;
   width: 100%;
-  min-height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 0;
-  border: 0;
-  font: 600 15px var(--font-body), sans-serif;
+  font: 700 11px var(--font-body), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.roomsLegend svg {
+  color: var(--color-gold-dark);
+}
+
+.pills {
+  clear: both;
+  display: flex;
+  gap: 6px;
+}
+
+.pill {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  font: 700 14px var(--font-body), sans-serif;
   color: var(--color-text);
-  background: transparent;
-  outline: none;
+  background: var(--color-white);
+  cursor: pointer;
+}
+
+/* "Indistinto" needs more room than the digits. */
+.pill:first-child {
+  flex: 2.4 1 0;
+}
+
+.pill:has(.radio:checked) {
+  color: var(--color-white);
+  border-color: var(--color-navy);
+  background: var(--color-navy);
 }
 
 .submit {
-  flex: 1 1 140px;
-  min-height: 58px;
+  min-height: 56px;
+  margin-top: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   border-radius: var(--radius-md);
-  font: 700 16px var(--font-body), sans-serif;
-  color: var(--color-white);
-  background: var(--color-navy);
+  font: 800 16px var(--font-body), sans-serif;
+  color: var(--color-navy-dark);
+  background: var(--color-gold);
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .submit:hover {
-  background: var(--color-navy-dark);
+  background: #d4b268;
 }
 
 .submit:focus-visible,
 .codeSummary:focus-visible,
 .codeButton:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-white);
   outline-offset: 2px;
+}
+
+/* Code search: a small link-style toggle under the card */
+.code {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .codeSummary {
@@ -178,7 +262,7 @@
   align-items: center;
   list-style: none;
   font: 600 14px var(--font-body), sans-serif;
-  color: #dfe3f5;
+  color: #eef0fb;
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
@@ -192,7 +276,7 @@
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .codeInput {
@@ -201,7 +285,7 @@
   padding: 0 14px;
   border: 0;
   border-radius: var(--radius-pill);
-  font: 600 15px ui-monospace, Menlo, monospace;
+  font: 600 16px ui-monospace, Menlo, monospace;
   text-transform: uppercase;
 }
 
@@ -217,4 +301,36 @@
   color: var(--color-navy-dark);
   background: var(--color-gold);
   cursor: pointer;
+}
+
+@media (min-width: 900px) {
+  .panel {
+    flex-direction: row;
+    align-items: stretch;
+    padding: 8px;
+  }
+
+  .segment {
+    border-bottom: 0;
+    border-right: 1px solid var(--color-border);
+  }
+
+  .location {
+    flex: 1.7 1 0;
+  }
+
+  .type {
+    flex: 1 1 0;
+  }
+
+  .rooms {
+    flex: 1.6 1 0;
+    justify-content: center;
+  }
+
+  .submit {
+    flex: none;
+    margin: 0 0 0 8px;
+    padding: 0 32px;
+  }
 }

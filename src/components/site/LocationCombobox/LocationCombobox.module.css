@@ -84,6 +84,14 @@
   outline: 2px solid var(--color-gold);
 }
 
+.plain .control {
+  min-height: 44px;
+}
+
+.plain .popup {
+  top: calc(100% + 14px);
+}
+
 .bar .control {
   height: 46px;
   padding: 0 8px 0 14px;
