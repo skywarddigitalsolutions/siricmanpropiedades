@@ -22,9 +22,9 @@
 
 | ID | Task | Route | Status | Commit |
 |----|------|-------|--------|--------|
-| T1 | Currency symbols site-wide (`formatPrice`, price inputs, filters, admin) | delegated | ⬜ | |
-| T2 | Hero search fixes: ambientes dropdown, compact Buscar, combobox stacking | delegated | ⬜ | |
-| T3 | CTA band + footer redesign with icons; WhatsApp button never overlaps the footer | delegated | ⬜ | |
+| T1 | Currency symbols site-wide (`formatPrice`, price inputs, filters, admin) | delegated | ✅ | 9282184 |
+| T2 | Hero search fixes: ambientes dropdown, compact Buscar, combobox stacking | delegated | ✅ | 331aa94 |
+| T3 | CTA band + footer redesign with icons; WhatsApp button never overlaps the footer | delegated | ✅ | 39114cc |
 
 ## Acceptance criteria
 
@@ -36,7 +36,10 @@
 ## Progress
 
 - 2026-10-01: feature started, branch `feat/public-polish`. RDD: off (default).
+- 2026-10-01: T1-T3 done. RED then GREEN observed: T1 (12 failing tests after updating expectations to `US$`, new `currencySymbol`/`adornment`/filters symbol tests), T2 (Ambientes combobox test), T3 (footer columns/icon buttons and CTA benefits tests). Final: lint 0 errors (1 pre-existing img warning), 923 tests pass, build ok.
+- Decisions: `TextField` gained an `adornment` prop; public filters track the currency toggle in state (default by operation); hero gets `z-index: 5` (header is 30); footer bottom bar has ~96-100px bottom padding so the floating WhatsApp button never covers legal links; Instagram glyph is a local inline SVG (lucide has no brand icons).
+- Screenshots (scratchpad): hero-1440.png, hero-390.png, hero-390b.png, cta-1440.png, cta-390.png, footer-1440.png, footer-390.png.
 
 ## Next step
 
-T1.
+Push, PR, deploy.
