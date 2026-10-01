@@ -69,3 +69,17 @@
   translate: 0 -50%;
   display: flex;
 }
+
+.adornment {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  translate: 0 -50%;
+  font: 700 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+  pointer-events: none;
+}
+
+.control .withAdornment {
+  padding-left: 48px;
+}

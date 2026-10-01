@@ -10,6 +10,8 @@ type TextFieldProps = {
   inputClassName?: string;
   /** Decorative leading icon (rendered `aria-hidden` by the caller). */
   icon?: ReactNode;
+  /** Leading text inside the control (e.g. a currency symbol). */
+  adornment?: string;
   /** Interactive trailing control (e.g. a show/hide button). */
   trailing?: ReactNode;
   /** React 19 passes `ref` as a regular prop. */
@@ -25,6 +27,7 @@ export default function TextField({
   inputClassName,
   icon,
   trailing,
+  adornment,
   type = "text",
   ...inputProps
 }: TextFieldProps) {
@@ -32,6 +35,7 @@ export default function TextField({
   const classes = [
     styles.input,
     icon && styles.withIcon,
+    adornment && styles.withAdornment,
     trailing && styles.withTrailing,
     inputClassName,
   ]
@@ -44,6 +48,11 @@ export default function TextField({
         {label}
       </label>
       <div className={styles.control}>
+        {adornment && (
+          <span className={styles.adornment} aria-hidden>
+            {adornment}
+          </span>
+        )}
         {icon && <span className={styles.icon}>{icon}</span>}
         <input
           id={id}

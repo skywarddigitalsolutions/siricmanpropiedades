@@ -72,7 +72,7 @@ describe("PropertyList", () => {
     expect(screen.getAllByText("Casa en Palermo").length).toBeGreaterThan(0);
     expect(screen.getAllByText("SP-0001").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Palermo").length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/USD 150.000/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/US[$] 150.000/).length).toBeGreaterThan(0);
     expect(screen.getAllByText("Publicada").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Disponible").length).toBeGreaterThan(0);
   });

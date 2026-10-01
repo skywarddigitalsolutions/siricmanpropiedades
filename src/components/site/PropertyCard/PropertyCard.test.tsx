@@ -12,7 +12,7 @@ describe("PropertyCard", () => {
       "href",
       "/propiedades/luminoso-3-ambientes-con-balcon",
     );
-    expect(within(card).getByText("USD 185.000")).toBeInTheDocument();
+    expect(within(card).getByText("US$ 185.000")).toBeInTheDocument();
     expect(within(card).getByText("SP-0101")).toBeInTheDocument();
     expect(within(card).getByText("+ $ 145.000 expensas")).toBeInTheDocument();
     expect(within(card).getByText("Venta")).toBeInTheDocument();

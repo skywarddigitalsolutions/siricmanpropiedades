@@ -107,7 +107,7 @@ describe("FiltersSheet", () => {
     const dialog = screen.getByRole("dialog", { name: "Filtros" });
     expect(within(dialog).getByRole("radio", { name: "Casa" })).toBeChecked();
     expect(within(dialog).getByRole("radio", { name: "3" })).toBeChecked();
-    expect(within(dialog).getByRole("radio", { name: "USD" })).toBeChecked();
+    expect(within(dialog).getByRole("radio", { name: "Dólares" })).toBeChecked();
     expect(within(dialog).getByLabelText("Desde")).toHaveValue("100000");
     expect(within(dialog).getByRole("checkbox", { name: "Acepta mascotas" })).toBeChecked();
     const form = within(dialog).getByRole("button", { name: "Ver resultados" }).closest("form")!;
@@ -117,6 +117,19 @@ describe("FiltersSheet", () => {
       "href",
       "/propiedades?operacion=venta&barrio=palermo",
     );
+  });
+
+  it("shows the currency symbol inside the price inputs and follows the toggle", async () => {
+    const user = userEvent.setup();
+    render(<FiltersSheet state={parseSearchParams({ operacion: "venta", moneda: "USD" })} />);
+
+    await user.click(screen.getByRole("button", { name: "Filtros" }));
+    const dialog = screen.getByRole("dialog", { name: "Filtros" });
+    expect(within(dialog).getByLabelText("Desde").parentElement).toHaveTextContent("US$");
+    expect(within(dialog).getByLabelText("Hasta").parentElement).toHaveTextContent("US$");
+
+    await user.click(within(dialog).getByRole("radio", { name: "Pesos" }));
+    expect(within(dialog).getByLabelText("Desde").parentElement).not.toHaveTextContent("US$");
   });
 
   it("closes the dialog", async () => {

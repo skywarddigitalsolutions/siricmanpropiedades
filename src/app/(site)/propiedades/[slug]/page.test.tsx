@@ -35,7 +35,7 @@ describe("PropertyPage", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Luminoso 3 ambientes con balcón al frente" }),
     ).toBeInTheDocument();
-    expect(screen.getAllByText("USD 185.000").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("US$ 185.000").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Gorriti 4800 · Palermo, CABA").length).toBeGreaterThan(0);
     const facts = screen.getByRole("list", { name: "Características" });
     expect(within(facts).getByText("Sup. cubierta")).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe("generateMetadata", () => {
   it("builds a unique title, description, canonical and share image", async () => {
     const metadata = await generateMetadata(params());
 
-    expect(metadata.title).toBe("Luminoso 3 ambientes con balcón al frente · USD 185.000");
+    expect(metadata.title).toBe("Luminoso 3 ambientes con balcón al frente · US$ 185.000");
     expect(metadata.description).toMatch(/^Departamento en venta en Palermo/);
     expect(metadata.alternates?.canonical).toBe("/propiedades/luminoso-3-ambientes-con-balcon");
     expect(metadata.openGraph?.images).toEqual([
