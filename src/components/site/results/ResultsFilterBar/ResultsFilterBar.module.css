@@ -73,17 +73,6 @@
   color: var(--color-text-faint);
 }
 
-.barrioSelect {
-  width: 100%;
-  min-width: 0;
-  height: 100%;
-  border: 0;
-  font: 600 14px var(--font-body), sans-serif;
-  color: var(--color-text);
-  background: transparent;
-  outline: none;
-}
-
 .noscriptButton {
   font: 700 13px var(--font-body), sans-serif;
   color: var(--color-navy);
