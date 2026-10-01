@@ -40,7 +40,7 @@
 | B1 | Public catalog: `featured` + `code` filters, unavailable last, public read throttle (catalog + neighborhoods GET) | back | inline (subagents rate-limited) | ✅ | back #21 |
 | T1 | Public catalog client (cached, server-only), results URL params, card view-model (price label, specs) | front | inline | ✅ | `9ab11f6` |
 | T2 | `PropertyCard` + home page | front | inline | ✅ | `a6fccda` |
-| T3 | Results page: filter bar, filters sheet, quick chips, sort, grid, pagination, empty state | front | inline | ⬜ | |
+| T3 | Results page: filter bar, filters sheet, quick chips, sort, grid, pagination, empty state | front | inline | ✅ | `a22e0ef` |
 | T4 | Property detail page: gallery, facts, chips, description, services, location, WhatsApp, bottom bar | front | inline | ⬜ | |
 | T5 | SEO: `SITE_URL`/metadataBase, per-page metadata, JSON-LD, sitemap, robots; deploy env docs | both | inline | ⬜ | |
 | T6 | Browser walkthrough (375 / 1280), ROADMAP close-out | front | inline | ⬜ | |
@@ -69,8 +69,15 @@
 
 - `PropertyCard`: stretched title link (one tap target, one name), cover via `next/image` `unoptimized` or "Sin fotos", operation/tag badges, status band (reserved gold, sold/rented navy + dimmed photo), price + code, expenses, type · barrio, specs with sr-only labels. `PropertyIcon` maps semantic icons to lucide. Global `.sr-only` utility.
 - Home (`force-dynamic`): `HeroSearch` (GET form to `/propiedades`, operation radios as pills, barrio/tipo/ambientes selects, code lookup in a `<details>`), type chips, carousel "Destacadas" (falls back to "Recién publicadas"), services, personal quote (monogram instead of the missing portrait), appraisal CTA. API failures degrade to the static sections.
-- RED: card (missing module), home (5 failing on the placeholder). GREEN: 432 tests. Lint 0 errors. Build OK.
+- RED: card (missing module), home (5 failing on the placeholder). GREEN: 431 tests. Lint 0 errors. Build OK.
+
+### T3 — results (strict TDD)
+
+- `/propiedades` (`force-dynamic`): redirects non-canonical queries (empty GET fields, invalid/default values) to `canonicalHref`; a code lookup with one match redirects to the property; count heading; sort (auto-submit, `<noscript>` fallback); 12-card grid (1 column on phones); crawlable prev/next pagination; empty, code-not-found and unavailable (429/network) messages with WhatsApp; metadata with canonical and `noindex,follow` for narrow combinations (`resultsSeo`).
+- `ResultsFilterBar` (sticky under the header via `--site-header-height`): operation links with `aria-current`, barrio GET form, quick chip links. `FiltersSheet`: modal `<dialog>` (bottom sheet / side panel ≥960 px) with a GET form — type, currency + range, rooms, bedrooms, bathrooms, switches; hidden inputs keep the rest (`PreservedParams`).
+- Bug caught by tests: `buildSearchHref` resets the page, so page 2 looked non-canonical → `canonicalHref(state)` keeps the page.
+- RED: helpers (missing functions), filter components, page (missing modules), canonical page. GREEN: 451 tests. Lint 0 errors. Build OK.
 
 ## Next step
 
-T3.
+T4.

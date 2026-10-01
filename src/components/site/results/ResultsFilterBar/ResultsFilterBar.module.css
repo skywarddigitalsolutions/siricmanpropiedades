@@ -1,0 +1,135 @@
+.bar {
+  position: sticky;
+  top: var(--site-header-height);
+  z-index: 20;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.inner {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 12px 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.segment {
+  flex: none;
+  display: flex;
+  padding: 4px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+}
+
+.segmentLink {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 13px;
+  border-radius: var(--radius-pill);
+  font: 700 13px var(--font-body), sans-serif;
+  color: var(--color-text);
+}
+
+.segmentLink:hover {
+  color: var(--color-navy);
+}
+
+.segmentLink[aria-current="page"] {
+  color: var(--color-white);
+  background: var(--color-navy);
+}
+
+.barrio {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+}
+
+.barrio:focus-within {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.barrioIcon {
+  flex: none;
+  color: var(--color-text-faint);
+}
+
+.barrioSelect {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--color-text);
+  background: transparent;
+  outline: none;
+}
+
+.noscriptButton {
+  font: 700 13px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  background: none;
+}
+
+.chipsRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 16px;
+  scrollbar-width: none;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+}
+
+.chip {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  font: 600 13px var(--font-body), sans-serif;
+  white-space: nowrap;
+  color: var(--color-text);
+  background: var(--color-white);
+}
+
+.chip:hover {
+  color: var(--color-text);
+  border-color: var(--color-navy);
+}
+
+.chip[data-active] {
+  color: var(--color-white);
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+}
+
+.segmentLink:focus-visible,
+.chip:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}

@@ -1,0 +1,33 @@
+.main {
+  flex: 1;
+}
+
+.results {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 18px 16px 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.title {
+  font: 800 20px var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* One column on phones, then as many 300 px+ columns as fit. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+  list-style: none;
+}

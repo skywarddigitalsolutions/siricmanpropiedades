@@ -38,6 +38,8 @@
 
   /* Layout */
   --content-max-width: 1240px;
+  /* Height of the sticky public header; sticky bars below it offset by this. */
+  --site-header-height: 65px;
 }
 
 html {
