@@ -16,7 +16,7 @@ import {
 
 describe("propertyPriceLabel", () => {
   it("formats sales and adds /mes to rents", () => {
-    expect(propertyPriceLabel(makePublicProperty())).toBe("USD 185.000");
+    expect(propertyPriceLabel(makePublicProperty())).toBe("US$ 185.000");
     expect(
       propertyPriceLabel(makePublicProperty({ operation: "rent", currency: "ARS", price: 650000 })),
     ).toBe("$ 650.000 /mes");

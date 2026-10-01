@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
-import { PROPERTY_TYPES } from "@/lib/properties/enums";
-import { PROPERTY_TYPE_LABELS } from "@/lib/properties/labels";
+import { PROPERTY_TYPES, type Currency } from "@/lib/properties/enums";
+import { PROPERTY_TYPE_LABELS, currencySymbol } from "@/lib/properties/labels";
 import {
   EMPTY_SEARCH,
   RESULTS_PATH,
@@ -80,6 +80,10 @@ const minimumOptions = (max: number) => [
  */
 export default function FiltersSheet({ state }: { state: SearchState }) {
   const [open, setOpen] = useState(false);
+  const [priceCurrency, setPriceCurrency] = useState<Currency | undefined>(state.currency);
+  const symbol = currencySymbol(
+    priceCurrency ?? (state.operation === "rent" ? "ARS" : "USD"),
+  );
   const dialogRef = useRef<HTMLDialogElement>(null);
   const active = countActiveFilters(state);
 
@@ -155,7 +159,7 @@ export default function FiltersSheet({ state }: { state: SearchState }) {
                 <div className={styles.priceRow}>
                   <div className={styles.currency} role="radiogroup" aria-label="Moneda">
                     {[
-                      { label: "USD", value: "USD" },
+                      { label: "US$", value: "USD" },
                       { label: "$", value: "ARS" },
                     ].map((currency) => (
                       <label key={currency.value} className={styles.currencyOption}>
@@ -164,33 +168,46 @@ export default function FiltersSheet({ state }: { state: SearchState }) {
                           name="moneda"
                           value={currency.value}
                           defaultChecked={state.currency === currency.value}
-                          aria-label={currency.value === "ARS" ? "Pesos" : "USD"}
+                          onChange={() => setPriceCurrency(currency.value as Currency)}
+                          aria-label={currency.value === "ARS" ? "Pesos" : "Dólares"}
                           className={styles.pillInput}
                         />
                         <span aria-hidden>{currency.label}</span>
                       </label>
                     ))}
                   </div>
-                  <label className={styles.priceField}>
-                    <span className="sr-only">Desde</span>
+                  <div className={styles.priceField}>
+                    <label htmlFor="filter-desde" className="sr-only">
+                      Desde
+                    </label>
+                    <span className={styles.symbol} aria-hidden>
+                      {symbol}
+                    </span>
                     <input
+                      id="filter-desde"
                       name="desde"
                       inputMode="numeric"
                       placeholder="Desde"
                       defaultValue={state.priceMin ?? ""}
                       className={styles.input}
                     />
-                  </label>
-                  <label className={styles.priceField}>
-                    <span className="sr-only">Hasta</span>
+                  </div>
+                  <div className={styles.priceField}>
+                    <label htmlFor="filter-hasta" className="sr-only">
+                      Hasta
+                    </label>
+                    <span className={styles.symbol} aria-hidden>
+                      {symbol}
+                    </span>
                     <input
+                      id="filter-hasta"
                       name="hasta"
                       inputMode="numeric"
                       placeholder="Hasta"
                       defaultValue={state.priceMax ?? ""}
                       className={styles.input}
                     />
-                  </label>
+                  </div>
                 </div>
                 <p className={styles.hint}>
                   Sin moneda elegida se usa dólares para venta y pesos para alquiler.

@@ -12,6 +12,7 @@ import {
   MARKETING_TAG_LABELS,
   OPERATION_LABELS,
   PROPERTY_TYPE_LABELS,
+  currencySymbol,
 } from "@/lib/properties/labels";
 import {
   DEFAULT_FORM_VALUES,
@@ -227,6 +228,7 @@ function DatosFields({ mode, neighborhoods, values, errors }: FieldsProps) {
             id="price"
             name="price"
             label="Precio"
+            adornment={currencySymbol(currency === "ARS" ? "ARS" : "USD")}
             inputMode="decimal"
             defaultValue={values.price}
             error={errors.price}

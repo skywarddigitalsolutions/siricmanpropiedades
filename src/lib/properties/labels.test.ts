@@ -14,6 +14,7 @@ import {
   PROPERTY_TYPE_LABELS,
   PUBLICATION_STATUS_LABELS,
   allowedDealStatuses,
+  currencySymbol,
   formatPrice,
 } from "./labels";
 
@@ -94,8 +95,8 @@ describe("allowedDealStatuses", () => {
 });
 
 describe("formatPrice", () => {
-  it("prefixes USD amounts with the currency code", () => {
-    expect(formatPrice("USD", 120_000)).toBe("USD 120.000");
+  it("prefixes USD amounts with US$", () => {
+    expect(formatPrice("USD", 120_000)).toBe("US$ 120.000");
   });
 
   it("prefixes ARS amounts with a peso sign", () => {
@@ -103,6 +104,13 @@ describe("formatPrice", () => {
   });
 
   it("rounds to whole units", () => {
-    expect(formatPrice("USD", 1234.6)).toBe("USD 1.235");
+    expect(formatPrice("USD", 1234.6)).toBe("US$ 1.235");
+  });
+});
+
+describe("currencySymbol", () => {
+  it("maps USD to US$ and ARS to $", () => {
+    expect(currencySymbol("USD")).toBe("US$");
+    expect(currencySymbol("ARS")).toBe("$");
   });
 });

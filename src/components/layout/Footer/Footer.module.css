@@ -5,13 +5,20 @@
   margin-top: auto;
 }
 
+/* Mobile: stacked sections. Desktop: brand | contact | navigation. */
 .inner {
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 40px 16px 24px;
+  padding: 48px 16px 36px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 28px;
+  gap: 36px;
+}
+
+.brandColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
 }
 
 .brand {
@@ -45,60 +52,125 @@
   color: var(--color-gold);
 }
 
-.address,
+.tagline {
+  max-width: 320px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 .professional {
+  max-width: 320px;
+  font: 600 13px/1.5 var(--font-body), sans-serif;
+  color: var(--color-white);
+}
+
+.social {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.socialButton {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: var(--color-white);
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.socialButton:hover {
+  color: var(--color-navy-dark);
+  border-color: var(--color-gold);
+  background: var(--color-gold);
+}
+
+.column {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
+}
+
+.heading {
+  font: 700 12px var(--font-body), sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   font-size: 14px;
   line-height: 1.5;
 }
 
-.email {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  overflow-wrap: anywhere;
-}
-
-.bottomBar {
-  max-width: var(--content-max-width);
-  margin: 0 auto;
-  padding: 16px 16px 28px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+.item {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  font-size: 12px;
+  align-items: flex-start;
+  gap: 12px;
   color: var(--color-text-on-dark-muted);
 }
 
-.contactLinks {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 18px;
+.itemIcon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--color-gold);
+}
+
+/* Instagram glyph has no class hook: keep its colour in line with the others. */
+.item > svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--color-gold);
 }
 
 .link {
-  min-height: 32px;
+  min-height: 24px;
   display: inline-flex;
   align-items: center;
   color: var(--color-white);
   text-underline-offset: 3px;
 }
 
-.link:hover,
-.email:hover {
+.email {
+  overflow-wrap: anywhere;
+}
+
+.link:hover {
   color: var(--color-gold);
 }
 
 .link:focus-visible,
-.email:focus-visible {
+.socialButton:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+.socialButton:focus-visible {
+  border-radius: 50%;
+}
+
+/*
+ * The fixed WhatsApp button (58px + 20px offset) sits over the bottom-right
+ * corner: the extra bottom padding keeps the legal links always clear of it.
+ */
+.bottomBar {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 18px 16px calc(100px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--color-text-on-dark-muted);
 }
 
 .legal {
@@ -121,4 +193,18 @@
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+@media (min-width: 900px) {
+  .inner {
+    grid-template-columns: 1.3fr 1.4fr 0.8fr;
+    gap: 56px;
+    padding: 64px 24px 48px;
+  }
+
+  .bottomBar {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px 24px calc(96px + env(safe-area-inset-bottom, 0px));
+  }
 }
