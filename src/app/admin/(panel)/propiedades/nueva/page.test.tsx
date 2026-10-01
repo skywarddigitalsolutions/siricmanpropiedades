@@ -11,7 +11,7 @@ import NewPropertyPage from "./page";
 afterEach(() => cleanup());
 
 describe("NewPropertyPage", () => {
-  it("renders an empty create form with the neighborhoods", async () => {
+  it("renders step 1 of the guided flow with the neighborhoods, USD by default and the later steps disabled", async () => {
     listNeighborhoods.mockResolvedValue([
       { id: "n1", name: "Palermo", slug: "palermo", createdAt: "2024-01-01" },
     ]);
@@ -23,6 +23,11 @@ describe("NewPropertyPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "Palermo" })).toBeInTheDocument();
     expect(screen.getByLabelText("Título")).toHaveValue("");
-    expect(screen.getByRole("button", { name: "Crear propiedad" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Moneda")).toHaveValue("USD");
+    expect(
+      screen.getByRole("button", { name: "Guardar y continuar" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Paso 1 de 4: Datos")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Fotos/ })).toBeNull();
   });
 });

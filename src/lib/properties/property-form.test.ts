@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { STEP_FIELDS } from "./steps";
 import {
+  DEFAULT_FORM_VALUES,
   mapApiErrorToFields,
   parsePropertyForm,
   toFormValues,
@@ -343,5 +345,69 @@ describe("toFormValues", () => {
 
     expect(values.description).toBe("Hermosa vista");
     expect(values.expenses).toBe("25000");
+  });
+});
+
+describe("parsePropertyForm with only (per-step saves)", () => {
+  function fd(fields: Record<string, string>) {
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(fields)) formData.set(key, value);
+    return formData;
+  }
+
+  it("validates and returns only the requested fields (extras step)", () => {
+    const result = parsePropertyForm(
+      fd({ description: "Una descripción", marketingTag: "new", hasWater: "on" }),
+      { mode: "edit", only: STEP_FIELDS.extras },
+    );
+
+    expect("input" in result).toBe(true);
+    if (!("input" in result)) return;
+    expect(result.input).toEqual(
+      expect.objectContaining({
+        description: "Una descripción",
+        marketingTag: "new",
+        hasWater: true,
+      }),
+    );
+    expect(result.input).not.toHaveProperty("operation");
+    expect(result.input).not.toHaveProperty("price");
+    expect(result.input).not.toHaveProperty("title");
+    expect(result.input).not.toHaveProperty("hasGarage");
+  });
+
+  it("does not complain about required fields outside the step", () => {
+    const result = parsePropertyForm(fd({ marketingTag: "none" }), {
+      mode: "edit",
+      only: STEP_FIELDS.extras,
+    });
+
+    expect("fieldErrors" in result).toBe(false);
+  });
+
+  it("still reports errors for fields inside the step (datos)", () => {
+    const result = parsePropertyForm(fd({ title: "ab", marketingTag: "none" }), {
+      mode: "edit",
+      only: STEP_FIELDS.datos,
+    });
+
+    expect("fieldErrors" in result).toBe(true);
+    if (!("fieldErrors" in result)) return;
+    expect(result.fieldErrors.title).toBeDefined();
+    expect(result.fieldErrors.price).toBeDefined();
+    expect(result.fieldErrors).not.toHaveProperty("marketingTag");
+  });
+
+  it("clears the description with null when the extras step sends it empty", () => {
+    const result = parsePropertyForm(fd({ description: "", marketingTag: "none" }), {
+      mode: "edit",
+      only: STEP_FIELDS.extras,
+    });
+
+    expect("input" in result && result.input.description).toBeNull();
+  });
+
+  it("defaults a brand-new form to USD", () => {
+    expect(DEFAULT_FORM_VALUES.currency).toBe("USD");
   });
 });

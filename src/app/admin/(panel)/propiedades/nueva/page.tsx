@@ -2,10 +2,11 @@ import Link from "next/link";
 import { listNeighborhoods } from "@/lib/api/properties";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import PropertyForm from "@/components/admin/properties/PropertyForm/PropertyForm";
+import PropertyStepper from "@/components/admin/properties/PropertyStepper/PropertyStepper";
 import { createPropertyAction } from "./actions";
 import styles from "../editor.module.css";
 
-/** `/admin/propiedades/nueva` — create a draft property (feature 6 T4). */
+/** `/admin/propiedades/nueva` — step 1 of the guided flow; saves the draft and continues to photos (feature 16 T3). */
 export default async function NewPropertyPage() {
   const neighborhoods = await listNeighborhoods();
 
@@ -16,10 +17,12 @@ export default async function NewPropertyPage() {
       </Link>
       <PageHeader
         title="Nueva propiedad"
-        description="Se guarda como borrador. Después vas a poder cargar las fotos y publicarla."
+        description="Cargá los datos principales: se guarda como borrador y seguís con las fotos."
       />
+      <PropertyStepper current="datos" />
       <PropertyForm
         mode="create"
+        step="datos"
         action={createPropertyAction}
         neighborhoods={neighborhoods}
       />

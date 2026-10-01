@@ -68,7 +68,7 @@ describe("createPropertyAction", () => {
 
     await expectRedirect(
       createPropertyAction({}, formDataFor(VALID_FIELDS)),
-      "/admin/propiedades/new-id?creada=1",
+      "/admin/propiedades/new-id?paso=fotos&creada=1",
     );
 
     expect(createProperty).toHaveBeenCalledWith(
@@ -76,10 +76,13 @@ describe("createPropertyAction", () => {
       expect.objectContaining({
         title: "Departamento luminoso",
         price: 120000,
-        hasWater: true,
         hasGarage: false,
       }),
     );
+    // Only step 1 fields are created; services, description and tags come later.
+    const input = createProperty.mock.calls[0][1];
+    expect(input).not.toHaveProperty("hasWater");
+    expect(input).not.toHaveProperty("marketingTag");
     expect(revalidatePath).toHaveBeenCalledWith("/admin/propiedades");
   });
 
@@ -92,7 +95,7 @@ describe("createPropertyAction", () => {
     expect(createProperty).not.toHaveBeenCalled();
     expect(state.fieldErrors?.title).toMatch(/entre 5 y 150/);
     expect(state.values?.title).toBe("abc");
-    expect(state.values?.hasWater).toBe(true);
+    expect(state.values?.address).toBe("Av. Santa Fe 1234");
   });
 
   it("maps back validation messages to fields", async () => {
@@ -135,24 +138,61 @@ describe("updatePropertyAction", () => {
     updateProperty.mockResolvedValue(makeProperty());
 
     await expectRedirect(
-      updatePropertyAction("p1", {}, formDataFor(VALID_FIELDS)),
-      "/admin/propiedades/p1?guardada=1",
+      updatePropertyAction("p1", "datos", {}, formDataFor(VALID_FIELDS)),
+      "/admin/propiedades/p1?paso=datos&guardada=1",
     );
 
     expect(updateProperty).toHaveBeenCalledWith(
       "jwt-1",
       "p1",
-      expect.objectContaining({ description: null, expenses: null }),
+      expect.objectContaining({ expenses: null, price: 120000 }),
     );
+    // A partial PATCH: the datos step never touches the description or services.
+    const input = updateProperty.mock.calls[0][2];
+    expect(input).not.toHaveProperty("description");
+    expect(input).not.toHaveProperty("hasWater");
     expect(revalidatePath).toHaveBeenCalledWith("/admin/propiedades");
     expect(revalidatePath).toHaveBeenCalledWith("/admin/propiedades/p1");
+  });
+
+  it("saves only the extras fields for the description step, clearing an emptied description", async () => {
+    updateProperty.mockResolvedValue(makeProperty());
+
+    await expectRedirect(
+      updatePropertyAction(
+        "p1",
+        "extras",
+        {},
+        formDataFor({ marketingTag: "new", description: "", hasWater: "on" }),
+      ),
+      "/admin/propiedades/p1?paso=descripcion&guardada=1",
+    );
+
+    const input = updateProperty.mock.calls[0][2];
+    expect(input).toEqual(
+      expect.objectContaining({ description: null, marketingTag: "new", hasWater: true }),
+    );
+    expect(input).not.toHaveProperty("price");
+    expect(input).not.toHaveProperty("title");
+  });
+
+  it("returns field errors for the step without calling the API", async () => {
+    const state = await updatePropertyAction(
+      "p1",
+      "datos",
+      {},
+      formDataFor({ ...VALID_FIELDS, price: "" }),
+    );
+
+    expect(updateProperty).not.toHaveBeenCalled();
+    expect(state.fieldErrors?.price).toBeDefined();
   });
 
   it("renders the not-found page when the property no longer exists", async () => {
     updateProperty.mockRejectedValue(new ApiError(404, "Not found"));
 
     await expect(
-      updatePropertyAction("p1", {}, formDataFor(VALID_FIELDS)),
+      updatePropertyAction("p1", "datos", {}, formDataFor(VALID_FIELDS)),
     ).rejects.toThrow("NEXT_NOT_FOUND");
   });
 });

@@ -8,13 +8,17 @@ import {
 } from "@/lib/api/properties";
 import { canDeleteProperty } from "@/lib/properties/lifecycle";
 import { toFormValues } from "@/lib/properties/property-form";
+import { computeReadiness } from "@/lib/properties/readiness";
+import { parseStep } from "@/lib/properties/steps";
 import { getCurrentUser, getSessionToken } from "@/lib/session/dal";
 import { handleSessionError } from "@/lib/session/session-error";
-import FormNotice from "@/components/admin/forms/FormNotice/FormNotice";
+import AutoHideNotice from "@/components/admin/forms/AutoHideNotice/AutoHideNotice";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import DealStatusBadge from "@/components/admin/properties/DealStatusBadge/DealStatusBadge";
 import PropertyForm from "@/components/admin/properties/PropertyForm/PropertyForm";
 import PropertyImagesManager from "@/components/admin/properties/PropertyImagesManager/PropertyImagesManager";
+import PropertyStepper from "@/components/admin/properties/PropertyStepper/PropertyStepper";
+import StepNav from "@/components/admin/properties/StepNav/StepNav";
 import PropertyStatusPanel from "@/components/admin/properties/PropertyStatusPanel/PropertyStatusPanel";
 import PublicationStatusBadge from "@/components/admin/properties/PublicationStatusBadge/PublicationStatusBadge";
 import { updatePropertyAction } from "./actions";
@@ -48,8 +52,10 @@ async function loadProperty(token: string, id: string): Promise<PropertyDetail> 
 }
 
 /**
- * `/admin/propiedades/[id]` — property editor (feature 6). Sections: data form
- * (T4), status and actions (T5), photos (T6).
+ * `/admin/propiedades/[id]` — guided property editor (feature 6, reworked in
+ * feature 16 T3). `?paso=` picks the step: datos, fotos, descripcion or
+ * vista-previa (publication). Each form step saves only its own fields; the
+ * stepper allows free navigation.
  */
 export default async function EditPropertyPage({
   params,
@@ -63,10 +69,16 @@ export default async function EditPropertyPage({
     getCurrentUser(),
   ]);
   const isAdmin = user.roles.includes("admin");
+  const step = parseStep(query.paso);
+  const readiness = computeReadiness({
+    imageCount: property.images.length,
+    description: property.description,
+    price: property.price,
+  });
 
   const notice =
     query.creada === "1"
-      ? "Propiedad creada como borrador. Cargá las fotos y publicala cuando esté lista."
+      ? "Borrador creado. Ahora cargá las fotos; después sumá la descripción y publicá."
       : query.guardada === "1"
         ? "Cambios guardados."
         : undefined;
@@ -82,47 +94,75 @@ export default async function EditPropertyPage({
         <DealStatusBadge status={property.dealStatus} />
       </div>
 
-      {notice && <FormNotice>{notice}</FormNotice>}
+      {notice && <AutoHideNotice>{notice}</AutoHideNotice>}
 
-      <section aria-labelledby="property-status-heading" className={styles.section}>
-        <h2 id="property-status-heading" className={styles.sectionTitle}>
-          Estado y acciones
-        </h2>
-        <PropertyStatusPanel
-          publicationStatus={property.publicationStatus}
-          dealStatus={property.dealStatus}
-          operation={property.operation}
-          canDelete={canDeleteProperty(user.roles, property)}
-          showArchiveHint={isAdmin && property.firstPublishedAt !== null}
-          publicationAction={changePublicationAction.bind(null, property.id)}
-          dealStatusAction={changeDealStatusAction.bind(null, property.id)}
-          deleteAction={deletePropertyAction.bind(null, property.id)}
-        />
-      </section>
+      <PropertyStepper current={step} propertyId={property.id} />
 
-      <section aria-labelledby="property-photos-heading" className={styles.section}>
-        <h2 id="property-photos-heading" className={styles.sectionTitle}>
-          Fotos
-        </h2>
-        <PropertyImagesManager
-          images={property.images}
-          uploadAction={uploadImageAction.bind(null, property.id)}
-          reorderAction={reorderImagesAction.bind(null, property.id)}
-          deleteAction={deleteImageAction.bind(null, property.id)}
-        />
-      </section>
+      {step === "datos" && (
+        <section aria-labelledby="property-data-heading" className={styles.section}>
+          <h2 id="property-data-heading" className={styles.sectionTitle}>
+            Datos de la propiedad
+          </h2>
+          <PropertyForm
+            mode="edit"
+            step="datos"
+            action={updatePropertyAction.bind(null, property.id, "datos")}
+            neighborhoods={neighborhoods}
+            initialValues={toFormValues(property)}
+          />
+        </section>
+      )}
 
-      <section aria-labelledby="property-data-heading" className={styles.section}>
-        <h2 id="property-data-heading" className={styles.sectionTitle}>
-          Datos de la propiedad
-        </h2>
-        <PropertyForm
-          mode="edit"
-          action={updatePropertyAction.bind(null, property.id)}
-          neighborhoods={neighborhoods}
-          initialValues={toFormValues(property)}
-        />
-      </section>
+      {step === "fotos" && (
+        <section aria-labelledby="property-photos-heading" className={styles.section}>
+          <h2 id="property-photos-heading" className={styles.sectionTitle}>
+            Fotos
+          </h2>
+          <PropertyImagesManager
+            images={property.images}
+            uploadAction={uploadImageAction.bind(null, property.id)}
+            reorderAction={reorderImagesAction.bind(null, property.id)}
+            deleteAction={deleteImageAction.bind(null, property.id)}
+          />
+        </section>
+      )}
+
+      {step === "descripcion" && (
+        <section aria-labelledby="property-extras-heading" className={styles.section}>
+          <h2 id="property-extras-heading" className={styles.sectionTitle}>
+            Descripción y extras
+          </h2>
+          <PropertyForm
+            mode="edit"
+            step="extras"
+            action={updatePropertyAction.bind(null, property.id, "extras")}
+            neighborhoods={neighborhoods}
+            initialValues={toFormValues(property)}
+          />
+        </section>
+      )}
+
+      {step === "vista-previa" && (
+        <section aria-labelledby="property-status-heading" className={styles.section}>
+          <h2 id="property-status-heading" className={styles.sectionTitle}>
+            Publicación y estado
+          </h2>
+          <PropertyStatusPanel
+            propertyId={property.id}
+            readiness={readiness}
+            publicationStatus={property.publicationStatus}
+            dealStatus={property.dealStatus}
+            operation={property.operation}
+            canDelete={canDeleteProperty(user.roles, property)}
+            showArchiveHint={isAdmin && property.firstPublishedAt !== null}
+            publicationAction={changePublicationAction.bind(null, property.id)}
+            dealStatusAction={changeDealStatusAction.bind(null, property.id)}
+            deleteAction={deletePropertyAction.bind(null, property.id)}
+          />
+        </section>
+      )}
+
+      <StepNav propertyId={property.id} current={step} />
     </div>
   );
 }

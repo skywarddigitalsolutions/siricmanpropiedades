@@ -20,6 +20,8 @@ import {
   type PropertyFormState,
   type PropertyFormValues,
 } from "@/lib/properties/property-form";
+import { currencyForOperation, suggestTitle } from "@/lib/properties/suggest";
+import type { FormStep } from "@/lib/properties/steps";
 import AddressField from "@/components/admin/properties/AddressField/AddressField";
 import CheckboxField from "@/components/admin/forms/CheckboxField/CheckboxField";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
@@ -27,12 +29,15 @@ import SelectField from "@/components/admin/forms/SelectField/SelectField";
 import SubmitButton from "@/components/admin/forms/SubmitButton/SubmitButton";
 import TextareaField from "@/components/admin/forms/TextareaField/TextareaField";
 import TextField from "@/components/admin/forms/TextField/TextField";
+import { MIN_DESCRIPTION_LENGTH } from "@/lib/properties/readiness";
 import styles from "./PropertyForm.module.css";
 
 export type { PropertyFormState };
 
 type PropertyFormProps = {
   mode: PropertyFormMode;
+  /** Which step's fields this form owns: step 1 data or step 3 description and extras. */
+  step: FormStep;
   action: (
     prev: PropertyFormState,
     formData: FormData,
@@ -42,6 +47,7 @@ type PropertyFormProps = {
 };
 
 const CURRENCY_LABELS = { USD: "Dólares (USD)", ARS: "Pesos (ARS)" } as const;
+const DESCRIPTION_MAX = 5000;
 
 function toOptions<T extends string>(
   values: readonly T[],
@@ -75,102 +81,67 @@ const CONDITION_FIELDS: { name: BooleanKey; label: string }[] = [
   { name: "immediateAvailability", label: "Disponibilidad inmediata" },
 ];
 
-/**
- * Address + barrio. The barrio select is controlled here so a validated
- * address can pre-select it (or offer to). Lives inside the keyed `<form>`, so
- * it remounts with the submitted values after each action.
- */
-function LocationFields({
-  neighborhoods,
-  values,
-  errors,
-}: {
+type FieldsProps = {
+  mode: PropertyFormMode;
   neighborhoods: Neighborhood[];
   values: PropertyFormValues;
   errors: PropertyFieldErrors;
-}) {
+};
+
+/**
+ * Step 1: the 13 required fields grouped as operation and type, location,
+ * price, rooms and areas, plus the title. Operation, type, barrio, rooms,
+ * currency and title are controlled here so that, when creating, the currency
+ * follows the operation (until the user picks one) and the title is suggested
+ * (until the user edits it). Lives inside the keyed `<form>`, so it remounts
+ * with the submitted values after each action.
+ */
+function DatosFields({ mode, neighborhoods, values, errors }: FieldsProps) {
+  const isCreate = mode === "create";
+  const [operation, setOperation] = useState(values.operation);
+  const [type, setType] = useState(values.type);
+  const [currency, setCurrency] = useState(values.currency);
+  const [currencyTouched, setCurrencyTouched] = useState(
+    () =>
+      !isCreate ||
+      (values.operation !== "" &&
+        values.currency !== currencyForOperation(values.operation)),
+  );
   const [neighborhoodId, setNeighborhoodId] = useState(values.neighborhoodId);
-  const options = neighborhoods.map((neighborhood) => ({
+  const [rooms, setRooms] = useState(values.rooms);
+
+  const suggestionFor = (
+    nextType: string,
+    nextNeighborhoodId: string,
+    nextRooms: string,
+  ) =>
+    isCreate
+      ? suggestTitle({
+          type: nextType,
+          neighborhoodName:
+            neighborhoods.find((n) => n.id === nextNeighborhoodId)?.name ?? "",
+          rooms: nextRooms,
+        })
+      : "";
+  const suggested = suggestionFor(type, neighborhoodId, rooms);
+  // `null` = the user has not edited the title, so it follows the suggestion.
+  const [titleOverride, setTitleOverride] = useState<string | null>(() => {
+    if (!isCreate) return values.title;
+    if (values.title === "") return null;
+    return values.title ===
+      suggestionFor(values.type, values.neighborhoodId, values.rooms)
+      ? null
+      : values.title;
+  });
+  const title = titleOverride ?? suggested;
+
+  const neighborhoodOptions = neighborhoods.map((neighborhood) => ({
     value: neighborhood.id,
     label: neighborhood.name,
   }));
 
   return (
     <>
-      <AddressField
-        neighborhoods={neighborhoods}
-        neighborhoodId={neighborhoodId}
-        onNeighborhoodChange={setNeighborhoodId}
-        defaultAddress={values.address}
-        error={errors.address}
-      />
-      <SelectField
-        id="neighborhoodId"
-        name="neighborhoodId"
-        label="Barrio"
-        placeholder="Elegí un barrio"
-        options={options}
-        value={neighborhoodId}
-        onChange={(event) => setNeighborhoodId(event.target.value)}
-        error={errors.neighborhoodId}
-        required
-      />
-    </>
-  );
-}
-
-/**
- * Create/edit form for a property (feature 6 T4). Presentational: the route
- * passes the Server Action, the neighborhoods and, in edit mode, the current
- * values. Number fields are text inputs with a numeric keyboard so the es-AR
- * formats accepted by `parsePropertyForm` ("120.000", "85,50") are allowed.
- */
-export default function PropertyForm({
-  mode,
-  action,
-  neighborhoods,
-  initialValues = DEFAULT_FORM_VALUES,
-}: PropertyFormProps) {
-  const [state, formAction] = useActionState(action, {});
-
-  // Remount the fields whenever the action returns, so uncontrolled inputs
-  // (selects included, which ignore later `defaultValue` changes) show the
-  // values the user submitted instead of the original ones.
-  const [lastState, setLastState] = useState(state);
-  const [version, setVersion] = useState(0);
-  if (state !== lastState) {
-    setLastState(state);
-    setVersion((current) => current + 1);
-  }
-
-  // After a failed submit, take the user to what needs fixing: the first
-  // invalid field, or the error summary when the error is not field-specific.
-  const formRef = useRef<HTMLFormElement>(null);
-  useEffect(() => {
-    if (version === 0 || !state.fieldErrors) return;
-    const form = formRef.current;
-    const target = form?.querySelector<HTMLElement>('[aria-invalid="true"]');
-    if (target) target.focus();
-    else form?.querySelector('[role="alert"]')?.scrollIntoView({ block: "center" });
-  }, [version, state.fieldErrors]);
-
-  const values = state.values ?? initialValues;
-  const errors = state.fieldErrors ?? {};
-  const hasFieldErrors = Object.keys(errors).some((key) => key !== "general");
-
-  return (
-    <form
-      key={version}
-      ref={formRef}
-      action={formAction}
-      className={styles.form}
-    >
-      {(errors.general || hasFieldErrors) && (
-        <FormAlert>
-          {errors.general ?? "Revisá los campos marcados antes de guardar."}
-        </FormAlert>
-      )}
-
       <fieldset className={styles.section}>
         <legend className={styles.legend}>Operación y tipo</legend>
         <div className={styles.grid}>
@@ -180,7 +151,15 @@ export default function PropertyForm({
             label="Operación"
             placeholder="Elegí una opción"
             options={OPERATION_OPTIONS}
-            defaultValue={values.operation}
+            value={operation}
+            onChange={(event) => {
+              const next = event.target.value;
+              setOperation(next);
+              const suggestedCurrency = currencyForOperation(next);
+              if (isCreate && !currencyTouched && suggestedCurrency) {
+                setCurrency(suggestedCurrency);
+              }
+            }}
             error={errors.operation}
             required
           />
@@ -190,29 +169,33 @@ export default function PropertyForm({
             label="Tipo de propiedad"
             placeholder="Elegí una opción"
             options={TYPE_OPTIONS}
-            defaultValue={values.type}
+            value={type}
+            onChange={(event) => setType(event.target.value)}
             error={errors.type}
             required
           />
         </div>
-        <TextField
-          id="title"
-          name="title"
-          label="Título"
-          defaultValue={values.title}
-          error={errors.title}
-          minLength={5}
-          maxLength={150}
-          required
-        />
       </fieldset>
 
       <fieldset className={styles.section}>
         <legend className={styles.legend}>Ubicación</legend>
-        <LocationFields
+        <AddressField
           neighborhoods={neighborhoods}
-          values={values}
-          errors={errors}
+          neighborhoodId={neighborhoodId}
+          onNeighborhoodChange={setNeighborhoodId}
+          defaultAddress={values.address}
+          error={errors.address}
+        />
+        <SelectField
+          id="neighborhoodId"
+          name="neighborhoodId"
+          label="Barrio"
+          placeholder="Elegí un barrio"
+          options={neighborhoodOptions}
+          value={neighborhoodId}
+          onChange={(event) => setNeighborhoodId(event.target.value)}
+          error={errors.neighborhoodId}
+          required
         />
         <CheckboxField
           id="showExactAddress"
@@ -232,7 +215,11 @@ export default function PropertyForm({
             label="Moneda"
             placeholder="Elegí una moneda"
             options={CURRENCY_OPTIONS}
-            defaultValue={values.currency}
+            value={currency}
+            onChange={(event) => {
+              setCurrency(event.target.value);
+              setCurrencyTouched(true);
+            }}
             error={errors.currency}
             required
           />
@@ -257,14 +244,15 @@ export default function PropertyForm({
       </fieldset>
 
       <fieldset className={styles.section}>
-        <legend className={styles.legend}>Características</legend>
+        <legend className={styles.legend}>Ambientes y superficies</legend>
         <div className={styles.compactGrid}>
           <TextField
             id="rooms"
             name="rooms"
             label="Ambientes"
             inputMode="numeric"
-            defaultValue={values.rooms}
+            value={rooms}
+            onChange={(event) => setRooms(event.target.value)}
             error={errors.rooms}
             required
           />
@@ -323,7 +311,102 @@ export default function PropertyForm({
       </fieldset>
 
       <fieldset className={styles.section}>
-        <legend className={styles.legend}>Servicios</legend>
+        <legend className={styles.legend}>Título del aviso</legend>
+        <TextField
+          id="title"
+          name="title"
+          label="Título"
+          value={title}
+          onChange={(event) =>
+            setTitleOverride(event.target.value === "" ? null : event.target.value)
+          }
+          error={errors.title}
+          minLength={5}
+          maxLength={150}
+          required
+        />
+        {isCreate && titleOverride === null && title !== "" && (
+          <p className={styles.hint}>
+            Lo armamos con los datos que cargaste. Podés editarlo.
+          </p>
+        )}
+      </fieldset>
+    </>
+  );
+}
+
+function DescriptionField({
+  defaultValue,
+  error,
+}: {
+  defaultValue: string;
+  error?: string;
+}) {
+  const [length, setLength] = useState(defaultValue.trim().length);
+  const missing = Math.max(0, MIN_DESCRIPTION_LENGTH - length);
+
+  return (
+    <div className={styles.descriptionField}>
+      <TextareaField
+        id="description"
+        name="description"
+        label="Descripción"
+        rows={8}
+        maxLength={DESCRIPTION_MAX}
+        defaultValue={defaultValue}
+        error={error}
+        onChange={(event) => setLength(event.target.value.trim().length)}
+      />
+      <p className={styles.counter}>
+        <span>
+          {length} / {DESCRIPTION_MAX}
+        </span>
+        {missing > 0 && (
+          <span className={styles.counterHint}>
+            Te faltan {missing} caracteres para poder publicar.
+          </span>
+        )}
+      </p>
+    </div>
+  );
+}
+
+function OptionalGroup({
+  title,
+  defaultOpen,
+  children,
+}: {
+  title: string;
+  defaultOpen: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <details className={styles.optional} open={defaultOpen}>
+      <summary className={styles.optionalSummary}>
+        {title}
+        <span className={styles.optionalTag}>Opcional</span>
+      </summary>
+      <div className={styles.optionalBody}>{children}</div>
+    </details>
+  );
+}
+
+/** Step 3: description plus optional collapsed groups (services, conditions, highlight). */
+function ExtrasFields({ values, errors }: Pick<FieldsProps, "values" | "errors">) {
+  return (
+    <>
+      <fieldset className={styles.section}>
+        <legend className={styles.legend}>Descripción</legend>
+        <DescriptionField
+          defaultValue={values.description}
+          error={errors.description}
+        />
+      </fieldset>
+
+      <OptionalGroup
+        title="Servicios"
+        defaultOpen={SERVICE_FIELDS.some((field) => values[field.name])}
+      >
         <div className={styles.checkGrid}>
           {SERVICE_FIELDS.map((field) => (
             <CheckboxField
@@ -335,10 +418,12 @@ export default function PropertyForm({
             />
           ))}
         </div>
-      </fieldset>
+      </OptionalGroup>
 
-      <fieldset className={styles.section}>
-        <legend className={styles.legend}>Condiciones</legend>
+      <OptionalGroup
+        title="Condiciones"
+        defaultOpen={CONDITION_FIELDS.some((field) => values[field.name])}
+      >
         <div className={styles.checkGrid}>
           {CONDITION_FIELDS.map((field) => (
             <CheckboxField
@@ -350,10 +435,12 @@ export default function PropertyForm({
             />
           ))}
         </div>
-      </fieldset>
+      </OptionalGroup>
 
-      <fieldset className={styles.section}>
-        <legend className={styles.legend}>Destaque</legend>
+      <OptionalGroup
+        title="Destacar el aviso"
+        defaultOpen={values.featured || values.marketingTag !== "none"}
+      >
         <SelectField
           id="marketingTag"
           name="marketingTag"
@@ -368,24 +455,80 @@ export default function PropertyForm({
           label="Destacada en la portada"
           defaultChecked={values.featured}
         />
-      </fieldset>
+      </OptionalGroup>
+    </>
+  );
+}
 
-      <fieldset className={styles.section}>
-        <legend className={styles.legend}>Descripción</legend>
-        <TextareaField
-          id="description"
-          name="description"
-          label="Descripción"
-          rows={8}
-          maxLength={5000}
-          defaultValue={values.description}
-          error={errors.description}
+/**
+ * Form of one editor step (feature 6 T4, reworked in feature 16 T3):
+ * `step="datos"` owns the required data, `step="extras"` the description and
+ * optional extras. Presentational: the route passes the Server Action, the
+ * neighborhoods and, in edit mode, the current values. Number fields are text
+ * inputs with a numeric keyboard so the es-AR formats accepted by
+ * `parsePropertyForm` ("120.000", "85,50") are allowed.
+ */
+export default function PropertyForm({
+  mode,
+  step,
+  action,
+  neighborhoods,
+  initialValues = DEFAULT_FORM_VALUES,
+}: PropertyFormProps) {
+  const [state, formAction] = useActionState(action, {});
+
+  // Remount the fields whenever the action returns, so uncontrolled inputs
+  // (selects included, which ignore later `defaultValue` changes) show the
+  // values the user submitted instead of the original ones.
+  const [lastState, setLastState] = useState(state);
+  const [version, setVersion] = useState(0);
+  if (state !== lastState) {
+    setLastState(state);
+    setVersion((current) => current + 1);
+  }
+
+  // After a failed submit, take the user to what needs fixing: the first
+  // invalid field, or the error summary when the error is not field-specific.
+  const formRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (version === 0 || !state.fieldErrors) return;
+    const form = formRef.current;
+    const target = form?.querySelector<HTMLElement>('[aria-invalid="true"]');
+    if (target) target.focus();
+    else form?.querySelector('[role="alert"]')?.scrollIntoView({ block: "center" });
+  }, [version, state.fieldErrors]);
+
+  const values = state.values ?? initialValues;
+  const errors = state.fieldErrors ?? {};
+  const hasFieldErrors = Object.keys(errors).some((key) => key !== "general");
+
+  return (
+    <form
+      key={version}
+      ref={formRef}
+      action={formAction}
+      className={styles.form}
+    >
+      {(errors.general || hasFieldErrors) && (
+        <FormAlert>
+          {errors.general ?? "Revisá los campos marcados antes de guardar."}
+        </FormAlert>
+      )}
+
+      {step === "datos" ? (
+        <DatosFields
+          mode={mode}
+          neighborhoods={neighborhoods}
+          values={values}
+          errors={errors}
         />
-      </fieldset>
+      ) : (
+        <ExtrasFields values={values} errors={errors} />
+      )}
 
       <div className={styles.actions}>
         <SubmitButton pendingLabel="Guardando…">
-          {mode === "create" ? "Crear propiedad" : "Guardar cambios"}
+          {mode === "create" ? "Guardar y continuar" : "Guardar cambios"}
         </SubmitButton>
       </div>
     </form>

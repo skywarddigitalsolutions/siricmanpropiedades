@@ -104,3 +104,64 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+.hint {
+  font: 500 13px var(--font-body), sans-serif;
+  color: var(--color-text-faint);
+}
+
+.descriptionField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.counter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font: 600 13px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
+.counterHint {
+  color: #8a5a1a;
+}
+
+/* Optional groups of step 3 stay collapsed until needed. */
+.optional {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.optionalSummary {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  font: 700 17px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  cursor: pointer;
+}
+
+.optionalSummary:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: -2px;
+  border-radius: var(--radius-md);
+}
+
+.optionalTag {
+  font: 600 12px var(--font-body), sans-serif;
+  color: var(--color-text-faint);
+}
+
+.optionalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 16px 16px;
+}
