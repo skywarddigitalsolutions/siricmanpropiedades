@@ -1,0 +1,207 @@
+import type { Currency, Operation, PropertyType } from "@/lib/properties/enums";
+import type { PublicPropertyFilters, PublicSort } from "./types";
+
+/**
+ * Results page state, read from and written to Spanish, shareable URLs
+ * (`/propiedades?operacion=venta&ambientes=3…`). Invalid values are dropped,
+ * never forwarded, so a hand-edited URL can't make the API answer 400.
+ */
+export type ResultsSort = "recientes" | "menor-precio" | "mayor-precio";
+
+export type SearchState = {
+  operation?: Operation;
+  type?: PropertyType;
+  /** Neighborhood slug. */
+  neighborhood?: string;
+  /** Minimum rooms (5 means "5 or more"). */
+  rooms?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  garage: boolean;
+  credit: boolean;
+  pets: boolean;
+  currency?: Currency;
+  priceMin?: number;
+  priceMax?: number;
+  sort: ResultsSort;
+  page: number;
+  code?: string;
+};
+
+export const EMPTY_SEARCH: SearchState = {
+  garage: false,
+  credit: false,
+  pets: false,
+  sort: "recientes",
+  page: 1,
+};
+
+export const RESULTS_PATH = "/propiedades";
+
+export const OPERATION_SLUGS: Record<Operation, string> = {
+  sale: "venta",
+  rent: "alquiler",
+};
+
+export const TYPE_SLUGS: Record<PropertyType, string> = {
+  apartment: "departamento",
+  house: "casa",
+  ph: "ph",
+  land: "terreno",
+  commercial: "local",
+  office: "oficina",
+  garage: "cochera",
+};
+
+const SORTS: Record<ResultsSort, PublicSort> = {
+  recientes: "newest",
+  "menor-precio": "price_asc",
+  "mayor-precio": "price_desc",
+};
+
+type RawParams = Record<string, string | string[] | undefined>;
+
+function first(raw: RawParams, key: string): string | undefined {
+  const value = raw[key];
+  return (Array.isArray(value) ? value[0] : value)?.trim() || undefined;
+}
+
+function fromSlug<T extends string>(slugs: Record<T, string>, slug?: string): T | undefined {
+  return (Object.keys(slugs) as T[]).find((key) => slugs[key] === slug);
+}
+
+function intInRange(value: string | undefined, min: number, max: number) {
+  if (!value || !/^\d+$/.test(value)) return undefined;
+  const number = Number(value);
+  return number >= min && number <= max ? number : undefined;
+}
+
+/** "300.000" or "$ 300000" → 300000 (prices are whole units). */
+function amount(value: string | undefined): number | undefined {
+  const digits = value?.replace(/\D/g, "");
+  return digits ? Number(digits) : undefined;
+}
+
+export function parseSearchParams(raw: RawParams): SearchState {
+  const neighborhood = first(raw, "barrio");
+  const currency = first(raw, "moneda");
+  const sort = first(raw, "orden");
+  const code = first(raw, "codigo")?.toUpperCase();
+  let priceMin = amount(first(raw, "desde"));
+  let priceMax = amount(first(raw, "hasta"));
+  if (priceMin !== undefined && priceMax !== undefined && priceMin > priceMax) {
+    [priceMin, priceMax] = [priceMax, priceMin];
+  }
+
+  const state: SearchState = {
+    ...EMPTY_SEARCH,
+    operation: fromSlug(OPERATION_SLUGS, first(raw, "operacion")),
+    type: fromSlug(TYPE_SLUGS, first(raw, "tipo")),
+    neighborhood:
+      neighborhood && /^[a-z0-9-]{1,120}$/.test(neighborhood) ? neighborhood : undefined,
+    rooms: intInRange(first(raw, "ambientes"), 1, 5),
+    bedrooms: intInRange(first(raw, "dormitorios"), 1, 4),
+    bathrooms: intInRange(first(raw, "banos"), 1, 3),
+    garage: first(raw, "cochera") === "1",
+    credit: first(raw, "credito") === "1",
+    pets: first(raw, "mascotas") === "1",
+    currency: currency === "USD" || currency === "ARS" ? currency : undefined,
+    priceMin,
+    priceMax,
+    sort: sort && sort in SORTS ? (sort as ResultsSort) : "recientes",
+    page: intInRange(first(raw, "pagina"), 1, 10_000) ?? 1,
+    code: code && code.length <= 20 ? code : undefined,
+  };
+
+  // Drop keys left undefined so states compare cleanly.
+  return Object.fromEntries(
+    Object.entries(state).filter(([, value]) => value !== undefined),
+  ) as SearchState;
+}
+
+/**
+ * The back filters and sorts by price within one currency only. When price
+ * matters but no currency was chosen, use the usual one in CABA: dollars for
+ * sales, pesos for rents.
+ */
+export function effectiveCurrency(state: SearchState): Currency | undefined {
+  if (state.currency) return state.currency;
+  const usesPrice =
+    state.sort !== "recientes" ||
+    state.priceMin !== undefined ||
+    state.priceMax !== undefined;
+  if (!usesPrice) return undefined;
+  return state.operation === "rent" ? "ARS" : "USD";
+}
+
+export function toApiFilters(state: SearchState, pageSize: number): PublicPropertyFilters {
+  const filters: PublicPropertyFilters = {
+    operation: state.operation,
+    type: state.type,
+    neighborhood: state.neighborhood,
+    minRooms: state.rooms,
+    minBedrooms: state.bedrooms,
+    minBathrooms: state.bathrooms,
+    hasGarage: state.garage || undefined,
+    creditEligible: state.credit || undefined,
+    petsAllowed: state.pets || undefined,
+    code: state.code,
+    currency: effectiveCurrency(state),
+    priceMin: state.priceMin,
+    priceMax: state.priceMax,
+    sort: SORTS[state.sort],
+    limit: pageSize,
+    offset: (state.page - 1) * pageSize,
+  };
+  return Object.fromEntries(
+    Object.entries(filters).filter(([, value]) => value !== undefined),
+  ) as PublicPropertyFilters;
+}
+
+/** Results URL for `state` with `patch` applied; the page resets to 1 unless patched. */
+export function buildSearchHref(state: SearchState, patch: Partial<SearchState> = {}): string {
+  const next: SearchState = { ...state, page: 1, ...patch };
+  const params = new URLSearchParams();
+  const set = (key: string, value: string | number | undefined | false) => {
+    if (value !== undefined && value !== false) params.set(key, String(value));
+  };
+
+  set("operacion", next.operation && OPERATION_SLUGS[next.operation]);
+  set("tipo", next.type && TYPE_SLUGS[next.type]);
+  set("barrio", next.neighborhood);
+  set("ambientes", next.rooms);
+  set("dormitorios", next.bedrooms);
+  set("banos", next.bathrooms);
+  set("cochera", next.garage && 1);
+  set("credito", next.credit && 1);
+  set("mascotas", next.pets && 1);
+  set("moneda", next.currency);
+  set("desde", next.priceMin);
+  set("hasta", next.priceMax);
+  set("orden", next.sort !== "recientes" && next.sort);
+  set("pagina", next.page > 1 && next.page);
+  set("codigo", next.code);
+
+  const query = params.toString();
+  return query ? `${RESULTS_PATH}?${query}` : RESULTS_PATH;
+}
+
+/** Filters that live in the filters sheet (operation and barrio have their own controls). */
+export function countActiveFilters(state: SearchState): number {
+  return [
+    state.type,
+    state.rooms,
+    state.bedrooms,
+    state.bathrooms,
+    state.garage,
+    state.credit,
+    state.pets,
+    state.priceMin !== undefined || state.priceMax !== undefined,
+  ].filter(Boolean).length;
+}
+
+export function resultsTitle(total: number, operation?: Operation): string {
+  const noun = total === 1 ? "propiedad" : "propiedades";
+  const suffix = operation === "sale" ? " en venta" : operation === "rent" ? " en alquiler" : "";
+  return `${total} ${noun}${suffix}`;
+}

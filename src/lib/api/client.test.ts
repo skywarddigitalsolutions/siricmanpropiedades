@@ -123,6 +123,20 @@ describe("apiFetch", () => {
     expect(init.cache).toBe("no-store");
   });
 
+  it("uses the Next data cache and skips the visitor IP when revalidate is set", async () => {
+    headers.mockResolvedValue(mockRequestHeaders({ "x-forwarded-for": "203.0.113.7" }));
+    const { apiFetch } = await loadClient();
+    const fetchMock = stubFetch(new Response("{}", { status: 200 }));
+
+    await apiFetch("/properties", { revalidate: 60 });
+
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init.next).toEqual({ revalidate: 60 });
+    expect(init.cache).toBeUndefined();
+    expect(init.headers["X-Forwarded-For"]).toBeUndefined();
+    expect(headers).not.toHaveBeenCalled();
+  });
+
   it("parses a 2xx JSON body and returns it", async () => {
     const { apiFetch } = await loadClient();
     stubFetch(

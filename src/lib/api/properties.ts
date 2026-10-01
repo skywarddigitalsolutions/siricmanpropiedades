@@ -1,5 +1,6 @@
 import "server-only";
 import { apiFetch } from "./client";
+import { buildQuery } from "./query-string";
 import type {
   Currency,
   DealStatus,
@@ -146,16 +147,6 @@ export type PropertyFilters = {
 };
 
 export type Paginated<T> = { items: T[]; total: number };
-
-function buildQuery(filters: PropertyFilters): string {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(filters)) {
-    if (value === undefined || value === null || value === "") continue;
-    params.set(key, String(value));
-  }
-  const query = params.toString();
-  return query ? `?${query}` : "";
-}
 
 /** `GET /api/admin/properties` — every publicationStatus, filterable, paginated. */
 export function listProperties(

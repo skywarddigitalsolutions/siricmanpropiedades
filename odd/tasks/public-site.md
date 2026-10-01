@@ -37,8 +37,8 @@
 
 | ID | Task | Repo | Route | Status | Commit / PR |
 |----|------|------|-------|--------|-------------|
-| B1 | Public catalog: `featured` + `code` filters, unavailable last, public read throttle (catalog + neighborhoods GET) | back | inline (subagents rate-limited) | ⬜ | |
-| T1 | Public catalog client (cached, server-only), results URL params, card view-model (price label, specs) | front | inline | ⬜ | |
+| B1 | Public catalog: `featured` + `code` filters, unavailable last, public read throttle (catalog + neighborhoods GET) | back | inline (subagents rate-limited) | ✅ | back #21 |
+| T1 | Public catalog client (cached, server-only), results URL params, card view-model (price label, specs) | front | inline | ✅ | `9ab11f6` |
 | T2 | `PropertyCard` + home page | front | inline | ⬜ | |
 | T3 | Results page: filter bar, filters sheet, quick chips, sort, grid, pagination, empty state | front | inline | ⬜ | |
 | T4 | Property detail page: gallery, facts, chips, description, services, location, WhatsApp, bottom bar | front | inline | ⬜ | |
@@ -54,8 +54,17 @@
 
 ## Progress / evidence
 
-(filled per task)
+### B1 — back public catalog (strict TDD, Jest)
+
+- `featured` and `code` (trimmed, uppercased, `UPPER(code) =`) filters; every public sort starts with `dealStatus ASC` (enum order puts sold/rented last); `PUBLIC_READ_THROTTLE` (300/min) on `PublicPropertiesController` and `GET /neighborhoods`. Spec `property-public-catalog` updated.
+- RED: builder spec failed to compile (unknown DTO fields); throttle specs 2 failing. Feature 3's test asserting `featured` was rejected and the service's order assertion were updated to the new contract. GREEN: 39/39 suites. Lint clean. Build OK. Merged as back PR #21.
+
+### T1 — public catalog client + URL state + view model (strict TDD)
+
+- `apiFetch` gained `revalidate` (Next data cache, no visitor IP). `src/lib/api/public-catalog.ts`: `listPublicProperties`, `getPublicProperty`, `getPublicNeighborhoods` (60 s / 1 h). Shared `buildQuery` moved to `query-string.ts`.
+- Client-safe `src/lib/public/types.ts`, `search-params.ts` (Spanish URL ⇄ state ⇄ API filters, effective currency for price sort/range, stable hrefs, active filter count, results title), `property-view.ts` (price `/mes`, expenses, specs with a11y labels, tag, status notice, location privacy, facts, conditions, services, WhatsApp inquiry). Fixture `src/test/fixtures/public-property.ts`.
+- RED: client (revalidate), public client, search params, view model (missing modules). GREEN: 423 tests passed. Lint 0 errors (1 pre-existing warning). Build OK.
 
 ## Next step
 
-B1.
+T2.
