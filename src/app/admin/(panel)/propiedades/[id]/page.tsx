@@ -14,9 +14,15 @@ import FormNotice from "@/components/admin/forms/FormNotice/FormNotice";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import DealStatusBadge from "@/components/admin/properties/DealStatusBadge/DealStatusBadge";
 import PropertyForm from "@/components/admin/properties/PropertyForm/PropertyForm";
+import PropertyImagesManager from "@/components/admin/properties/PropertyImagesManager/PropertyImagesManager";
 import PropertyStatusPanel from "@/components/admin/properties/PropertyStatusPanel/PropertyStatusPanel";
 import PublicationStatusBadge from "@/components/admin/properties/PublicationStatusBadge/PublicationStatusBadge";
 import { updatePropertyAction } from "./actions";
+import {
+  deleteImageAction,
+  reorderImagesAction,
+  uploadImageAction,
+} from "./image-actions";
 import {
   changeDealStatusAction,
   changePublicationAction,
@@ -91,6 +97,18 @@ export default async function EditPropertyPage({
           publicationAction={changePublicationAction.bind(null, property.id)}
           dealStatusAction={changeDealStatusAction.bind(null, property.id)}
           deleteAction={deletePropertyAction.bind(null, property.id)}
+        />
+      </section>
+
+      <section aria-labelledby="property-photos-heading" className={styles.section}>
+        <h2 id="property-photos-heading" className={styles.sectionTitle}>
+          Fotos
+        </h2>
+        <PropertyImagesManager
+          images={property.images}
+          uploadAction={uploadImageAction.bind(null, property.id)}
+          reorderAction={reorderImagesAction.bind(null, property.id)}
+          deleteAction={deleteImageAction.bind(null, property.id)}
         />
       </section>
 

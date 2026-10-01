@@ -25,6 +25,11 @@ const { getSessionToken, getCurrentUser } = vi.hoisted(() => ({
 vi.mock("@/lib/session/dal", () => ({ getSessionToken, getCurrentUser }));
 
 vi.mock("./actions", () => ({ updatePropertyAction: vi.fn() }));
+vi.mock("./image-actions", () => ({
+  uploadImageAction: vi.fn(),
+  reorderImagesAction: vi.fn(),
+  deleteImageAction: vi.fn(),
+}));
 vi.mock("./lifecycle-actions", () => ({
   changePublicationAction: vi.fn(),
   changeDealStatusAction: vi.fn(),
@@ -78,11 +83,11 @@ describe("EditPropertyPage", () => {
     getProperty.mockResolvedValue(makePropertyDetail());
 
     render(await renderPage({ creada: "1" }));
-    expect(screen.getByRole("status")).toHaveTextContent(/Propiedad creada/);
+    expect(screen.getByText(/Propiedad creada/)).toHaveAttribute("role", "status");
     cleanup();
 
     render(await renderPage({ guardada: "1" }));
-    expect(screen.getByRole("status")).toHaveTextContent(/Cambios guardados/);
+    expect(screen.getByText(/Cambios guardados/)).toHaveAttribute("role", "status");
   });
 
   it("shows the status and actions section", async () => {
@@ -94,6 +99,31 @@ describe("EditPropertyPage", () => {
       screen.getByRole("heading", { level: 2, name: "Estado y acciones" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Publicar" })).toBeInTheDocument();
+  });
+
+  it("shows the photos section with the current photos", async () => {
+    getProperty.mockResolvedValue(
+      makePropertyDetail({
+        images: [
+          {
+            id: "img-1",
+            position: 0,
+            url: "https://media.test/1.webp",
+            width: 1600,
+            height: 1200,
+            thumbnailUrl: "https://media.test/1-thumb.webp",
+            thumbnailWidth: 480,
+            thumbnailHeight: 360,
+            createdAt: "2024-01-01",
+          },
+        ],
+      }),
+    );
+
+    render(await renderPage());
+
+    expect(screen.getByRole("heading", { level: 2, name: "Fotos" })).toBeInTheDocument();
+    expect(screen.getByAltText("Foto 1 (portada)")).toBeInTheDocument();
   });
 
   it("offers delete only to admins on never-published properties", async () => {

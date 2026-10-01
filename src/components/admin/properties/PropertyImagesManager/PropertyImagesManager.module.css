@@ -1,0 +1,212 @@
+.manager {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.upload {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-pill);
+  padding: 10px 20px;
+  font: 700 15px var(--font-body), sans-serif;
+  color: var(--color-white);
+  background: var(--color-navy);
+  cursor: pointer;
+}
+
+.upload:hover {
+  background: var(--color-navy-dark);
+}
+
+.upload:focus-within {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.upload[data-disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Visually hidden but focusable: the label is the visible control. */
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.meta {
+  font: 700 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+}
+
+.hint,
+.empty {
+  font: 500 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
+.progress {
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--color-navy);
+}
+
+.progress:empty {
+  display: none;
+}
+
+.errorLine {
+  display: block;
+}
+
+.empty {
+  padding: 24px 16px;
+  text-align: center;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grid[aria-busy="true"] {
+  cursor: progress;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--color-border-soft);
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  font: 700 12px var(--font-body), sans-serif;
+  color: var(--color-ink);
+  background: var(--color-gold);
+}
+
+.controls,
+.confirm {
+  display: flex;
+  gap: 4px;
+}
+
+.iconButton,
+.confirmDelete,
+.cancel {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.iconButton,
+.cancel {
+  color: var(--color-navy);
+  background: var(--color-white);
+  border: 1px solid var(--color-border-strong);
+}
+
+.iconButton:hover:not(:disabled) {
+  border-color: var(--color-gold);
+}
+
+.iconButton:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.deleteButton {
+  color: #a13d3d;
+}
+
+.confirmDelete {
+  font: 700 13px var(--font-body), sans-serif;
+  color: var(--color-white);
+  background: #a13d3d;
+  border: 1px solid #a13d3d;
+}
+
+.cancel {
+  font: 600 13px var(--font-body), sans-serif;
+}
+
+.iconButton:focus-visible,
+.confirmDelete:focus-visible,
+.cancel:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 1px;
+}
+
+@media (min-width: 640px) {
+  .manager {
+    padding: 24px;
+  }
+
+  .upload {
+    flex: 0 0 auto;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (min-width: 960px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
