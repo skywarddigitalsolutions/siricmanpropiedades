@@ -1,0 +1,215 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(19, 28, 77, 0.25) 0%, rgba(19, 28, 77, 0.85) 100%),
+    repeating-linear-gradient(135deg, #27357a 0 14px, #223071 14px 28px);
+}
+
+.inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: clamp(56px, 10vw, 120px) 16px clamp(28px, 5vw, 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  text-align: center;
+}
+
+.title {
+  font: 800 clamp(34px, 6vw, 60px) / 1.05 var(--font-body), sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--color-white);
+  text-wrap: balance;
+}
+
+.subtitle {
+  max-width: 560px;
+  font-size: clamp(16px, 2vw, 19px);
+  line-height: 1.5;
+  color: #dfe3f5;
+}
+
+.form {
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.operations {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(6px);
+}
+
+.operation {
+  position: relative;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 20px;
+  border-radius: var(--radius-pill);
+  font: 700 14px var(--font-body), sans-serif;
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+/* The radio covers its pill so the whole pill is the tap target. */
+.radio {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.operation:has(.radio:checked) {
+  color: var(--color-navy);
+  background: var(--color-white);
+}
+
+.operation:has(.radio:focus-visible) {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.panel {
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius-xl);
+  background: var(--color-white);
+  box-shadow: var(--shadow-lifted);
+  text-align: left;
+}
+
+.field {
+  flex: 1 1 200px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+.field:focus-within {
+  outline: 2px solid var(--color-gold);
+}
+
+.narrow {
+  flex-basis: 140px;
+}
+
+.icon {
+  flex: none;
+  color: var(--color-gold-dark);
+}
+
+.fieldText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.caption {
+  font: 700 11px var(--font-body), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.select {
+  width: 100%;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  font: 600 15px var(--font-body), sans-serif;
+  color: var(--color-text);
+  background: transparent;
+  outline: none;
+}
+
+.submit {
+  flex: 1 1 140px;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: var(--radius-md);
+  font: 700 16px var(--font-body), sans-serif;
+  color: var(--color-white);
+  background: var(--color-navy);
+  cursor: pointer;
+}
+
+.submit:hover {
+  background: var(--color-navy-dark);
+}
+
+.submit:focus-visible,
+.codeSummary:focus-visible,
+.codeButton:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.codeSummary {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  list-style: none;
+  font: 600 14px var(--font-body), sans-serif;
+  color: #dfe3f5;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.codeSummary::-webkit-details-marker {
+  display: none;
+}
+
+.codeForm {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.codeInput {
+  width: 160px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  font: 600 15px ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+}
+
+.codeInput:focus-visible {
+  outline: 2px solid var(--color-gold);
+}
+
+.codeButton {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  font: 700 14px var(--font-body), sans-serif;
+  color: var(--color-navy-dark);
+  background: var(--color-gold);
+  cursor: pointer;
+}
