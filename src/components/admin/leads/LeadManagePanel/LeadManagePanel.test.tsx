@@ -37,6 +37,22 @@ describe("LeadManagePanel", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("Cambios guardados.");
   });
 
+  it("keeps the confirmation after the page refreshes with the new status", async () => {
+    const updateAction = vi.fn<UpdateAction>(async () => ({ message: "Cambios guardados." }));
+    const deleteAction = vi.fn<DeleteAction>(async () => ({}));
+    const props = { notes: null, canDelete: false, updateAction, deleteAction };
+    const { rerender } = render(<LeadManagePanel status="new" {...props} />);
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: "Marcar como contactada" }));
+    await screen.findByRole("status");
+    // The action revalidates the page: the lead now arrives as contacted.
+    rerender(<LeadManagePanel status="contacted" {...props} />);
+
+    expect(screen.queryByRole("button", { name: "Marcar como contactada" })).toBeNull();
+    expect(screen.getByRole("status")).toHaveTextContent("Cambios guardados.");
+  });
+
   it("hides the one-tap action once the lead is no longer new", () => {
     setup({ status: "contacted" });
 
