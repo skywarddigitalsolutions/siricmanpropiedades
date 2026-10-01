@@ -15,10 +15,12 @@ import {
 } from "@/lib/properties/labels";
 import {
   DEFAULT_FORM_VALUES,
+  type PropertyFieldErrors,
   type PropertyFormMode,
   type PropertyFormState,
   type PropertyFormValues,
 } from "@/lib/properties/property-form";
+import AddressField from "@/components/admin/properties/AddressField/AddressField";
 import CheckboxField from "@/components/admin/forms/CheckboxField/CheckboxField";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
 import SelectField from "@/components/admin/forms/SelectField/SelectField";
@@ -74,6 +76,50 @@ const CONDITION_FIELDS: { name: BooleanKey; label: string }[] = [
 ];
 
 /**
+ * Address + barrio. The barrio select is controlled here so a validated
+ * address can pre-select it (or offer to). Lives inside the keyed `<form>`, so
+ * it remounts with the submitted values after each action.
+ */
+function LocationFields({
+  neighborhoods,
+  values,
+  errors,
+}: {
+  neighborhoods: Neighborhood[];
+  values: PropertyFormValues;
+  errors: PropertyFieldErrors;
+}) {
+  const [neighborhoodId, setNeighborhoodId] = useState(values.neighborhoodId);
+  const options = neighborhoods.map((neighborhood) => ({
+    value: neighborhood.id,
+    label: neighborhood.name,
+  }));
+
+  return (
+    <>
+      <AddressField
+        neighborhoods={neighborhoods}
+        neighborhoodId={neighborhoodId}
+        onNeighborhoodChange={setNeighborhoodId}
+        defaultAddress={values.address}
+        error={errors.address}
+      />
+      <SelectField
+        id="neighborhoodId"
+        name="neighborhoodId"
+        label="Barrio"
+        placeholder="Elegí un barrio"
+        options={options}
+        value={neighborhoodId}
+        onChange={(event) => setNeighborhoodId(event.target.value)}
+        error={errors.neighborhoodId}
+        required
+      />
+    </>
+  );
+}
+
+/**
  * Create/edit form for a property (feature 6 T4). Presentational: the route
  * passes the Server Action, the neighborhoods and, in edit mode, the current
  * values. Number fields are text inputs with a numeric keyboard so the es-AR
@@ -111,10 +157,6 @@ export default function PropertyForm({
   const values = state.values ?? initialValues;
   const errors = state.fieldErrors ?? {};
   const hasFieldErrors = Object.keys(errors).some((key) => key !== "general");
-  const neighborhoodOptions = neighborhoods.map((neighborhood) => ({
-    value: neighborhood.id,
-    label: neighborhood.name,
-  }));
 
   return (
     <form
@@ -167,26 +209,10 @@ export default function PropertyForm({
 
       <fieldset className={styles.section}>
         <legend className={styles.legend}>Ubicación</legend>
-        <SelectField
-          id="neighborhoodId"
-          name="neighborhoodId"
-          label="Barrio"
-          placeholder="Elegí un barrio"
-          options={neighborhoodOptions}
-          defaultValue={values.neighborhoodId}
-          error={errors.neighborhoodId}
-          required
-        />
-        <TextField
-          id="address"
-          name="address"
-          label="Dirección"
-          defaultValue={values.address}
-          error={errors.address}
-          minLength={3}
-          maxLength={200}
-          autoComplete="off"
-          required
+        <LocationFields
+          neighborhoods={neighborhoods}
+          values={values}
+          errors={errors}
         />
         <CheckboxField
           id="showExactAddress"
