@@ -2,9 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   EMPTY_SEARCH,
   buildSearchHref,
+  canonicalHref,
   countActiveFilters,
   effectiveCurrency,
+  isCanonicalQuery,
   parseSearchParams,
+  resultsSeo,
   resultsTitle,
   toApiFilters,
 } from "./search-params";
@@ -177,5 +180,53 @@ describe("resultsTitle", () => {
     expect(resultsTitle(1, undefined)).toBe("1 propiedad");
     expect(resultsTitle(12, "sale")).toBe("12 propiedades en venta");
     expect(resultsTitle(0, "rent")).toBe("0 propiedades en alquiler");
+  });
+});
+
+describe("isCanonicalQuery", () => {
+  it("keeps the page as part of the canonical URL", () => {
+    const raw = { operacion: "venta", pagina: "2" };
+
+    expect(isCanonicalQuery(raw, parseSearchParams(raw))).toBe(true);
+    expect(canonicalHref(parseSearchParams(raw))).toBe("/propiedades?operacion=venta&pagina=2");
+  });
+
+  it("accepts the URL built for the same state, in any key order", () => {
+    const raw = { barrio: "palermo", operacion: "venta" };
+
+    expect(isCanonicalQuery(raw, parseSearchParams(raw))).toBe(true);
+  });
+
+  it("rejects empty, invalid or default params so the page can redirect", () => {
+    for (const raw of [
+      { operacion: "", barrio: "palermo" },
+      { operacion: "permuta" },
+      { orden: "recientes" },
+      { pagina: "1" },
+      { desde: "200", hasta: "100" },
+    ]) {
+      expect(isCanonicalQuery(raw, parseSearchParams(raw))).toBe(false);
+    }
+  });
+});
+
+describe("resultsSeo", () => {
+  it("names type, operation and barrio, and indexes those combinations", () => {
+    expect(
+      resultsSeo(parseSearchParams({ tipo: "departamento", operacion: "venta" }), "Palermo"),
+    ).toEqual({
+      title: "Departamentos en venta en Palermo",
+      indexable: true,
+    });
+    expect(resultsSeo(parseSearchParams({ operacion: "alquiler" }))).toEqual({
+      title: "Propiedades en alquiler en CABA",
+      indexable: true,
+    });
+  });
+
+  it("does not index pages with other filters or beyond page 1", () => {
+    expect(resultsSeo(parseSearchParams({ ambientes: "3" })).indexable).toBe(false);
+    expect(resultsSeo(parseSearchParams({ pagina: "2" })).indexable).toBe(false);
+    expect(resultsSeo(parseSearchParams({ codigo: "SP-1" })).indexable).toBe(false);
   });
 });

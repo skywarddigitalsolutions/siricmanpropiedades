@@ -1,0 +1,21 @@
+.form {
+  display: flex;
+  gap: 8px;
+}
+
+.select,
+.apply {
+  min-height: 44px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  padding: 0 14px;
+  font: 600 13px var(--font-body), sans-serif;
+  color: var(--color-text);
+  background: var(--color-white);
+}
+
+.select:focus-visible,
+.apply:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}

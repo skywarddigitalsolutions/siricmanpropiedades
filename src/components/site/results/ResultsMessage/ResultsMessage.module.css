@@ -1,0 +1,47 @@
+.message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 24px;
+  border-radius: var(--radius-xl);
+  text-align: center;
+  background: var(--color-white);
+}
+
+.title {
+  font: 800 20px var(--font-body), sans-serif;
+}
+
+.text {
+  max-width: 440px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* Shared look for the action links passed in. */
+.actions > a {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 20px;
+  border: 1px solid var(--color-navy);
+  border-radius: var(--radius-pill);
+  font: 700 14px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  background: var(--color-white);
+}
+
+.actions > a:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}

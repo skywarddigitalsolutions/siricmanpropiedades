@@ -186,6 +186,11 @@ export function buildSearchHref(state: SearchState, patch: Partial<SearchState> 
   return query ? `${RESULTS_PATH}?${query}` : RESULTS_PATH;
 }
 
+/** The one URL for exactly this state, page included. */
+export function canonicalHref(state: SearchState): string {
+  return buildSearchHref(state, { page: state.page });
+}
+
 /** Filters that live in the filters sheet (operation and barrio have their own controls). */
 export function countActiveFilters(state: SearchState): number {
   return [
@@ -204,4 +209,54 @@ export function resultsTitle(total: number, operation?: Operation): string {
   const noun = total === 1 ? "propiedad" : "propiedades";
   const suffix = operation === "sale" ? " en venta" : operation === "rent" ? " en alquiler" : "";
   return `${total} ${noun}${suffix}`;
+}
+
+/**
+ * Whether the incoming query is exactly the canonical one for `state` (key
+ * order aside). When it isn't (empty fields from the GET forms, invalid or
+ * default values), the page redirects so each search has one URL.
+ */
+export function isCanonicalQuery(raw: RawParams, state: SearchState): boolean {
+  const incoming = new URLSearchParams();
+  for (const [key, value] of Object.entries(raw)) {
+    for (const item of Array.isArray(value) ? value : [value]) {
+      if (item !== undefined) incoming.append(key, item);
+    }
+  }
+  const canonical = new URLSearchParams(canonicalHref(state).split("?")[1] ?? "");
+  incoming.sort();
+  canonical.sort();
+  return incoming.toString() === canonical.toString();
+}
+
+const TYPE_PLURALS: Record<PropertyType, string> = {
+  apartment: "Departamentos",
+  house: "Casas",
+  ph: "PH",
+  land: "Terrenos",
+  commercial: "Locales",
+  office: "Oficinas",
+  garage: "Cocheras",
+};
+
+/**
+ * Page title for a results URL. Only landing-style combinations (operation,
+ * type, barrio on page 1) are worth indexing; any other filter makes a
+ * near-duplicate page, so it is kept out of the index.
+ */
+export function resultsSeo(
+  state: SearchState,
+  neighborhoodName?: string,
+): { title: string; indexable: boolean } {
+  const noun = state.type ? TYPE_PLURALS[state.type] : "Propiedades";
+  const operation =
+    state.operation === "sale" ? " en venta" : state.operation === "rent" ? " en alquiler" : "";
+  const place = neighborhoodName ? ` en ${neighborhoodName}` : " en CABA";
+  const extra =
+    countActiveFilters({ ...state, type: undefined }) > 0 ||
+    state.currency !== undefined ||
+    state.sort !== "recientes" ||
+    state.page > 1 ||
+    state.code !== undefined;
+  return { title: `${noun}${operation}${place}`, indexable: !extra };
 }
