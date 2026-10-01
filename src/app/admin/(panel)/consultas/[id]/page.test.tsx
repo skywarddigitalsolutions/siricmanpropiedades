@@ -103,6 +103,18 @@ describe("LeadDetailPage", () => {
     );
   });
 
+  it("links the public page on the site host when the admin has its own host", async () => {
+    vi.stubEnv("ADMIN_URL", "https://admin.example.com");
+    vi.stubEnv("SITE_URL", "https://example.com");
+    render(await LeadDetailPage(params()));
+
+    expect(screen.getByRole("link", { name: /Ver en el sitio/ })).toHaveAttribute(
+      "href",
+      "https://example.com/propiedades/casa-en-palermo",
+    );
+    vi.unstubAllEnvs();
+  });
+
   it("shows appraisal details and contact topics", async () => {
     getLead.mockResolvedValue(
       makeLead({

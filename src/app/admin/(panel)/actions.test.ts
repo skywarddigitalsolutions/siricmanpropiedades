@@ -28,7 +28,7 @@ describe("logoutAction", () => {
   let store: ReturnType<typeof createCookieStore>;
 
   beforeEach(() => {
-    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "development");
     store = createCookieStore({ [SESSION_COOKIE]: "jwt-token" });
     cookies.mockResolvedValue(store);
     logout.mockReset();

@@ -55,7 +55,7 @@ describe("enableMfaAction", () => {
   let store: ReturnType<typeof createCookieStore>;
 
   beforeEach(() => {
-    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "development");
     store = createCookieStore();
     cookies.mockResolvedValue(store);
     enableMfa.mockReset();
@@ -152,7 +152,7 @@ describe("confirmMfaAction", () => {
   let store: ReturnType<typeof createCookieStore>;
 
   beforeEach(() => {
-    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "development");
     store = createCookieStore();
     cookies.mockResolvedValue(store);
     confirmMfa.mockReset();
@@ -244,7 +244,7 @@ describe("finishEnrollmentAction", () => {
   let store: ReturnType<typeof createCookieStore>;
 
   beforeEach(() => {
-    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "development");
     store = createCookieStore();
     cookies.mockResolvedValue(store);
   });

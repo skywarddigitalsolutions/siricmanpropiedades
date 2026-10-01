@@ -44,7 +44,7 @@ describe("loginAction", () => {
   const initial: FormState = {};
 
   beforeEach(() => {
-    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "development");
     store = createCookieStore();
     cookies.mockResolvedValue(store);
     login.mockReset();

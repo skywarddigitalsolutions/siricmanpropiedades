@@ -47,7 +47,7 @@ describe("cookieOptions", () => {
     expect(cookieOptions(SESSION_MAX_AGE)).toEqual({
       httpOnly: true,
       sameSite: "lax",
-      path: ADMIN_COOKIE_PATH,
+      path: "/",
       secure: true,
       maxAge: SESSION_MAX_AGE,
     });
@@ -78,12 +78,12 @@ describe("cookie get/set/clear helpers", () => {
     await setSessionCookie("jwt-token");
 
     const [call] = store.getSetCalls();
-    expect(call?.name).toBe(SESSION_COOKIE);
+    expect(call?.name).toBe(`__Host-${SESSION_COOKIE}`);
     expect(call?.value).toBe("jwt-token");
     expect(call?.options).toMatchObject({
       httpOnly: true,
       sameSite: "lax",
-      path: ADMIN_COOKIE_PATH,
+      path: "/",
       secure: true,
       maxAge: SESSION_MAX_AGE,
     });
@@ -93,7 +93,7 @@ describe("cookie get/set/clear helpers", () => {
     await setMfaPendingCookie("mfa-token");
 
     const [call] = store.getSetCalls();
-    expect(call?.name).toBe(MFA_PENDING_COOKIE);
+    expect(call?.name).toBe(`__Host-${MFA_PENDING_COOKIE}`);
     expect(call?.options).toMatchObject({ maxAge: MFA_PENDING_MAX_AGE });
   });
 
@@ -101,12 +101,12 @@ describe("cookie get/set/clear helpers", () => {
     await setSetupPendingCookie("setup-token");
 
     const [call] = store.getSetCalls();
-    expect(call?.name).toBe(SETUP_PENDING_COOKIE);
+    expect(call?.name).toBe(`__Host-${SETUP_PENDING_COOKIE}`);
     expect(call?.options).toMatchObject({ maxAge: SETUP_PENDING_MAX_AGE });
   });
 
   it("getSessionCookie reads back the session cookie value", async () => {
-    store.set(SESSION_COOKIE, "existing-jwt");
+    store.set(`__Host-${SESSION_COOKIE}`, "existing-jwt");
 
     await expect(getSessionCookie()).resolves.toBe("existing-jwt");
   });
@@ -119,10 +119,10 @@ describe("cookie get/set/clear helpers", () => {
     await clearSessionCookie();
 
     const [call] = store.getSetCalls();
-    expect(call?.name).toBe(SESSION_COOKIE);
+    expect(call?.name).toBe(`__Host-${SESSION_COOKIE}`);
     expect(call?.value).toBe("");
     expect(call?.options).toMatchObject({
-      path: ADMIN_COOKIE_PATH,
+      path: "/",
       maxAge: 0,
     });
   });
@@ -134,10 +134,32 @@ describe("cookie get/set/clear helpers", () => {
     expect(calls).toHaveLength(3);
     for (const call of calls) {
       expect(call.value).toBe("");
-      expect(call.options).toMatchObject({ path: ADMIN_COOKIE_PATH, maxAge: 0 });
+      expect(call.options).toMatchObject({ path: "/", maxAge: 0 });
     }
     expect(calls.map((c) => c.name).sort()).toEqual(
-      [SESSION_COOKIE, MFA_PENDING_COOKIE, SETUP_PENDING_COOKIE].sort(),
+      [
+        `__Host-${SESSION_COOKIE}`,
+        `__Host-${MFA_PENDING_COOKIE}`,
+        `__Host-${SETUP_PENDING_COOKIE}`,
+      ].sort(),
     );
+  });
+});
+
+describe("cookie helpers outside production", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("keeps the plain name and the /admin path so localhost over HTTP works", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    const store = createCookieStore();
+    cookies.mockResolvedValue(store);
+
+    await setSessionCookie("jwt-token");
+
+    const [call] = store.getSetCalls();
+    expect(call?.name).toBe(SESSION_COOKIE);
+    expect(call?.options).toMatchObject({ path: ADMIN_COOKIE_PATH, secure: false });
   });
 });

@@ -13,8 +13,24 @@ export const MFA_PENDING_COOKIE = "siricman_admin_mfa";
 /** Pending `setupToken` (`mfa_setup` scope), set after login when MFA enrollment is required. */
 export const SETUP_PENDING_COOKIE = "siricman_admin_setup";
 
-/** All three admin session cookies are scoped to `/admin`. */
+/** Cookie path outside production. Production uses `/` (see `cookiePath`). */
 export const ADMIN_COOKIE_PATH = "/admin";
+
+/**
+ * In production the admin lives on its own host (`ADMIN_URL`) and the cookies
+ * are host-only (no `Domain`), so the public site never receives them. The
+ * `__Host-` prefix makes browsers enforce that: `Secure`, `Path=/`, no
+ * `Domain`. Localhost over HTTP cannot use the prefix, so dev keeps the plain
+ * names and the `/admin` path.
+ */
+export function cookieName(baseName: string): string {
+  return process.env.NODE_ENV === "production" ? `__Host-${baseName}` : baseName;
+}
+
+/** `/` in production (required by `__Host-`), `/admin` otherwise. */
+export function cookiePath(): string {
+  return process.env.NODE_ENV === "production" ? "/" : ADMIN_COOKIE_PATH;
+}
 
 /** Seconds. Matches the API's 60-minute JWT lifetime. */
 export const SESSION_MAX_AGE = 3600;
