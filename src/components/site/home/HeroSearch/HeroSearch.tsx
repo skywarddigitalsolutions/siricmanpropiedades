@@ -1,8 +1,11 @@
-import { BedDouble, House, MapPin, Search } from "lucide-react";
+import Image from "next/image";
+import { BedDouble, House, Search } from "lucide-react";
 import { PROPERTY_TYPES } from "@/lib/properties/enums";
 import { PROPERTY_TYPE_LABELS } from "@/lib/properties/labels";
 import { RESULTS_PATH, TYPE_SLUGS } from "@/lib/public/search-params";
 import type { PublicNeighborhood } from "@/lib/public/types";
+import LocationCombobox from "../../LocationCombobox/LocationCombobox";
+import Select from "../../Select/Select";
 import styles from "./HeroSearch.module.css";
 
 const OPERATIONS = [
@@ -13,21 +16,31 @@ const OPERATIONS = [
 
 const ROOMS = [
   { label: "Indistinto", value: "" },
-  { label: "1 amb.", value: "1" },
-  { label: "2 amb.", value: "2" },
-  { label: "3 amb.", value: "3" },
-  { label: "4 amb.", value: "4" },
-  { label: "5+ amb.", value: "5" },
+  { label: "1", value: "1" },
+  { label: "2", value: "2" },
+  { label: "3", value: "3" },
+  { label: "4", value: "4" },
+  { label: "5+", value: "5" },
 ];
 
 /**
- * Home hero with the main search. A plain GET form to the results page, so
- * it works without JavaScript; empty fields are dropped by the results page,
- * which redirects to the canonical URL.
+ * Home hero with the main search over the owner's photo. A plain GET form to
+ * the results page, so it works without JavaScript; empty fields are dropped
+ * by the results page, which redirects to the canonical URL.
  */
 export default function HeroSearch({ neighborhoods }: { neighborhoods: PublicNeighborhood[] }) {
   return (
     <section className={styles.hero}>
+      <Image
+        src="/hero.jpeg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className={styles.photo}
+      />
+      <div className={styles.overlay} aria-hidden />
+
       <div className={styles.inner}>
         <h1 className={styles.title}>Encontrá tu próxima propiedad en CABA</h1>
         <p className={styles.subtitle}>
@@ -58,47 +71,53 @@ export default function HeroSearch({ neighborhoods }: { neighborhoods: PublicNei
           </fieldset>
 
           <div className={styles.panel}>
-            <label className={styles.field}>
-              <MapPin aria-hidden size={20} className={styles.icon} />
-              <span className={styles.fieldText}>
-                <span className={styles.caption}>Barrio</span>
-                <select name="barrio" defaultValue="" className={styles.select}>
-                  <option value="">Todos los barrios</option>
-                  {neighborhoods.map((neighborhood) => (
-                    <option key={neighborhood.slug} value={neighborhood.slug}>
-                      {neighborhood.name}
-                    </option>
-                  ))}
-                </select>
-              </span>
-            </label>
-            <label className={styles.field}>
+            <div className={`${styles.segment} ${styles.location}`}>
+              <LocationCombobox
+                id="hero-barrio"
+                variant="plain"
+                caption="Ubicación"
+                neighborhoods={neighborhoods}
+              />
+            </div>
+
+            <div className={`${styles.segment} ${styles.type}`}>
               <House aria-hidden size={20} className={styles.icon} />
               <span className={styles.fieldText}>
-                <span className={styles.caption}>Tipo</span>
-                <select name="tipo" defaultValue="" className={styles.select}>
+                <label htmlFor="hero-tipo" className={styles.caption}>
+                  Tipo
+                </label>
+                <Select id="hero-tipo" name="tipo" variant="bare" defaultValue="">
                   <option value="">Todos</option>
                   {PROPERTY_TYPES.map((type) => (
                     <option key={type} value={TYPE_SLUGS[type]}>
                       {PROPERTY_TYPE_LABELS[type]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </span>
-            </label>
-            <label className={`${styles.field} ${styles.narrow}`}>
-              <BedDouble aria-hidden size={20} className={styles.icon} />
-              <span className={styles.fieldText}>
-                <span className={styles.caption}>Ambientes</span>
-                <select name="ambientes" defaultValue="" className={styles.select}>
-                  {ROOMS.map((rooms) => (
-                    <option key={rooms.label} value={rooms.value}>
-                      {rooms.label}
-                    </option>
-                  ))}
-                </select>
-              </span>
-            </label>
+            </div>
+
+            <fieldset className={`${styles.segment} ${styles.rooms}`}>
+              <legend className={styles.roomsLegend}>
+                <BedDouble aria-hidden size={16} />
+                Ambientes
+              </legend>
+              <div className={styles.pills}>
+                {ROOMS.map((rooms) => (
+                  <label key={rooms.label} className={styles.pill}>
+                    <input
+                      type="radio"
+                      name="ambientes"
+                      value={rooms.value}
+                      defaultChecked={rooms.value === ""}
+                      className={styles.radio}
+                    />
+                    <span>{rooms.label}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
             <button type="submit" className={styles.submit}>
               <Search aria-hidden size={18} />
               Buscar

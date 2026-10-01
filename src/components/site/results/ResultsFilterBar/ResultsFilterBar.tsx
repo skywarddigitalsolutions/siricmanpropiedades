@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { MapPin } from "lucide-react";
 import type { Operation } from "@/lib/properties/enums";
 import {
   RESULTS_PATH,
@@ -7,15 +6,15 @@ import {
   type SearchState,
 } from "@/lib/public/search-params";
 import type { PublicNeighborhood } from "@/lib/public/types";
-import AutoSubmitSelect from "../AutoSubmitSelect/AutoSubmitSelect";
+import LocationCombobox from "../../LocationCombobox/LocationCombobox";
 import FiltersSheet from "../FiltersSheet/FiltersSheet";
 import PreservedParams from "../PreservedParams/PreservedParams";
 import styles from "./ResultsFilterBar.module.css";
 
 const OPERATIONS: { label: string; value?: Operation }[] = [
   { label: "Todas" },
-  { label: "Venta", value: "sale" },
-  { label: "Alquiler", value: "rent" },
+  { label: "Comprar", value: "sale" },
+  { label: "Alquilar", value: "rent" },
 ];
 
 type QuickFilter = { label: string; active: boolean; patch: Partial<SearchState> };
@@ -75,24 +74,13 @@ export default function ResultsFilterBar({ state, neighborhoods }: ResultsFilter
 
           <form action={RESULTS_PATH} method="get" className={styles.barrio}>
             <PreservedParams state={state} omit={["barrio"]} />
-            <MapPin aria-hidden size={16} className={styles.barrioIcon} />
-            <label htmlFor="results-barrio" className="sr-only">
-              Barrio
-            </label>
-            <AutoSubmitSelect
+            <LocationCombobox
               id="results-barrio"
-              name="barrio"
-              variant="bare"
-              defaultValue={state.neighborhood ?? ""}
-            >
-              {/* Short label: the bar is narrow on phones. */}
-              <option value="">Barrio</option>
-              {neighborhoods.map((neighborhood) => (
-                <option key={neighborhood.slug} value={neighborhood.slug}>
-                  {neighborhood.name}
-                </option>
-              ))}
-            </AutoSubmitSelect>
+              variant="bar"
+              neighborhoods={neighborhoods}
+              defaultSlug={state.neighborhood}
+              autoSubmit
+            />
             <noscript>
               <button type="submit" className={styles.noscriptButton}>
                 Ir

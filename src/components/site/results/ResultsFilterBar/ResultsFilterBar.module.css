@@ -53,24 +53,9 @@
 .barrio {
   flex: 1;
   min-width: 0;
-  height: 46px;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 14px;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-pill);
-  background: var(--color-white);
-}
-
-.barrio:focus-within {
-  outline: 2px solid var(--color-gold);
-  outline-offset: 2px;
-}
-
-.barrioIcon {
-  flex: none;
-  color: var(--color-text-faint);
 }
 
 .noscriptButton {

@@ -19,7 +19,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 11 | Enforce deal status vs operation in the back (back `odd/tasks/deal-status-operation-rule.md`) | both | ODD | ✅ Done |
 | 12 | Security hardening + admin on `admin.` host (back `odd/tasks/security-hardening.md`, back #30, front #41) | both | ODD | ✅ Done |
 | 13 | UX quick wins: custom selects, WhatsApp icon, tags, admin login redesign, footer + legal pages (`odd/tasks/ux-quick-wins.md`) | front | ODD | ✅ Done |
-| 14 | Home: typeahead location search, hero photo, featured sale/rent sections | front | ODD | ⬜ |
+| 14 | Home: typeahead location search, hero photo, featured sale/rent sections | front | ODD | ✅ Done |
 | 15 | Admin: clients view (deduped by email) + friendlier leads inbox | both | ODD | ⬜ |
 | 16 | Admin: property list (thumbnails, search, sort) + editor (steps, validated address + map, photos, preview) | both | ODD | ⬜ |
 | 17 | Public favorites (browser-stored) | front | ODD | ⬜ |

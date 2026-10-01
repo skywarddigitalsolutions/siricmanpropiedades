@@ -1,0 +1,137 @@
+/*
+ * 375px: header stacked (eyebrow, title, subtitle, link), cards in a swipe
+ * carousel, 78vw wide so the next one peeks. 1280px: three cards visible,
+ * circular prev/next buttons on the sides, disabled at the ends.
+ */
+.section {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 36px 0 12px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 0 16px 16px;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eyebrow {
+  font: 700 12px var(--font-body), sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-gold-dark);
+}
+
+.title {
+  font: 800 clamp(24px, 3vw, 32px) / 1.15 var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+
+.subtitle {
+  max-width: 520px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.seeAll {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 700 14px var(--font-body), sans-serif;
+}
+
+.seeAll:focus-visible,
+.arrow:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.viewport {
+  position: relative;
+}
+
+.track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 16px 20px;
+  scroll-padding-inline: 16px;
+  scroll-snap-type: x mandatory;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  flex: 0 0 min(78vw, 340px);
+  scroll-snap-align: start;
+}
+
+.arrow {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .slide {
+    flex-basis: calc((100% - 32px) / 3);
+  }
+
+  .arrow {
+    position: absolute;
+    top: calc(50% - 10px);
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 50%;
+    color: var(--color-navy);
+    background: var(--color-white);
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    translate: 0 -50%;
+    transition:
+      opacity 0.15s ease,
+      background 0.15s ease;
+  }
+
+  .arrow:hover:not(:disabled) {
+    background: var(--color-bg);
+  }
+
+  .arrow:disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .prev {
+    left: 4px;
+  }
+
+  .next {
+    right: 4px;
+  }
+}

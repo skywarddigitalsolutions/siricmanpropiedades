@@ -23,11 +23,11 @@ describe("ResultsFilterBar", () => {
     );
 
     const operations = screen.getByRole("navigation", { name: "Operación" });
-    expect(within(operations).getByRole("link", { name: "Alquiler" })).toHaveAttribute(
+    expect(within(operations).getByRole("link", { name: "Alquilar" })).toHaveAttribute(
       "href",
       "/propiedades?operacion=alquiler&barrio=palermo",
     );
-    expect(within(operations).getByRole("link", { name: "Venta" })).toHaveAttribute(
+    expect(within(operations).getByRole("link", { name: "Comprar" })).toHaveAttribute(
       "aria-current",
       "page",
     );
@@ -41,13 +41,25 @@ describe("ResultsFilterBar", () => {
       />,
     );
 
-    const select = screen.getByLabelText("Barrio");
-    expect(select).toHaveValue("palermo");
-    const form = select.closest("form")!;
+    const combobox = screen.getByRole("combobox", { name: "Barrio" });
+    expect(combobox).toHaveValue("Palermo");
+    const form = combobox.closest("form")!;
     expect(form).toHaveAttribute("action", "/propiedades");
     expect(form.querySelector('input[type="hidden"][name="operacion"]')).toHaveValue("venta");
     expect(form.querySelector('input[type="hidden"][name="cochera"]')).toHaveValue("1");
-    expect(form.querySelector('input[type="hidden"][name="barrio"]')).toBeNull();
+    expect(form.querySelector('input[type="hidden"][name="barrio"]')).toHaveValue("palermo");
+  });
+
+  it("submits the barrio form as soon as a barrio is picked", async () => {
+    const submit = vi.spyOn(HTMLFormElement.prototype, "requestSubmit").mockImplementation(() => {});
+    render(
+      <ResultsFilterBar state={parseSearchParams({ operacion: "venta" })} neighborhoods={NEIGHBORHOODS} />,
+    );
+
+    await userEvent.type(screen.getByRole("combobox", { name: "Barrio" }), "belg{Enter}");
+
+    expect(submit).toHaveBeenCalledTimes(1);
+    submit.mockRestore();
   });
 
   it("toggles quick filters through links", () => {
