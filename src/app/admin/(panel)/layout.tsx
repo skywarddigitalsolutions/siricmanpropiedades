@@ -1,15 +1,15 @@
 import type { ReactNode } from "react";
-import AdminHeader from "@/components/admin/panel/AdminHeader/AdminHeader";
+import AdminShell from "@/components/admin/panel/AdminShell/AdminShell";
 import LogoutButton from "@/components/admin/panel/LogoutButton/LogoutButton";
 import { getCurrentUser } from "@/lib/session/dal";
 import { logoutAction } from "./actions";
-import styles from "./layout.module.css";
 
 /**
  * `(panel)` route-group layout (design.md ADR-7's route tree). Calls
- * `getCurrentUser()` — the same call the page below makes, deduped per
- * request via `React.cache` (ADR-7's rationale) — and renders `AdminHeader`
- * with the logout control in its trailing slot.
+ * `getCurrentUser()` — the same call child pages make, deduped per request
+ * via `React.cache` (ADR-7's rationale) — and renders the mobile-first
+ * `AdminShell` (sticky top bar + drawer on phones, persistent sidebar from
+ * 960px; feature 6 T2) with the logout control passed through.
  */
 export default async function AdminPanelLayout({
   children,
@@ -19,11 +19,11 @@ export default async function AdminPanelLayout({
   const user = await getCurrentUser();
 
   return (
-    <div className={styles.panel}>
-      <AdminHeader userName={user.userName}>
-        <LogoutButton action={logoutAction} />
-      </AdminHeader>
-      <main className={styles.main}>{children}</main>
-    </div>
+    <AdminShell
+      userName={user.userName}
+      logout={<LogoutButton action={logoutAction} />}
+    >
+      {children}
+    </AdminShell>
   );
 }

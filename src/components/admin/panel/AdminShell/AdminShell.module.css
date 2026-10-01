@@ -1,0 +1,185 @@
+.shell {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  font: 500 18px var(--font-display), serif;
+  letter-spacing: 0.04em;
+  color: var(--color-navy);
+  white-space: nowrap;
+}
+
+.brandDot {
+  color: var(--color-gold-dark);
+}
+
+/* Phones: sticky top bar + menu button. */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.menuButton {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-navy);
+}
+
+.menuButton:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* Drawer (phones/tablets, below the 960px sidebar breakpoint). */
+
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px 24px;
+}
+
+.drawerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+}
+
+.closeButton {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-navy);
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.drawerNav {
+  margin-top: 8px;
+}
+
+.drawerFooter {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.userName {
+  font: 700 15px var(--font-body), sans-serif;
+  color: var(--color-text);
+}
+
+/* Desktop: persistent sidebar, no top bar/drawer. */
+
+.sidebar {
+  display: none;
+}
+
+.main {
+  flex: 1;
+  padding: 24px 16px 48px;
+  max-width: var(--content-max-width);
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (min-width: 960px) {
+  .shell {
+    flex-direction: row;
+  }
+
+  .topbar {
+    display: none;
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    width: 260px;
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    gap: 8px;
+    padding: 24px 16px;
+    background: var(--color-navy);
+  }
+
+  .sidebar .brand,
+  .sidebar .userName {
+    color: var(--color-white);
+    padding: 0 14px;
+  }
+
+  .sidebar .brandDot {
+    color: var(--color-gold);
+  }
+
+  .sidebarNav {
+    margin-top: 16px;
+  }
+
+  .sidebarNav :global(a) {
+    color: var(--color-text-on-dark-muted);
+  }
+
+  .sidebarNav :global(a:hover) {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-white);
+  }
+
+  .sidebarNav :global(a[aria-current="page"]) {
+    background: rgba(198, 160, 82, 0.16);
+    color: var(--color-white);
+    box-shadow: inset 3px 0 0 var(--color-gold);
+  }
+
+  .sidebarFooter {
+    margin-top: auto;
+    padding: 16px 14px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .main {
+    padding: 32px 32px 48px;
+  }
+}

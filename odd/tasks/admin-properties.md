@@ -33,7 +33,7 @@
 | ID | Task | Route | Status | Commit / PR |
 |----|------|-------|--------|-------------|
 | T1 | BFF transport (PATCH/PUT/DELETE, multipart) + typed properties/images/neighborhoods API + Spanish labels | delegated (writer trigger: 2+ files) | ✅ | `d9390e4`, `0f47d3f` |
-| T2 | Form primitives (SelectField, TextareaField, CheckboxField) + mobile-first panel shell with nav; `/admin` → `/admin/propiedades` | delegated | ⬜ | |
+| T2 | Form primitives (SelectField, TextareaField, CheckboxField) + mobile-first panel shell with nav; `/admin` → `/admin/propiedades` | delegated | ✅ | `3c38c7a`, `c38221d` |
 | T3 | Property list page: filters (q, status, operation, type), pagination, cards → table | delegated | ⬜ | |
 | T4 | Create/edit form with server actions and field error mapping | delegated | ⬜ | |
 | T5 | Lifecycle actions: publish/archive/unpublish, deal status (restricted by operation), delete (admin only) | delegated | ⬜ | |
@@ -60,6 +60,13 @@
 - Numeric columns arrive as numbers (the back's `numericTransformer` parses them); `neighborhood` includes `createdAt`.
 - RED: client 6 failed / 20 passed; labels and properties failed on missing modules. GREEN: 201 tests passed. Lint 0 errors (1 pre-existing warning). Build OK. Parent spot check: `npx vitest run src/lib` → 104 passed.
 
+### T2 — form primitives + panel shell (strict TDD)
+
+- `SelectField`, `TextareaField`, `CheckboxField` match `TextField` (`error`, `hint`, aria wiring, 44 px, gold focus ring).
+- `AdminShell` (sticky top bar + drawer on phones, navy sidebar with gold active indicator from 960 px), `AdminNav` driven by `nav-items.ts` (feature 8 appends "Consultas"), `PageHeader` for page titles/actions. `AdminHeader` removed.
+- `/admin` redirects to `/admin/propiedades`; `openspec/specs/admin-session/spec.md` landing requirement updated.
+- RED: 7 files failed (missing modules; old landing page). GREEN: 226 tests passed. Lint 0 errors. Build OK.
+
 ## Next step
 
-T2.
+T3.

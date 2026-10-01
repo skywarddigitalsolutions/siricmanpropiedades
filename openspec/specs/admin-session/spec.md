@@ -314,11 +314,12 @@ This forwarding MUST apply to every authenticated and unauthenticated call the B
 
 ### Requirement: Authenticated Admin Landing Page
 
-The system MUST provide `/admin` as a server component that establishes the session via `/auth/me`, displays the authenticated user's `userName`, and renders a logout control.
+The system MUST provide `/admin` as a server component that, once the `(panel)` layout has established the session via `/auth/me`, redirects to the property list at `/admin/propiedades` (feature 6). The authenticated user's `userName` and a logout control wired to the logout Server Action MUST be shown in the panel shell rendered by that layout, rather than on `/admin` itself.
 
-#### Scenario: Landing page renders the signed-in user
+#### Scenario: Landing page redirects to the property list
 
 - GIVEN a valid, role-gated session
 - WHEN `/admin` is rendered
-- THEN the page shows the authenticated user's `userName`
+- THEN the system redirects to `/admin/propiedades`
+- AND the panel shell shows the authenticated user's `userName`
 - AND a logout button is present and wired to the logout Server Action
