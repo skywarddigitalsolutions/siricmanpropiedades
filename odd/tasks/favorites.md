@@ -30,8 +30,8 @@
 
 | ID | Task | Route | Status | Commit |
 |----|------|-------|--------|--------|
-| T1 | Favorites store (localStorage, cross-tab sync, cap, SSR-safe hook) + heart toggle on cards/detail + header link with count | delegated | ⬜ | |
-| T2 | Refresh route handler + `/favoritos` page with sold/unavailable/price-change states | delegated | ⬜ | |
+| T1 | Favorites store (localStorage, cross-tab sync, cap, SSR-safe hook) + heart toggle on cards/detail + header link with count | delegated | ✅ | 1116bdf |
+| T2 | Refresh route handler + `/favoritos` page with sold/unavailable/price-change states | delegated | ✅ | c2b3c33 |
 
 ## Acceptance criteria
 
@@ -42,7 +42,9 @@
 ## Progress
 
 - 2026-10-01: feature started, branch `feat/favorites`. RDD: off (default).
+- 2026-10-01 T1 (1116bdf): RED = store/toggle/header/card/detail tests failing (missing modules); GREEN = store, useFavorites (useSyncExternalStore), FavoriteToggle, card heart, detail Guardar, header link + badge (after mount). Screenshots fav-home-desktop.png, fav-home-saved-desktop.png, fav-detail-mobile.png.
+- 2026-10-01 T2 (c2b3c33): RED = view/route/list/page tests failing (missing modules); GREEN = /api/favoritos route (max 50, regex, dedupe, concurrency 4, ok/gone/error), FavoritesList + FavoriteCard, /favoritos noindex page. Screenshots fav-page-desktop.png, fav-page-sold-mobile.png (sold mocked via route), fav-empty-mobile.png. Decisions: cap evicts oldest; transient API failures map to status error (snapshot shown, never gone); similares links to results URL. Checks: lint 0 errors, npm test 962 passed, build ok.
 
 ## Next step
 
-T1.
+Push, PR, deploy.
