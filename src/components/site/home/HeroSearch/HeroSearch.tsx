@@ -97,26 +97,21 @@ export default function HeroSearch({ neighborhoods }: { neighborhoods: PublicNei
               </span>
             </div>
 
-            <fieldset className={`${styles.segment} ${styles.rooms}`}>
-              <legend className={styles.roomsLegend}>
-                <BedDouble aria-hidden size={16} />
-                Ambientes
-              </legend>
-              <div className={styles.pills}>
-                {ROOMS.map((rooms) => (
-                  <label key={rooms.label} className={styles.pill}>
-                    <input
-                      type="radio"
-                      name="ambientes"
-                      value={rooms.value}
-                      defaultChecked={rooms.value === ""}
-                      className={styles.radio}
-                    />
-                    <span>{rooms.label}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
+            <div className={`${styles.segment} ${styles.rooms}`}>
+              <BedDouble aria-hidden size={20} className={styles.icon} />
+              <span className={styles.fieldText}>
+                <label htmlFor="hero-ambientes" className={styles.caption}>
+                  Ambientes
+                </label>
+                <Select id="hero-ambientes" name="ambientes" variant="bare" defaultValue="">
+                  {ROOMS.map((rooms) => (
+                    <option key={rooms.label} value={rooms.value}>
+                      {rooms.label}
+                    </option>
+                  ))}
+                </Select>
+              </span>
+            </div>
 
             <button type="submit" className={styles.submit}>
               <Search aria-hidden size={18} />
