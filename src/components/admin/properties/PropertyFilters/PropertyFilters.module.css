@@ -1,0 +1,81 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.details {
+  border-top: 1px solid var(--color-border-soft);
+  padding-top: 12px;
+}
+
+.summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--color-navy);
+}
+
+.summary:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.applyButton {
+  min-height: 44px;
+  border-radius: var(--radius-pill);
+  padding: 10px 20px;
+  font: 700 15px var(--font-body), sans-serif;
+  color: var(--color-white);
+  background: var(--color-navy);
+  cursor: pointer;
+}
+
+.applyButton:hover {
+  background: var(--color-navy-dark);
+}
+
+.clearLink {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+}
+
+.clearLink:hover {
+  color: var(--color-gold-dark);
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
