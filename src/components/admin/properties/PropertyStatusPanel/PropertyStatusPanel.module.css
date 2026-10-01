@@ -1,0 +1,143 @@
+.panel {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  padding: 16px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+  font: 500 20px var(--font-display), serif;
+  color: var(--color-navy);
+}
+
+.legend + * {
+  clear: both;
+}
+
+.hint,
+.footnote {
+  font: 500 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.primary,
+.secondary,
+.destructive {
+  flex: 1 1 auto;
+  min-height: 44px;
+  border-radius: var(--radius-pill);
+  padding: 10px 20px;
+  font: 700 15px var(--font-body), sans-serif;
+  cursor: pointer;
+}
+
+.primary {
+  color: var(--color-white);
+  background: var(--color-navy);
+  border: 1px solid var(--color-navy);
+}
+
+.primary:hover {
+  background: var(--color-navy-dark);
+}
+
+.secondary {
+  color: var(--color-navy);
+  background: var(--color-white);
+  border: 1px solid var(--color-border-strong);
+}
+
+.secondary:hover {
+  border-color: var(--color-gold);
+}
+
+.destructive {
+  margin-top: 12px;
+  color: var(--color-white);
+  background: #a13d3d;
+  border: 1px solid #a13d3d;
+}
+
+.primary:focus-visible,
+.secondary:focus-visible,
+.destructive:focus-visible,
+.summary:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.panel :disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.danger {
+  border-color: #e6b8b8;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font: 700 15px var(--font-body), sans-serif;
+  color: #a13d3d;
+}
+
+.details[open] .summary {
+  margin-bottom: 8px;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 24px;
+  }
+
+  .primary,
+  .secondary,
+  .destructive {
+    flex: 0 0 auto;
+  }
+}
+
+@media (min-width: 960px) {
+  .panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .danger,
+  .footnote {
+    grid-column: 1 / -1;
+  }
+}

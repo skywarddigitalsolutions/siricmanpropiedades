@@ -139,6 +139,17 @@ describe("AdminPropertiesPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("confirms a deletion when coming back from the editor", async () => {
+    listProperties.mockResolvedValue({ items: [], total: 0 });
+
+    const page = await AdminPropertiesPage({
+      searchParams: searchParamsOf({ eliminada: "1" }),
+    });
+    render(page);
+
+    expect(screen.getByRole("status")).toHaveTextContent("Propiedad eliminada.");
+  });
+
   it("redirects to /admin/login?reason=expired on a 401 from listProperties", async () => {
     listProperties.mockRejectedValue(new ApiError(401, "Invalid or expired token"));
 

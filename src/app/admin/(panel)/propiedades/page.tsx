@@ -15,6 +15,7 @@ import PropertyFilters from "@/components/admin/properties/PropertyFilters/Prope
 import PropertyList from "@/components/admin/properties/PropertyList/PropertyList";
 import PropertyPagination from "@/components/admin/properties/PropertyPagination/PropertyPagination";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
+import FormNotice from "@/components/admin/forms/FormNotice/FormNotice";
 import styles from "./page.module.css";
 
 type AdminPropertiesPageProps = {
@@ -71,6 +72,9 @@ export default async function AdminPropertiesPage({
         }
       />
 
+      {resolvedSearchParams.eliminada === "1" && (
+        <FormNotice>Propiedad eliminada.</FormNotice>
+      )}
       {notice && <FormAlert>{notice}</FormAlert>}
 
       <PropertyFilters

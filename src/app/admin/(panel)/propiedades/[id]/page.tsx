@@ -6,15 +6,22 @@ import {
   listNeighborhoods,
   type PropertyDetail,
 } from "@/lib/api/properties";
+import { canDeleteProperty } from "@/lib/properties/lifecycle";
 import { toFormValues } from "@/lib/properties/property-form";
-import { getSessionToken } from "@/lib/session/dal";
+import { getCurrentUser, getSessionToken } from "@/lib/session/dal";
 import { handleSessionError } from "@/lib/session/session-error";
 import FormNotice from "@/components/admin/forms/FormNotice/FormNotice";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import DealStatusBadge from "@/components/admin/properties/DealStatusBadge/DealStatusBadge";
 import PropertyForm from "@/components/admin/properties/PropertyForm/PropertyForm";
+import PropertyStatusPanel from "@/components/admin/properties/PropertyStatusPanel/PropertyStatusPanel";
 import PublicationStatusBadge from "@/components/admin/properties/PublicationStatusBadge/PublicationStatusBadge";
 import { updatePropertyAction } from "./actions";
+import {
+  changeDealStatusAction,
+  changePublicationAction,
+  deletePropertyAction,
+} from "./lifecycle-actions";
 import styles from "../editor.module.css";
 
 type EditPropertyPageProps = {
@@ -44,10 +51,12 @@ export default async function EditPropertyPage({
 }: EditPropertyPageProps) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
   const token = await getSessionToken();
-  const [property, neighborhoods] = await Promise.all([
+  const [property, neighborhoods, user] = await Promise.all([
     loadProperty(token, id),
     listNeighborhoods(),
+    getCurrentUser(),
   ]);
+  const isAdmin = user.roles.includes("admin");
 
   const notice =
     query.creada === "1"
@@ -68,6 +77,22 @@ export default async function EditPropertyPage({
       </div>
 
       {notice && <FormNotice>{notice}</FormNotice>}
+
+      <section aria-labelledby="property-status-heading" className={styles.section}>
+        <h2 id="property-status-heading" className={styles.sectionTitle}>
+          Estado y acciones
+        </h2>
+        <PropertyStatusPanel
+          publicationStatus={property.publicationStatus}
+          dealStatus={property.dealStatus}
+          operation={property.operation}
+          canDelete={canDeleteProperty(user.roles, property)}
+          showArchiveHint={isAdmin && property.firstPublishedAt !== null}
+          publicationAction={changePublicationAction.bind(null, property.id)}
+          dealStatusAction={changeDealStatusAction.bind(null, property.id)}
+          deleteAction={deletePropertyAction.bind(null, property.id)}
+        />
+      </section>
 
       <section aria-labelledby="property-data-heading" className={styles.section}>
         <h2 id="property-data-heading" className={styles.sectionTitle}>
