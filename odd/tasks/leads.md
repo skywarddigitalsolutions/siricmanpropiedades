@@ -32,7 +32,7 @@
 | ID | Task | Repo | Route | Status | Commit / PR |
 |----|------|------|-------|--------|-------------|
 | B1 | Leads domain: entity + migration, public create (validation, honeypot, throttle), admin list/detail/update/delete, audit | back | inline (subagents rate-limited) | ✅ | back #24 |
-| B2 | Lead notifier port: log adapter + SMTP adapter (nodemailer), config, deploy docs | back | inline | ✅ | back #25 |
+| B2 | Lead notifier port: log adapter + SMTP adapter (nodemailer), config, deploy docs | back | inline | ✅ (reverted in 8.1, back #26) | back #25 |
 | T1 | Leads API client (public + admin) and the inquiry form on the property page | front | inline | ✅ | `2842f50` |
 | T2 | Admin inbox: "Consultas" nav with new-leads badge, list with filters and pagination | front | inline | ✅ | `92c050e` |
 | T3 | Admin lead detail: contact actions, status, notes, admin-only delete | front | inline | ✅ | `5246f3c` |
@@ -55,6 +55,8 @@
 - RED: DTO, service, controllers (missing modules). GREEN: 427 tests. Smoke test on the local back: 201, honeypot 201 with nothing stored, 400 (no contact / unknown property), 429 on the 6th request per minute; the test row was deleted afterwards. Lint/build OK.
 
 ### B2 — email notifications (strict TDD)
+
+> Reverted by feature 8.1 (`odd/tasks/remove-smtp-footer-email.md`, back #26): no mail service; leads are answered by WhatsApp from the panel.
 
 - `LEAD_NOTIFIER` port; `SmtpLeadNotifier` (nodemailer 10, bundled types; Node 22) when `SMTP_HOST/USER/PASS` + `LEADS_NOTIFY_TO` are set, else `LogLeadNotifier` (id + type only). Spanish plain-text email, Reply-To = visitor, panel link via `PUBLIC_SITE_URL`. Fire-and-forget after saving; failures only logged.
 - Deploy: env example (optional SMTP block), compose `PUBLIC_SITE_URL: https://${SITE_DOMAIN}` for `api`, README section 9 (Google Workspace app password steps).
