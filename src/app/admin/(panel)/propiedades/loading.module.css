@@ -1,0 +1,31 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  height: 40px;
+  width: 60%;
+  border-radius: var(--radius-sm);
+  background: var(--color-border-soft);
+}
+
+.filters {
+  height: 88px;
+  border-radius: var(--radius-md);
+  background: var(--color-border-soft);
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+}
+
+.card {
+  height: 120px;
+  border-radius: var(--radius-md);
+  background: var(--color-border-soft);
+}

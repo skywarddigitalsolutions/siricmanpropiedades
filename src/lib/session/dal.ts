@@ -3,9 +3,9 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { getMe, logout } from "@/lib/api/auth";
 import type { SessionUser } from "@/lib/api/auth";
-import { ApiError } from "@/lib/api/client";
 import { canAccessPanel } from "./roles";
 import { getSessionCookie } from "./cookies";
+import { handleSessionError } from "./session-error";
 
 /**
  * Reads the session cookie, redirecting to `/admin/login` when it is absent.
@@ -63,10 +63,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser> => {
   try {
     user = await getMe(token);
   } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
-      redirect("/admin/login?reason=expired");
-    }
-    throw error;
+    handleSessionError(error);
   }
 
   if (!canAccessPanel(user.roles)) {
