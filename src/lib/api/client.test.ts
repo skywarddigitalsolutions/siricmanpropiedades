@@ -188,4 +188,142 @@ describe("apiFetch", () => {
     await expect(apiFetch("/auth/me")).rejects.toBeInstanceOf(ApiError);
     await expect(apiFetch("/auth/me")).rejects.toMatchObject({ status: 0 });
   });
+
+  it("sends PATCH requests with the given method", async () => {
+    const { apiFetch } = await loadClient();
+    const fetchMock = stubFetch(new Response("{}", { status: 200 }));
+
+    await apiFetch("/admin/properties/p1", {
+      method: "PATCH",
+      body: { title: "x" },
+    });
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(init.method).toBe("PATCH");
+  });
+
+  it("sends PUT requests with the given method", async () => {
+    const { apiFetch } = await loadClient();
+    const fetchMock = stubFetch(new Response("{}", { status: 200 }));
+
+    await apiFetch("/admin/properties/p1/images/order", {
+      method: "PUT",
+      body: { imageIds: ["a"] },
+    });
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(init.method).toBe("PUT");
+  });
+
+  it("sends DELETE requests with the given method and returns undefined for a 204", async () => {
+    const { apiFetch } = await loadClient();
+    const fetchMock = stubFetch(new Response(null, { status: 204 }));
+
+    const result = await apiFetch("/admin/properties/p1", { method: "DELETE" });
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(init.method).toBe("DELETE");
+    expect(result).toBeUndefined();
+  });
+
+  it("sends a FormData body as-is without a Content-Type header", async () => {
+    const { apiFetch } = await loadClient();
+    const fetchMock = stubFetch(new Response("{}", { status: 201 }));
+    const formData = new FormData();
+    formData.append("file", new Blob(["x"]), "photo.webp");
+
+    await apiFetch("/admin/properties/p1/images", {
+      method: "POST",
+      body: formData,
+    });
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(init.body).toBe(formData);
+    const requestHeaders = init.headers as Record<string, string>;
+    expect(requestHeaders["Content-Type"]).toBeUndefined();
+  });
+
+  it("sets Content-Type application/json for a JSON body", async () => {
+    const { apiFetch } = await loadClient();
+    const fetchMock = stubFetch(new Response("{}", { status: 200 }));
+
+    await apiFetch("/auth/login", { method: "POST", body: {} });
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const requestHeaders = init.headers as Record<string, string>;
+    expect(requestHeaders["Content-Type"]).toBe("application/json");
+  });
+
+  it("uses the default 10s timeout for a JSON request", async () => {
+    const { apiFetch } = await loadClient();
+    stubFetch(new Response("{}", { status: 200 }));
+    const timeoutSpy = vi.spyOn(AbortSignal, "timeout");
+
+    await apiFetch("/auth/me");
+
+    expect(timeoutSpy).toHaveBeenCalledWith(10_000);
+  });
+
+  it("defaults to a 60s timeout for a FormData body", async () => {
+    const { apiFetch } = await loadClient();
+    stubFetch(new Response("{}", { status: 200 }));
+    const timeoutSpy = vi.spyOn(AbortSignal, "timeout");
+
+    await apiFetch("/admin/properties/p1/images", {
+      method: "POST",
+      body: new FormData(),
+    });
+
+    expect(timeoutSpy).toHaveBeenCalledWith(60_000);
+  });
+
+  it("honors an explicit timeoutMs option over the defaults", async () => {
+    const { apiFetch } = await loadClient();
+    stubFetch(new Response("{}", { status: 200 }));
+    const timeoutSpy = vi.spyOn(AbortSignal, "timeout");
+
+    await apiFetch("/auth/me", { timeoutMs: 5_000 });
+
+    expect(timeoutSpy).toHaveBeenCalledWith(5_000);
+  });
+
+  it("exposes every back-end validation message in ApiError.details", async () => {
+    const { apiFetch } = await loadClient();
+    stubFetch(
+      new Response(
+        JSON.stringify({
+          statusCode: 400,
+          message: [
+            "title must be longer than 5 characters",
+            "price must be positive",
+          ],
+          error: "Bad Request",
+        }),
+        { status: 400 },
+      ),
+    );
+
+    await expect(
+      apiFetch("/admin/properties", { method: "POST", body: {} }),
+    ).rejects.toMatchObject({
+      status: 400,
+      details: [
+        "title must be longer than 5 characters",
+        "price must be positive",
+      ],
+    });
+  });
+
+  it("defaults ApiError.details to a single-item array for a string message", async () => {
+    const { apiFetch } = await loadClient();
+    stubFetch(
+      new Response(JSON.stringify({ message: "No autorizado" }), {
+        status: 401,
+      }),
+    );
+
+    await expect(apiFetch("/auth/me")).rejects.toMatchObject({
+      details: ["No autorizado"],
+    });
+  });
 });
