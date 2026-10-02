@@ -18,7 +18,7 @@ describe("HeroSearch", () => {
 
     const photo = container.querySelector("img");
     expect(photo).not.toBeNull();
-    expect(decodeURIComponent(photo!.getAttribute("src")!)).toContain("/hero.jpeg");
+    expect(decodeURIComponent(photo!.getAttribute("src")!)).toContain("/hero.jpg");
     expect(photo).toHaveAttribute("alt", "");
   });
 

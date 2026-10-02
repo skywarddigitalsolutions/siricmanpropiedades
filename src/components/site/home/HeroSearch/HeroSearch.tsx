@@ -32,7 +32,7 @@ export default function HeroSearch({ neighborhoods }: { neighborhoods: PublicNei
   return (
     <section className={styles.hero}>
       <Image
-        src="/hero.jpeg"
+        src="/hero.jpg"
         alt=""
         fill
         priority
