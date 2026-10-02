@@ -5,6 +5,7 @@ const { apiFetch } = vi.hoisted(() => ({ apiFetch: vi.fn() }));
 vi.mock("./client", () => ({ apiFetch }));
 
 import {
+  changePassword,
   confirmMfa,
   enableMfa,
   getMe,
@@ -12,6 +13,7 @@ import {
   isMfaSetupRequired,
   login,
   logout,
+  regenerateBackupCodes,
   verifyMfa,
   type FullSessionResponse,
   type MfaRequiredResponse,
@@ -110,6 +112,34 @@ describe("auth endpoint functions", () => {
       userName: "gabriel",
       isActive: true,
       roles: ["admin"],
+    });
+  });
+
+  it("changePassword patches /auth/password with the bearer token", async () => {
+    apiFetch.mockResolvedValue({ id: "u1", userName: "g", isActive: true, roles: [], token: "new" });
+
+    const result = await changePassword("jwt", {
+      currentPassword: "Actual1",
+      newPassword: "Nueva123",
+      code: "123456",
+    });
+
+    expect(apiFetch).toHaveBeenCalledWith("/auth/password", {
+      method: "PATCH",
+      body: { currentPassword: "Actual1", newPassword: "Nueva123", code: "123456" },
+      token: "jwt",
+    });
+    expect(result.token).toBe("new");
+  });
+
+  it("regenerateBackupCodes posts the TOTP to /auth/mfa/backup-codes", async () => {
+    apiFetch.mockResolvedValue({ backupCodes: ["a"] });
+
+    expect(await regenerateBackupCodes("jwt", "123456")).toEqual({ backupCodes: ["a"] });
+    expect(apiFetch).toHaveBeenCalledWith("/auth/mfa/backup-codes", {
+      method: "POST",
+      body: { code: "123456" },
+      token: "jwt",
     });
   });
 

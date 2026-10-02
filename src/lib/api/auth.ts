@@ -86,3 +86,27 @@ export function logout(token: string): Promise<void> {
 export function getMe(token: string): Promise<SessionUser> {
   return apiFetch<SessionUser>("/auth/me", { token });
 }
+
+/** `PATCH /api/auth/password` — bearer the session. Returns a fresh session (every other one is closed). */
+export function changePassword(
+  token: string,
+  body: { currentPassword: string; newPassword: string; code?: string },
+): Promise<FullSessionResponse> {
+  return apiFetch<FullSessionResponse>("/auth/password", {
+    method: "PATCH",
+    body,
+    token,
+  });
+}
+
+/** `POST /api/auth/mfa/backup-codes` — needs a current 6-digit TOTP; the codes are shown once. */
+export function regenerateBackupCodes(
+  token: string,
+  code: string,
+): Promise<{ backupCodes: string[] }> {
+  return apiFetch<{ backupCodes: string[] }>("/auth/mfa/backup-codes", {
+    method: "POST",
+    body: { code },
+    token,
+  });
+}

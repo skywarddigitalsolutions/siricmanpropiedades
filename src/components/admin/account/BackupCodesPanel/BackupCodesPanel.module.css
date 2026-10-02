@@ -1,0 +1,76 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 440px;
+}
+
+.intro {
+  font: 500 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.warning {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--tone-warning-fg);
+  background: var(--tone-warning-bg);
+}
+
+.warningIcon {
+  flex: none;
+  margin-top: 1px;
+}
+
+/* Two columns of 10-character codes fit a 390px phone. */
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  list-style: none;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+}
+
+.code {
+  font: 600 14px monospace;
+  color: var(--color-text);
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 640px) {
+  .actions {
+    align-items: flex-start;
+  }
+
+  .buttons {
+    flex-direction: row;
+  }
+}
