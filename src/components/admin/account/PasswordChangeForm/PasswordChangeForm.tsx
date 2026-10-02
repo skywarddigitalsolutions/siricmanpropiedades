@@ -63,28 +63,6 @@ export default function PasswordChangeForm({ action }: PasswordChangeFormProps) 
       />
 
       <div className={styles.group}>
-        <PasswordField
-          id="new-password"
-          name="newPassword"
-          label="Nueva contraseña"
-          autoComplete="new-password"
-          error={errors.newPassword}
-          aria-describedby={errors.newPassword ? undefined : "new-password-hint"}
-        />
-        <p id="new-password-hint" className={styles.hint}>
-          {PASSWORD_HINT}
-        </p>
-      </div>
-
-      <PasswordField
-        id="confirm-password"
-        name="confirmPassword"
-        label="Repetir nueva contraseña"
-        autoComplete="new-password"
-        error={errors.confirmPassword}
-      />
-
-      <div className={styles.group}>
         <TextField
           id="verification-code"
           name="code"
@@ -103,7 +81,28 @@ export default function PasswordChangeForm({ action }: PasswordChangeFormProps) 
         </p>
       </div>
 
-      <div className={styles.actions}>
+      <PasswordField
+        id="new-password"
+        name="newPassword"
+        label="Nueva contraseña"
+        autoComplete="new-password"
+        error={errors.newPassword}
+        aria-describedby={errors.newPassword ? undefined : "new-password-hint"}
+      />
+
+      <PasswordField
+        id="confirm-password"
+        name="confirmPassword"
+        label="Repetir nueva contraseña"
+        autoComplete="new-password"
+        error={errors.confirmPassword}
+      />
+
+      <p id="new-password-hint" className={`${styles.hint} ${styles.wide}`}>
+        {PASSWORD_HINT}
+      </p>
+
+      <div className={`${styles.actions} ${styles.wide}`}>
         <SubmitButton pendingLabel="Guardando...">Cambiar contraseña</SubmitButton>
       </div>
     </form>

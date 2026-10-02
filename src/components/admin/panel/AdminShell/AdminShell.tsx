@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
@@ -29,6 +30,7 @@ type AdminShellProps = {
 };
 
 const DRAWER_ID = "admin-nav-drawer";
+const ACCOUNT_HREF = "/admin/cuenta";
 
 /**
  * Mobile-first panel shell (ADR-7 route tree, feature 6 T2): a sticky top bar
@@ -46,6 +48,8 @@ export default function AdminShell({
   children,
 }: AdminShellProps) {
   const isAdmin = roles.includes("admin");
+  const pathname = usePathname();
+  const onAccount = pathname === ACCOUNT_HREF;
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -83,8 +87,16 @@ export default function AdminShell({
         <Brand />
         <AdminNav className={styles.sidebarNav} badges={navBadges} isAdmin={isAdmin} />
         <div className={styles.sidebarFooter}>
-          <UserCard userName={userName} roles={roles} tone="dark" />
           {logout}
+          <div className={styles.userRow} data-user-row>
+            <UserCard
+              userName={userName}
+              roles={roles}
+              tone="dark"
+              accountHref={ACCOUNT_HREF}
+              accountActive={onAccount}
+            />
+          </div>
         </div>
       </aside>
 
@@ -116,8 +128,15 @@ export default function AdminShell({
           />
 
           <div className={styles.drawerFooter}>
-            <UserCard userName={userName} roles={roles} />
             {logout}
+            <div className={styles.userRow} data-user-row>
+              <UserCard
+                userName={userName}
+                roles={roles}
+                accountHref={ACCOUNT_HREF}
+                accountActive={onAccount}
+              />
+            </div>
           </div>
         </div>
       )}
