@@ -1,5 +1,4 @@
-import type { SelectHTMLAttributes } from "react";
-import { ChevronDown } from "lucide-react";
+import Dropdown, { type DropdownProps } from "@/components/site/Dropdown/Dropdown";
 import styles from "./SelectField.module.css";
 
 type SelectOption = {
@@ -15,9 +14,12 @@ type SelectFieldProps = {
   placeholder?: string;
   error?: string;
   hint?: string;
-} & Omit<SelectHTMLAttributes<HTMLSelectElement>, "id" | "name">;
+} & Pick<DropdownProps, "defaultValue" | "value" | "onChange" | "disabled" | "required">;
 
-/** Labeled, styled native select wiring `aria-invalid`/`aria-describedby` from `error` (matches TextField, ADR-8). */
+/**
+ * Labeled styled dropdown wiring `aria-invalid`/`aria-describedby` from `error`
+ * (matches TextField, ADR-8). Same panel as the public site's dropdowns.
+ */
 export default function SelectField({
   id,
   name,
@@ -26,42 +28,30 @@ export default function SelectField({
   placeholder,
   error,
   hint,
-  ...selectProps
+  ...dropdownProps
 }: SelectFieldProps) {
   const errorId = `${id}-error`;
   const hintId = `${id}-hint`;
   const describedBy =
     [error ? errorId : null, hint ? hintId : null].filter(Boolean).join(" ") ||
     undefined;
+  const items = placeholder !== undefined ? [{ value: "", label: placeholder }, ...options] : options;
 
   return (
     <div className={styles.field}>
       <label htmlFor={id} className={styles.label}>
         {label}
       </label>
-      {/* Native select (OS pickers on phones) restyled with a drawn chevron. */}
-      <div className={styles.control}>
-        <select
-          id={id}
-          name={name}
-          className={styles.select}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={describedBy}
-          {...selectProps}
-        >
-          {placeholder !== undefined && <option value="">{placeholder}</option>}
-          {options.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              disabled={option.disabled}
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <ChevronDown aria-hidden size={18} className={styles.chevron} />
-      </div>
+      <Dropdown
+        id={id}
+        name={name}
+        options={items}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy}
+        className={styles.control}
+        triggerClassName={styles.select}
+        {...dropdownProps}
+      />
       {hint && (
         <p id={hintId} className={styles.hint}>
           {hint}

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ContactState } from "@/lib/leads/contact-form";
+import { dropdownValue, openLabels, pick } from "@/test/dropdown";
 import ContactForm from "./ContactForm";
 
 type Action = (prev: ContactState, formData: FormData) => Promise<ContactState>;
@@ -14,14 +15,15 @@ function renderForm(action: Action) {
 }
 
 describe("ContactForm", () => {
-  it("offers labelled fields, the topic options and a hidden honeypot", () => {
+  it("offers labelled fields, the topic options and a hidden honeypot", async () => {
+    const user = userEvent.setup();
     const { container } = render(<ContactForm action={vi.fn()} />);
 
     expect(screen.getByRole("heading", { name: "Envianos un mensaje" })).toBeInTheDocument();
     expect(screen.getByLabelText("Nombre y apellido")).toBeRequired();
     expect(screen.getByLabelText("Teléfono o email")).toBeRequired();
     expect(screen.getByLabelText("Tu mensaje (opcional)")).toBeInTheDocument();
-    const options = screen.getAllByRole("option").map((option) => option.textContent);
+    const options = await openLabels(user, screen.getByLabelText("Motivo de consulta"));
     expect(options).toEqual([
       "Quiero comprar",
       "Quiero alquilar",
@@ -40,7 +42,7 @@ describe("ContactForm", () => {
 
     await user.type(screen.getByLabelText("Nombre y apellido"), "Ana García");
     await user.type(screen.getByLabelText("Teléfono o email"), "11 3896-7363");
-    await user.selectOptions(screen.getByLabelText("Motivo de consulta"), "rent");
+    await pick(user, screen.getByLabelText("Motivo de consulta"), /alquil/i);
     await user.click(screen.getByRole("button", { name: "Enviar" }));
 
     const status = await screen.findByRole("status");
@@ -67,7 +69,7 @@ describe("ContactForm", () => {
     expect(await screen.findByText("Dejanos un teléfono o un email para responderte.")).toBeInTheDocument();
     expect(screen.getByLabelText("Teléfono o email")).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByLabelText("Nombre y apellido")).toHaveValue("Ana");
-    expect(screen.getByLabelText("Motivo de consulta")).toHaveValue("sell");
+    expect(dropdownValue(screen.getByLabelText("Motivo de consulta"))).toBe("sell");
     expect(screen.getByLabelText("Tu mensaje (opcional)")).toHaveValue("Mi mensaje");
   });
 

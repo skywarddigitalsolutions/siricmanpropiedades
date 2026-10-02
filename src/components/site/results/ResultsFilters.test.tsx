@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { parseSearchParams } from "@/lib/public/search-params";
+import { pick } from "@/test/dropdown";
 import FiltersSheet from "./FiltersSheet/FiltersSheet";
 import ResultsFilterBar from "./ResultsFilterBar/ResultsFilterBar";
 import ResultsSort from "./ResultsSort/ResultsSort";
@@ -151,7 +152,7 @@ describe("ResultsSort", () => {
     const select = screen.getByLabelText("Ordenar por");
     select.closest("form")!.addEventListener("submit", submit);
 
-    await user.selectOptions(select, "menor-precio");
+    await pick(user, select, "Menor precio");
 
     expect(submit).toHaveBeenCalled();
     const form = select.closest("form")!;

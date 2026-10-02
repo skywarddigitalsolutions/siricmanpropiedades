@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { dropdownValue } from "@/test/dropdown";
 import HeroSearch from "./HeroSearch";
 
 afterEach(() => cleanup());
@@ -36,26 +38,36 @@ describe("HeroSearch", () => {
     expect(within(operations).getByRole("radio", { name: "Alquilar" })).toBeInTheDocument();
   });
 
-  it("offers the property type through the shared select", () => {
+  it("offers the property type through the shared dropdown", async () => {
+    const user = userEvent.setup();
     const { form } = setup();
 
     const tipo = within(form).getByRole("combobox", { name: "Tipo" });
-    expect(tipo.tagName).toBe("SELECT");
-    expect(tipo).toHaveAttribute("name", "tipo");
-    expect(within(tipo).getByRole("option", { name: "Departamento" })).toHaveValue("departamento");
+    expect(tipo.tagName).toBe("BUTTON");
+    expect(tipo).toHaveTextContent("Todos");
+    expect(dropdownValue(tipo)).toBe("");
+    expect(form.querySelector('input[type="hidden"][name="tipo"]')).not.toBeNull();
+
+    await user.click(tipo);
+    await user.click(screen.getByRole("option", { name: "Departamento" }));
+
+    expect(dropdownValue(tipo)).toBe("departamento");
   });
 
-  it("offers rooms through the shared select, Indistinto by default", () => {
+  it("offers rooms through the shared dropdown, Indistinto by default", async () => {
+    const user = userEvent.setup();
     const { form } = setup();
 
     const rooms = within(form).getByRole("combobox", { name: "Ambientes" });
-    expect(rooms.tagName).toBe("SELECT");
-    expect(rooms).toHaveAttribute("name", "ambientes");
-    expect(rooms).toHaveValue("");
-    const options = within(rooms).getAllByRole("option");
-    expect(options.map((o) => o.getAttribute("value"))).toEqual(["", "1", "2", "3", "4", "5"]);
-    expect(within(rooms).getByRole("option", { name: "Indistinto" })).toHaveValue("");
-    expect(within(rooms).getByRole("option", { name: "5+" })).toHaveValue("5");
+    expect(rooms).toHaveTextContent("Indistinto");
+    expect(form.querySelector('input[type="hidden"][name="ambientes"]')).toHaveValue("");
+
+    await user.click(rooms);
+    const options = screen.getAllByRole("option").map((o) => o.textContent);
+    expect(options).toEqual(["Indistinto", "1", "2", "3", "4", "5+"]);
+    await user.click(screen.getByRole("option", { name: "5+" }));
+
+    expect(dropdownValue(rooms)).toBe("5");
   });
 
   it("keeps the code search reachable under the panel", () => {

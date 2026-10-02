@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { RedirectError, expectRedirect } from "@/test/next-server";
 import type { PropertyListItem } from "@/lib/api/properties";
 
@@ -177,7 +178,8 @@ describe("AdminPropertiesPage", () => {
     const page = await AdminPropertiesPage({ searchParams: searchParamsOf({}) });
     render(page);
 
-    expect(screen.getByText("Palermo")).toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText("Barrio"));
+    expect(screen.getByRole("option", { name: "Palermo" })).toBeInTheDocument();
   });
 
   it("shows the empty-catalog state when there are no properties and no filters", async () => {

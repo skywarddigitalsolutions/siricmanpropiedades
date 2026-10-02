@@ -7,6 +7,7 @@ import {
   toFormValues,
   type PropertyFormValues,
 } from "@/lib/properties/property-form";
+import { dropdownValue, pick } from "@/test/dropdown";
 import PropertyForm, { type PropertyFormState } from "./PropertyForm";
 
 afterEach(() => {
@@ -97,11 +98,12 @@ describe("PropertyForm step datos", () => {
     expect(screen.queryByLabelText("Admite mascotas")).toBeNull();
   });
 
-  it("lists the fetched neighborhoods in the barrio select", () => {
+  it("lists the fetched neighborhoods in the barrio dropdown", async () => {
     renderForm();
 
-    expect(screen.getByText("Palermo")).toBeInTheDocument();
-    expect(screen.getByText("Belgrano")).toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText("Barrio"));
+    expect(screen.getByRole("option", { name: "Palermo" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Belgrano" })).toBeInTheDocument();
   });
 
   it("shows Guardar y continuar when creating and Guardar cambios when editing", () => {
@@ -126,7 +128,7 @@ describe("PropertyForm step datos", () => {
   it("starts a new property in USD", () => {
     renderForm();
 
-    expect(screen.getByLabelText("Moneda")).toHaveValue("USD");
+    expect(dropdownValue(screen.getByLabelText("Moneda"))).toBe("USD");
   });
 
   it("shows the currency symbol next to the price and follows the chosen currency", async () => {
@@ -134,7 +136,7 @@ describe("PropertyForm step datos", () => {
     renderForm();
 
     expect(screen.getByLabelText("Precio").parentElement).toHaveTextContent("US$");
-    await user.selectOptions(screen.getByLabelText("Moneda"), "ARS");
+    await pick(user, screen.getByLabelText("Moneda"), /ARS/);
     expect(screen.getByLabelText("Precio").parentElement).not.toHaveTextContent("US$");
   });
 
@@ -142,31 +144,31 @@ describe("PropertyForm step datos", () => {
     const user = userEvent.setup();
     renderForm();
 
-    await user.selectOptions(screen.getByLabelText("Operación"), "rent");
-    expect(screen.getByLabelText("Moneda")).toHaveValue("ARS");
+    await pick(user, screen.getByLabelText("Operación"), /^Alquiler/);
+    expect(dropdownValue(screen.getByLabelText("Moneda"))).toBe("ARS");
 
-    await user.selectOptions(screen.getByLabelText("Operación"), "sale");
-    expect(screen.getByLabelText("Moneda")).toHaveValue("USD");
+    await pick(user, screen.getByLabelText("Operación"), /^Venta/);
+    expect(dropdownValue(screen.getByLabelText("Moneda"))).toBe("USD");
 
-    await user.selectOptions(screen.getByLabelText("Moneda"), "ARS");
-    await user.selectOptions(screen.getByLabelText("Operación"), "rent");
-    await user.selectOptions(screen.getByLabelText("Operación"), "sale");
-    expect(screen.getByLabelText("Moneda")).toHaveValue("ARS");
+    await pick(user, screen.getByLabelText("Moneda"), /ARS/);
+    await pick(user, screen.getByLabelText("Operación"), /^Alquiler/);
+    await pick(user, screen.getByLabelText("Operación"), /^Venta/);
+    expect(dropdownValue(screen.getByLabelText("Moneda"))).toBe("ARS");
   });
 
   it("suggests the title from type, rooms and barrio, and stops once the user edits it", async () => {
     const user = userEvent.setup();
     renderForm();
 
-    await user.selectOptions(screen.getByLabelText("Tipo de propiedad"), "apartment");
-    await user.selectOptions(screen.getByLabelText("Barrio"), "n1");
+    await pick(user, screen.getByLabelText("Tipo de propiedad"), "Departamento");
+    await pick(user, screen.getByLabelText("Barrio"), "Palermo");
     await user.type(screen.getByLabelText("Ambientes"), "3");
     expect(screen.getByLabelText("Título")).toHaveValue(
       "Departamento 3 ambientes en Palermo",
     );
 
     await user.type(screen.getByLabelText("Título"), " luminoso");
-    await user.selectOptions(screen.getByLabelText("Barrio"), "n2");
+    await pick(user, screen.getByLabelText("Barrio"), "Belgrano");
     expect(screen.getByLabelText("Título")).toHaveValue(
       "Departamento 3 ambientes en Palermo luminoso",
     );
@@ -189,7 +191,7 @@ describe("PropertyForm step datos", () => {
     expect(screen.getByLabelText("Precio")).toHaveValue("150000");
     expect(screen.getByLabelText("Expensas")).toHaveValue("25000");
     expect(screen.getByLabelText("Tiene cochera")).toBeChecked();
-    expect(screen.getByLabelText("Barrio")).toHaveValue("n1");
+    expect(dropdownValue(screen.getByLabelText("Barrio"))).toBe("n1");
   });
 
   it("submits the form data to the action", async () => {
@@ -230,7 +232,7 @@ describe("PropertyForm step datos", () => {
     // Focus jumps to the first invalid field so the user sees what to fix.
     await waitFor(() => expect(screen.getByLabelText("Título")).toHaveFocus());
     // Selects keep the submitted choice too (the form remounts with the returned values).
-    expect(screen.getByLabelText("Operación")).toHaveValue("rent");
+    expect(dropdownValue(screen.getByLabelText("Operación"))).toBe("rent");
   });
 });
 
