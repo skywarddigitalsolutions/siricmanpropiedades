@@ -102,11 +102,6 @@
   gap: 12px;
 }
 
-.userName {
-  font: 700 15px var(--font-body), sans-serif;
-  color: var(--color-text);
-}
-
 /* Desktop: persistent sidebar, no top bar/drawer. */
 
 .sidebar {
@@ -144,8 +139,7 @@
     background: var(--color-navy);
   }
 
-  .sidebar .brand,
-  .sidebar .userName {
+  .sidebar .brand {
     color: var(--color-white);
     padding: 0 14px;
   }
@@ -154,13 +148,12 @@
     color: var(--color-gold);
   }
 
-  /* The logout pill is navy too; outline it so it reads as a button. */
-  .sidebarFooter :global(button) {
-    border: 1px solid rgba(255, 255, 255, 0.35);
-  }
-
-  .sidebarFooter :global(button:hover:not(:disabled)) {
-    border-color: var(--color-gold);
+  /* Retheme the ghost logout button for the navy sidebar. */
+  .sidebarFooter {
+    --btn-ghost-fg: var(--color-text-on-dark-muted);
+    --btn-ghost-hover-fg: var(--color-white);
+    --btn-ghost-hover-bg: rgba(255, 255, 255, 0.08);
+    --btn-ghost-active-bg: rgba(255, 255, 255, 0.14);
   }
 
   .sidebarNav {

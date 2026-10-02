@@ -1,0 +1,38 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* The header has its own bottom margin; the page gap handles the rest. */
+.page > :first-child {
+  margin-bottom: -8px;
+}
+
+/* 2 x 2 on phones (390px: two 175px cards), one row of four from 960px. */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+@media (min-width: 960px) {
+  .kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  /* Latest leads on the left, quick actions in a narrower column on the right. */
+  .columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 32px;
+    align-items: start;
+  }
+}

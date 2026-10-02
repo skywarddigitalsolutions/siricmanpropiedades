@@ -24,8 +24,7 @@ export default function PropertyPagination({
       page={page}
       totalPages={totalPages}
       totalLabel={`${total} ${total === 1 ? "propiedad" : "propiedades"}`}
-      previousHref={page > 1 ? buildPropertyListHref(filters, page - 1) : undefined}
-      nextHref={page < totalPages ? buildPropertyListHref(filters, page + 1) : undefined}
+      hrefFor={(target) => buildPropertyListHref(filters, target)}
     />
   );
 }

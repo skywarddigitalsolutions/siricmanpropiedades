@@ -96,7 +96,8 @@
   background: var(--color-white);
 }
 
-.whatsapp {
+.whatsapp,
+.whatsapp:hover {
   color: var(--color-white);
   border-color: var(--color-whatsapp-dark);
   background: var(--color-whatsapp-dark);

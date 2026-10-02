@@ -163,35 +163,6 @@
   border: 0;
 }
 
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 32px 16px;
-  text-align: left;
-  background: var(--color-white);
-  border: 1px dashed var(--color-border-strong);
-  border-radius: var(--radius-md);
-  color: var(--color-text-muted);
-  font: 500 15px var(--font-body), sans-serif;
-}
-
-.emptyAction {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  border-radius: var(--radius-pill);
-  padding: 10px 20px;
-  font: 700 14px var(--font-body), sans-serif;
-  color: var(--color-white);
-  background: var(--color-navy);
-}
-
-.emptyAction:hover {
-  background: var(--color-navy-dark);
-}
-
 @media (min-width: 960px) {
   .cards {
     display: none;

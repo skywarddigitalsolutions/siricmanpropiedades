@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Inbox, SearchX } from "lucide-react";
 import { listLeads, type Lead, type LeadCounts } from "@/lib/api/leads";
 import {
   buildInboxHref,
@@ -13,6 +14,8 @@ import { getSessionToken } from "@/lib/session/dal";
 import { handleUnlessUnavailable } from "@/lib/session/session-error";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
 import FormNotice from "@/components/admin/forms/FormNotice/FormNotice";
+import EmptyState from "@/components/admin/ui/EmptyState/EmptyState";
+import { ButtonLink } from "@/components/admin/ui/Button/Button";
 import Pagination from "@/components/admin/panel/Pagination/Pagination";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import SearchForm from "@/components/admin/panel/SearchForm/SearchForm";
@@ -85,9 +88,22 @@ export default async function LeadsInboxPage({ searchParams }: LeadsInboxPagePro
       {unavailable ? (
         <FormAlert>No se pudieron cargar las consultas. Intentá de nuevo en unos minutos.</FormAlert>
       ) : leads.length === 0 ? (
-        <p className={styles.empty}>
-          {state.q ? `No encontramos consultas para “${state.q}”.` : EMPTY_MESSAGES[state.status]}
-        </p>
+        <EmptyState
+          icon={state.q ? SearchX : Inbox}
+          title={state.q ? `No encontramos consultas para “${state.q}”.` : EMPTY_MESSAGES[state.status]}
+          description={
+            state.q ? "Probá con otro nombre, email o teléfono." : "Cuando llegue una, la vas a ver acá."
+          }
+        >
+          {(state.q || state.status !== "all") && (
+            <ButtonLink
+              href={buildInboxHref(state, state.q ? { q: undefined } : { status: "all" })}
+              variant="secondary"
+            >
+              {state.q ? "Limpiar búsqueda" : "Ver todas las consultas"}
+            </ButtonLink>
+          )}
+        </EmptyState>
       ) : (
         <>
           <LeadList leads={leads} updateAction={updateLeadAction} />
@@ -96,10 +112,7 @@ export default async function LeadsInboxPage({ searchParams }: LeadsInboxPagePro
             page={state.page}
             totalPages={totalPages}
             totalLabel={`${total} ${total === 1 ? "consulta" : "consultas"}`}
-            previousHref={state.page > 1 ? buildInboxHref(state, { page: state.page - 1 }) : undefined}
-            nextHref={
-              state.page < totalPages ? buildInboxHref(state, { page: state.page + 1 }) : undefined
-            }
+            hrefFor={(target) => buildInboxHref(state, { page: target })}
           />
         </>
       )}

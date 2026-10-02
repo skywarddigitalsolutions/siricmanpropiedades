@@ -25,6 +25,14 @@ describe("LogoutButton", () => {
     resolveAction();
   });
 
+  it("shows a logout icon next to the label", () => {
+    render(<LogoutButton action={vi.fn()} />);
+
+    expect(
+      screen.getByRole("button", { name: "Cerrar sesión" }).querySelector("svg"),
+    ).not.toBeNull();
+  });
+
   it("shows a pending state via SubmitButton while the action is running", async () => {
     let resolveAction!: () => void;
     const action = vi.fn(
