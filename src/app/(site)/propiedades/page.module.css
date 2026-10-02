@@ -13,14 +13,14 @@
 
 .header {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
 .title {
-  font: 800 20px var(--font-body), sans-serif;
+  min-width: 0;
+  font: 800 18px var(--font-body), sans-serif;
   letter-spacing: -0.01em;
 }
 

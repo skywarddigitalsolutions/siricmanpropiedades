@@ -1,5 +1,6 @@
 import type { Currency, Operation, PropertyType } from "@/lib/properties/enums";
-import type { PublicPropertyFilters, PublicSort } from "./types";
+import { PROPERTY_TYPE_LABELS, formatPrice } from "@/lib/properties/labels";
+import type { PublicNeighborhood, PublicPropertyFilters, PublicSort } from "./types";
 
 /**
  * Results page state, read from and written to Spanish, shareable URLs
@@ -203,6 +204,67 @@ export function countActiveFilters(state: SearchState): number {
     state.pets,
     state.priceMin !== undefined || state.priceMax !== undefined,
   ].filter(Boolean).length;
+}
+
+export type ActiveFilter = { label: string; removeHref: string };
+
+function priceLabel(state: SearchState): string | undefined {
+  const { priceMin, priceMax } = state;
+  if (priceMin === undefined && priceMax === undefined) return undefined;
+  const currency = effectiveCurrency(state) ?? "USD";
+  if (priceMin !== undefined && priceMax !== undefined) {
+    return `${formatPrice(currency, priceMin)} – ${formatPrice(currency, priceMax)}`;
+  }
+  return priceMin !== undefined
+    ? `Desde ${formatPrice(currency, priceMin)}`
+    : `Hasta ${formatPrice(currency, priceMax as number)}`;
+}
+
+/**
+ * One entry per filter the visitor applied (operation and sort have their own
+ * controls), each with the URL that drops only that filter.
+ */
+export function activeFilters(
+  state: SearchState,
+  neighborhoods: PublicNeighborhood[],
+): ActiveFilter[] {
+  const filters: { label: string; patch: Partial<SearchState> }[] = [];
+  if (state.neighborhood) {
+    const name = neighborhoods.find((item) => item.slug === state.neighborhood)?.name;
+    filters.push({ label: name ?? state.neighborhood, patch: { neighborhood: undefined } });
+  }
+  if (state.type) {
+    filters.push({ label: PROPERTY_TYPE_LABELS[state.type], patch: { type: undefined } });
+  }
+  if (state.rooms) {
+    filters.push({
+      label: state.rooms === 5 ? "5 o más ambientes" : `${state.rooms} ambientes`,
+      patch: { rooms: undefined },
+    });
+  }
+  if (state.bedrooms) {
+    filters.push({
+      label: state.bedrooms === 1 ? "1 dormitorio" : `${state.bedrooms} dormitorios`,
+      patch: { bedrooms: undefined },
+    });
+  }
+  if (state.bathrooms) {
+    filters.push({
+      label: state.bathrooms === 1 ? "1 baño" : `${state.bathrooms} baños`,
+      patch: { bathrooms: undefined },
+    });
+  }
+  if (state.garage) filters.push({ label: "Cochera", patch: { garage: false } });
+  if (state.credit) filters.push({ label: "Apto crédito", patch: { credit: false } });
+  if (state.pets) filters.push({ label: "Mascotas", patch: { pets: false } });
+  const price = priceLabel(state);
+  if (price) {
+    filters.push({
+      label: price,
+      patch: { priceMin: undefined, priceMax: undefined, currency: undefined },
+    });
+  }
+  return filters.map(({ label, patch }) => ({ label, removeHref: buildSearchHref(state, patch) }));
 }
 
 export function resultsTitle(total: number, operation?: Operation): string {

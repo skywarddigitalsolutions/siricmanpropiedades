@@ -126,3 +126,23 @@ describe("generateMetadata", () => {
     expect(metadata.robots).toEqual({ index: false, follow: true });
   });
 });
+
+describe("ResultsPage filter feedback", () => {
+  it("shows removable chips for applied filters", async () => {
+    render(await ResultsPage(query({ operacion: "venta", barrio: "palermo", tipo: "casa" })));
+
+    expect(screen.getByRole("link", { name: "Quitar filtro: Palermo" })).toHaveAttribute(
+      "href",
+      "/propiedades?operacion=venta&tipo=casa",
+    );
+    expect(screen.getByRole("link", { name: "Limpiar todo" })).toBeInTheDocument();
+  });
+
+  it("does not promise alerts in the empty state", async () => {
+    listPublicProperties.mockResolvedValue({ items: [], total: 0 });
+
+    render(await ResultsPage(query({ operacion: "venta", tipo: "casa" })));
+
+    expect(screen.getByText(/por WhatsApp y te avisamos si ingresa algo similar/)).toBeInTheDocument();
+  });
+});

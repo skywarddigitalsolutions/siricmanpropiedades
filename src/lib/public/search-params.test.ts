@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   EMPTY_SEARCH,
+  activeFilters,
   buildSearchHref,
   canonicalHref,
   countActiveFilters,
@@ -228,5 +229,49 @@ describe("resultsSeo", () => {
     expect(resultsSeo(parseSearchParams({ ambientes: "3" })).indexable).toBe(false);
     expect(resultsSeo(parseSearchParams({ pagina: "2" })).indexable).toBe(false);
     expect(resultsSeo(parseSearchParams({ codigo: "SP-1" })).indexable).toBe(false);
+  });
+});
+
+describe("activeFilters", () => {
+  const neighborhoods = [{ id: "1", name: "Palermo", slug: "palermo" }];
+
+  it("is empty for a bare search", () => {
+    expect(activeFilters(EMPTY_SEARCH, neighborhoods)).toEqual([]);
+  });
+
+  it("describes each active filter with the URL that removes only it", () => {
+    const state = parseSearchParams({
+      operacion: "venta",
+      barrio: "palermo",
+      tipo: "departamento",
+      ambientes: "3",
+      moneda: "USD",
+      desde: "100000",
+      hasta: "200000",
+      cochera: "1",
+      orden: "menor-precio",
+    });
+    const filters = activeFilters(state, neighborhoods);
+    expect(filters.map((f) => f.label)).toEqual([
+      "Palermo",
+      "Departamento",
+      "3 ambientes",
+      "Cochera",
+      "US$ 100.000 – US$ 200.000",
+    ]);
+    const palermo = filters[0];
+    expect(palermo.removeHref).toBe(
+      "/propiedades?operacion=venta&tipo=departamento&ambientes=3&cochera=1&moneda=USD&desde=100000&hasta=200000&orden=menor-precio",
+    );
+    expect(filters[4].removeHref).not.toContain("desde");
+    expect(filters[4].removeHref).not.toContain("hasta");
+  });
+
+  it("labels open-ended price ranges and falls back to the slug", () => {
+    const state = parseSearchParams({ barrio: "otro-barrio", desde: "50000", rooms: "9" });
+    expect(activeFilters(state, []).map((f) => f.label)).toEqual([
+      "otro-barrio",
+      "Desde US$ 50.000",
+    ]);
   });
 });
