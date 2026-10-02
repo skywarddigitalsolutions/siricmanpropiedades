@@ -9,7 +9,7 @@ import type {
 import { PROPERTY_TYPES } from "@/lib/properties/enums";
 import { PROPERTY_TYPE_LABELS } from "@/lib/properties/labels";
 import Select from "../../Select/Select";
-import { FormHint, FormLiveRegion, Optional } from "../../forms/FormParts";
+import { FormLiveRegion, Optional } from "../../forms/FormParts";
 import FormSuccess from "../../forms/FormSuccess";
 import { countFieldErrors, useFocusOnError } from "../../forms/useFocusOnError";
 import styles from "./AppraisalForm.module.css";
