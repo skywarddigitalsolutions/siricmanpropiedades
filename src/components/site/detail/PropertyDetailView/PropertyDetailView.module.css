@@ -99,6 +99,14 @@
   gap: 6px;
 }
 
+.priceRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
 .price {
   font: 800 clamp(26px, 3.4vw, 34px) var(--font-body), sans-serif;
   letter-spacing: -0.01em;
