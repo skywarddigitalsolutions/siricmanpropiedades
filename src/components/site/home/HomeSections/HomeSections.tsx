@@ -65,7 +65,7 @@ const SERVICES = [
     icon: Building2,
     title: "Consorcios",
     text: "Más de 11 años administrando edificios en CABA.",
-    href: "/contacto",
+    href: "/administracion-de-consorcios",
   },
 ];
 

@@ -30,6 +30,10 @@ describe("Header", () => {
       "href",
       "/tasaciones",
     );
+    expect(screen.getByRole("link", { name: "Consorcios" })).toHaveAttribute(
+      "href",
+      "/administracion-de-consorcios",
+    );
     expect(screen.getByRole("link", { name: "Nosotros" })).toHaveAttribute(
       "href",
       "/nosotros",

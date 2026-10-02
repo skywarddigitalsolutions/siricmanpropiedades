@@ -66,6 +66,7 @@ describe("Footer", () => {
       "/propiedades?operacion=venta",
       "/propiedades?operacion=alquiler",
       "/tasaciones",
+      "/administracion-de-consorcios",
       "/nosotros",
       "/contacto",
     ]);
