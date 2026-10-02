@@ -14,6 +14,7 @@ import {
 } from "@/lib/public/search-params";
 import type { PublicNeighborhood, PublicPropertyListItem } from "@/lib/public/types";
 import { WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
+import ActiveFilters from "@/components/site/results/ActiveFilters/ActiveFilters";
 import PropertyCard from "@/components/site/PropertyCard/PropertyCard";
 import ResultsFilterBar from "@/components/site/results/ResultsFilterBar/ResultsFilterBar";
 import ResultsMessage from "@/components/site/results/ResultsMessage/ResultsMessage";
@@ -85,6 +86,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           </h1>
           <ResultsSort state={state} />
         </div>
+        <ActiveFilters state={state} neighborhoods={neighborhoods} />
         <ResultsBody
           listing={listing}
           state={state}
@@ -143,7 +145,7 @@ function ResultsBody({
           </>
         }
       >
-        Contanos qué buscás y te avisamos cuando ingrese algo similar.
+        Contanos qué buscás por WhatsApp y te avisamos si ingresa algo similar.
       </ResultsMessage>
     );
   }

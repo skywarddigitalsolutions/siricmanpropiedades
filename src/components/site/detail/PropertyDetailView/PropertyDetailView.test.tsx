@@ -79,3 +79,49 @@ describe("PropertyDetailView favorites", () => {
     expect(screen.queryByRole("button", { name: /favoritos/ })).toBeNull();
   });
 });
+
+describe("PropertyDetailView contact bar and extras", () => {
+  it("labels the phone bar actions: WhatsApp and Llamar", () => {
+    render(<PropertyDetailView property={makePublicPropertyDetail()} inquiryAction={inquiryAction} />);
+
+    const whatsapp = screen.getByRole("link", { name: "WhatsApp" });
+    expect(whatsapp).toHaveAttribute("href", expect.stringContaining("wa.me"));
+    expect(whatsapp).toHaveAttribute("rel", expect.stringContaining("noopener"));
+    expect(screen.getByRole("link", { name: "Llamar" })).toHaveAttribute(
+      "href",
+      expect.stringMatching(/^tel:\+/),
+    );
+  });
+
+  it("shows no phone bar in preview", () => {
+    render(<PropertyDetailView property={makePublicPropertyDetail()} preview />);
+
+    expect(screen.queryByRole("link", { name: "WhatsApp" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Llamar" })).toBeNull();
+  });
+
+  it("links the map to Google Maps in a new tab on the public page", () => {
+    render(<PropertyDetailView property={makePublicPropertyDetail()} inquiryAction={inquiryAction} />);
+
+    const link = within(locationSection()).getByRole("link", { name: /Abrir en Google Maps/ });
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", expect.stringContaining("noopener"));
+    expect(link).toHaveAttribute(
+      "href",
+      "https://www.google.com/maps/search/?api=1&query=Gorriti%204800%2C%20Palermo%2C%20CABA",
+    );
+  });
+
+  it("renders an ALL CAPS stored title in title case (display only)", () => {
+    render(
+      <PropertyDetailView
+        property={makePublicPropertyDetail({ title: "PH AVENIDA BOEDO 123 FRENTE A LA PLAZA" })}
+        inquiryAction={inquiryAction}
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "PH Avenida Boedo 123 Frente a la Plaza" }),
+    ).toBeInTheDocument();
+  });
+});

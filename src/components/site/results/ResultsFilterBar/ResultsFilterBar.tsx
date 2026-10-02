@@ -62,6 +62,7 @@ export default function ResultsFilterBar({ state, neighborhoods }: ResultsFilter
               return (
                 <Link
                   key={label}
+                  scroll={false}
                   href={buildSearchHref(state, { operation: value })}
                   aria-current={current ? "page" : undefined}
                   className={styles.segmentLink}
@@ -96,6 +97,7 @@ export default function ResultsFilterBar({ state, neighborhoods }: ResultsFilter
               <li key={filter.label}>
                 <Link
                   href={buildSearchHref(state, filter.patch)}
+                  scroll={false}
                   className={styles.chip}
                   data-active={filter.active ? "" : undefined}
                 >

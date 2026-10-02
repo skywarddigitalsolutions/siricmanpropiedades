@@ -1,0 +1,11 @@
+.optional {
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.hint {
+  font:
+    500 13px/1.4 var(--font-body),
+    sans-serif;
+  color: var(--color-text-muted);
+}

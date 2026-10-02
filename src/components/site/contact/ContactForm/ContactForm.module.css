@@ -83,26 +83,7 @@
   cursor: progress;
 }
 
-.submit:focus-visible,
-.thanks:focus-visible {
+.submit:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
-}
-
-.thanks {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px 0;
-}
-
-.thanksTitle {
-  font: 800 20px var(--font-body), sans-serif;
-  color: var(--color-navy);
-}
-
-.thanksText {
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--color-text-muted);
 }
