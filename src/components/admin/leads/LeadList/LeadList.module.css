@@ -9,8 +9,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 14px 16px;
+  gap: 12px;
+  padding: 16px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text);
@@ -29,9 +29,10 @@
 
 .top {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
+  gap: 4px 16px;
 }
 
 /* The name is the card's link: its ::after covers the whole row. */
@@ -83,7 +84,7 @@
 .contact {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 14px;
+  gap: 6px 18px;
   font: 500 13px var(--font-body), sans-serif;
   color: var(--color-text-muted-2);
 }
@@ -107,9 +108,12 @@
 
 .footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 10px 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-soft);
 }
 
 /* Above the stretched link so the buttons stay clickable. */
@@ -120,7 +124,7 @@
 
 @media (min-width: 960px) {
   .row {
-    padding: 16px 20px;
+    padding: 18px 22px;
   }
 
   .preview {

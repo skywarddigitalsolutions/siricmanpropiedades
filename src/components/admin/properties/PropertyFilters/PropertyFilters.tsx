@@ -64,6 +64,7 @@ export default function PropertyFilters({
 }: PropertyFiltersProps) {
   const [currency, setCurrency] = useState<string>(filters.currency ?? "");
   const [open, setOpen] = useState(activeFilterCount > 0);
+  const [sortFocused, setSortFocused] = useState(false);
   const priceSortBlocked = currency === "";
   const sortOptions = [
     { value: "recientes", label: "Más recientes" },
@@ -147,7 +148,11 @@ export default function PropertyFilters({
       </div>
 
       <div id={PANEL_ID} className={styles.panel} data-open={open ? "" : undefined}>
-        <div className={styles.cell}>
+        <div
+          className={styles.cell}
+          onFocus={() => setSortFocused(true)}
+          onBlur={() => setSortFocused(false)}
+        >
           <SelectField
             id="property-orden"
             name="orden"
@@ -155,11 +160,6 @@ export default function PropertyFilters({
             defaultValue={filters.orden ?? "recientes"}
             onChange={submitForm}
             options={sortOptions}
-            hint={
-              priceSortBlocked
-                ? "Elegí una moneda para ordenar por precio."
-                : undefined
-            }
           />
         </div>
         <div className={styles.cell}>
@@ -220,6 +220,9 @@ export default function PropertyFilters({
             options={neighborhoodOptions}
           />
         </div>
+      </div>
+
+      <div className={styles.footer} data-open={open ? "" : undefined}>
         <div className={styles.check}>
           <CheckboxField
             id="property-hasImages"
@@ -229,23 +232,27 @@ export default function PropertyFilters({
             defaultChecked={filters.hasImages === false}
           />
         </div>
-      </div>
-
-      <div className={styles.actions}>
-        {hasActiveFilters(filters) && (
-          <ButtonLink
-            href="/admin/propiedades"
-            variant="ghost"
-            icon={<X aria-hidden size={18} />}
-          >
-            Limpiar
-          </ButtonLink>
+        {priceSortBlocked && sortFocused && (
+          <p role="status" className={styles.note}>
+            Elegí una moneda para ordenar por precio.
+          </p>
         )}
-        <noscript>
-          <button type="submit" className={styles.noscriptSubmit}>
-            Aplicar
-          </button>
-        </noscript>
+        <div className={styles.actions}>
+          {hasActiveFilters(filters) && (
+            <ButtonLink
+              href="/admin/propiedades"
+              variant="ghost"
+              icon={<X aria-hidden size={18} />}
+            >
+              Limpiar
+            </ButtonLink>
+          )}
+          <noscript>
+            <button type="submit" className={styles.noscriptSubmit}>
+              Aplicar
+            </button>
+          </noscript>
+        </div>
       </div>
     </form>
   );

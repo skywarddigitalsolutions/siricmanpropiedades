@@ -177,16 +177,18 @@ describe("PropertyFilters", () => {
       <PropertyFilters filters={{}} neighborhoods={[]} activeFilterCount={0} />,
     );
 
+    const hint = "Elegí una moneda para ordenar por precio.";
+    // The note is only shown while it is relevant, never inside the control grid.
+    expect(screen.queryByText(hint)).not.toBeInTheDocument();
     await user.click(screen.getByLabelText("Ordenar por"));
+    expect(screen.getByText(hint).closest("[id='property-filters-panel']")).toBeNull();
     expect(
       screen.getByRole("option", { name: "Precio: menor a mayor" }),
     ).toHaveAttribute("aria-disabled", "true");
     expect(
       screen.getByRole("option", { name: "Precio: mayor a menor" }),
     ).toHaveAttribute("aria-disabled", "true");
-    expect(
-      screen.getByText("Elegí una moneda para ordenar por precio."),
-    ).toBeInTheDocument();
+    expect(screen.getByText(hint)).toBeInTheDocument();
     await user.keyboard("{Escape}");
 
     await pick(user, screen.getByLabelText("Moneda"), "Dólares (USD)");
