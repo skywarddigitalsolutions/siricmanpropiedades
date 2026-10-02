@@ -1,0 +1,126 @@
+.root {
+  position: relative;
+  display: block;
+  min-width: 0;
+  --dropdown-chevron-right: 14px;
+}
+
+.trigger {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.trigger:disabled {
+  cursor: not-allowed;
+}
+
+.value {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.trigger[data-placeholder] .value {
+  color: var(--color-text-faint);
+  font-weight: 500;
+}
+
+.chevron {
+  position: absolute;
+  top: 50%;
+  right: var(--dropdown-chevron-right);
+  translate: 0 -50%;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  transition: rotate 0.15s ease;
+}
+
+.chevron[data-open] {
+  rotate: 180deg;
+}
+
+.trigger:disabled ~ .chevron {
+  opacity: 0.55;
+}
+
+/* Same card as the location suggestions panel. */
+.popup {
+  position: absolute;
+  left: 0;
+  z-index: 60;
+  min-width: max(100%, 200px);
+  width: max-content;
+  max-width: min(360px, calc(100vw - 32px));
+  max-height: min(320px, 50vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 6px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+}
+
+.popup[data-align="end"] {
+  left: auto;
+  right: 0;
+}
+
+.popup[data-placement="bottom"] {
+  top: calc(100% + 6px);
+}
+
+.popup[data-placement="top"] {
+  bottom: calc(100% + 6px);
+}
+
+.listbox {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.option {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  font: 600 15px var(--font-body), sans-serif;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.option[data-active] {
+  background: var(--color-bg);
+}
+
+.option:active {
+  background: var(--color-border);
+}
+
+.option[aria-selected="true"] {
+  color: var(--color-navy);
+  font-weight: 800;
+}
+
+.option[aria-disabled="true"] {
+  color: var(--color-text-faint);
+  cursor: not-allowed;
+}
+
+.optionLabel {
+  min-width: 0;
+}
+
+.check {
+  flex: none;
+  color: var(--color-gold-dark);
+}

@@ -96,10 +96,15 @@
 .drawerFooter {
   margin-top: auto;
   padding-top: 24px;
-  border-top: 1px solid var(--color-border-soft);
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* The divider sits between "Cerrar sesión" and the user card. */
+.userRow {
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border-soft);
 }
 
 /* Desktop: persistent sidebar, no top bar/drawer. */
@@ -177,11 +182,14 @@
 
   .sidebarFooter {
     margin-top: auto;
-    padding: 16px 14px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+  }
+
+  .sidebar .userRow {
+    padding: 14px 0 0 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
   }
 
   .main {

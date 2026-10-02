@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { dropdownValue, openLabels } from "@/test/dropdown";
 import SelectField from "./SelectField";
 
 afterEach(() => {
@@ -12,25 +14,17 @@ const options = [
 ];
 
 describe("SelectField", () => {
-  it("renders a labeled select with the given options", () => {
-    render(
-      <SelectField
-        id="operation"
-        name="operation"
-        label="Operación"
-        options={options}
-      />,
-    );
+  it("renders a labeled dropdown with the given options", async () => {
+    const user = userEvent.setup();
+    render(<SelectField id="operation" name="operation" label="Operación" options={options} />);
 
-    const select = screen.getByLabelText("Operación");
-    expect(select).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "Venta" })).toBeInTheDocument();
-    expect(
-      screen.getByRole("option", { name: "Alquiler" }),
-    ).toBeInTheDocument();
+    const trigger = screen.getByLabelText("Operación");
+    expect(trigger).toHaveAttribute("role", "combobox");
+    expect(await openLabels(user, trigger)).toEqual(["Venta", "Alquiler"]);
   });
 
-  it("renders an empty-value placeholder as the first option when given", () => {
+  it("offers an empty-value placeholder as the first option when given", async () => {
+    const user = userEvent.setup();
     render(
       <SelectField
         id="operation"
@@ -41,23 +35,16 @@ describe("SelectField", () => {
       />,
     );
 
-    const select = screen.getByLabelText("Operación") as HTMLSelectElement;
-    expect(select.options[0].value).toBe("");
-    expect(select.options[0].textContent).toBe("Seleccionar...");
+    const trigger = screen.getByLabelText("Operación");
+    expect(trigger).toHaveTextContent("Seleccionar...");
+    expect(dropdownValue(trigger)).toBe("");
+    expect(await openLabels(user, trigger)).toEqual(["Seleccionar...", "Venta", "Alquiler"]);
   });
 
-  it("does not render a placeholder option when none is given", () => {
-    render(
-      <SelectField
-        id="operation"
-        name="operation"
-        label="Operación"
-        options={options}
-      />,
-    );
+  it("starts on the first option when no placeholder is given", () => {
+    render(<SelectField id="operation" name="operation" label="Operación" options={options} />);
 
-    const select = screen.getByLabelText("Operación") as HTMLSelectElement;
-    expect(select.options[0].value).toBe("venta");
+    expect(dropdownValue(screen.getByLabelText("Operación"))).toBe("venta");
   });
 
   it("wires aria-invalid and aria-describedby to the rendered error message when error is set", () => {
@@ -98,12 +85,12 @@ describe("SelectField", () => {
 });
 
 describe("SelectField chevron", () => {
-  it("draws a decorative chevron next to the native select", () => {
+  it("draws a decorative chevron and no native select", () => {
     const { container } = render(
       <SelectField id="x" name="x" label="X" options={options} />,
     );
 
     expect(container.querySelector("svg[aria-hidden='true']")).not.toBeNull();
-    expect(container.querySelector("select")).not.toBeNull();
+    expect(container.querySelector("select")).toBeNull();
   });
 });

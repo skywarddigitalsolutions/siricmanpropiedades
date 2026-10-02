@@ -64,10 +64,11 @@ describe("PropertyStatusPanel", () => {
     const props = renderPanel({ operation: "rent" });
 
     const select = screen.getByLabelText("Estado comercial");
-    expect(within(select).queryByRole("option", { name: "Vendida" })).toBeNull();
-    expect(within(select).getByRole("option", { name: "Alquilada" })).toBeInTheDocument();
+    await user.click(select);
+    expect(screen.queryByRole("option", { name: "Vendida" })).toBeNull();
+    expect(screen.getByRole("option", { name: "Alquilada" })).toBeInTheDocument();
 
-    await user.selectOptions(select, "rented");
+    await user.click(screen.getByRole("option", { name: "Alquilada" }));
     await user.click(screen.getByRole("button", { name: "Actualizar estado" }));
 
     const [, formData] = props.dealStatusAction.mock.calls[0];

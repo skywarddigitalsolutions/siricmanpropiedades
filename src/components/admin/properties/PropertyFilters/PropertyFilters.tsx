@@ -64,6 +64,7 @@ export default function PropertyFilters({
 }: PropertyFiltersProps) {
   const [currency, setCurrency] = useState<string>(filters.currency ?? "");
   const [open, setOpen] = useState(activeFilterCount > 0);
+  const [sortFocused, setSortFocused] = useState(false);
   const priceSortBlocked = currency === "";
   const sortOptions = [
     { value: "recientes", label: "Más recientes" },
@@ -80,12 +81,13 @@ export default function PropertyFilters({
     },
   ];
 
+  function submitForm(_value: string, form: HTMLFormElement | null) {
+    form?.requestSubmit();
+  }
+
   function applyOnChange(event: ChangeEvent<HTMLFormElement>) {
     const target = event.target;
-    if (
-      target instanceof HTMLSelectElement ||
-      (target instanceof HTMLInputElement && target.type === "checkbox")
-    ) {
+    if (target instanceof HTMLInputElement && target.type === "checkbox") {
       event.currentTarget.requestSubmit();
     }
   }
@@ -146,18 +148,18 @@ export default function PropertyFilters({
       </div>
 
       <div id={PANEL_ID} className={styles.panel} data-open={open ? "" : undefined}>
-        <div className={styles.cell}>
+        <div
+          className={styles.cell}
+          onFocus={() => setSortFocused(true)}
+          onBlur={() => setSortFocused(false)}
+        >
           <SelectField
             id="property-orden"
             name="orden"
             label="Ordenar por"
             defaultValue={filters.orden ?? "recientes"}
+            onChange={submitForm}
             options={sortOptions}
-            hint={
-              priceSortBlocked
-                ? "Elegí una moneda para ordenar por precio."
-                : undefined
-            }
           />
         </div>
         <div className={styles.cell}>
@@ -167,7 +169,10 @@ export default function PropertyFilters({
             label="Moneda"
             placeholder="Todas"
             value={currency}
-            onChange={(event) => setCurrency(event.target.value)}
+            onChange={(next, form) => {
+              setCurrency(next);
+              form?.requestSubmit();
+            }}
             options={CURRENCY_OPTIONS}
           />
         </div>
@@ -178,6 +183,7 @@ export default function PropertyFilters({
             label="Operación"
             placeholder="Todas"
             defaultValue={filters.operation ?? ""}
+            onChange={submitForm}
             options={OPERATION_OPTIONS}
           />
         </div>
@@ -188,6 +194,7 @@ export default function PropertyFilters({
             label="Tipo"
             placeholder="Todos"
             defaultValue={filters.type ?? ""}
+            onChange={submitForm}
             options={PROPERTY_TYPE_OPTIONS}
           />
         </div>
@@ -198,6 +205,7 @@ export default function PropertyFilters({
             label="Estado comercial"
             placeholder="Todos"
             defaultValue={filters.dealStatus ?? ""}
+            onChange={submitForm}
             options={DEAL_STATUS_OPTIONS}
           />
         </div>
@@ -208,9 +216,13 @@ export default function PropertyFilters({
             label="Barrio"
             placeholder="Todos"
             defaultValue={filters.neighborhoodId ?? ""}
+            onChange={submitForm}
             options={neighborhoodOptions}
           />
         </div>
+      </div>
+
+      <div className={styles.footer} data-open={open ? "" : undefined}>
         <div className={styles.check}>
           <CheckboxField
             id="property-hasImages"
@@ -220,23 +232,27 @@ export default function PropertyFilters({
             defaultChecked={filters.hasImages === false}
           />
         </div>
-      </div>
-
-      <div className={styles.actions}>
-        {hasActiveFilters(filters) && (
-          <ButtonLink
-            href="/admin/propiedades"
-            variant="ghost"
-            icon={<X aria-hidden size={18} />}
-          >
-            Limpiar
-          </ButtonLink>
+        {priceSortBlocked && sortFocused && (
+          <p role="status" className={styles.note}>
+            Elegí una moneda para ordenar por precio.
+          </p>
         )}
-        <noscript>
-          <button type="submit" className={styles.noscriptSubmit}>
-            Aplicar
-          </button>
-        </noscript>
+        <div className={styles.actions}>
+          {hasActiveFilters(filters) && (
+            <ButtonLink
+              href="/admin/propiedades"
+              variant="ghost"
+              icon={<X aria-hidden size={18} />}
+            >
+              Limpiar
+            </ButtonLink>
+          )}
+          <noscript>
+            <button type="submit" className={styles.noscriptSubmit}>
+              Aplicar
+            </button>
+          </noscript>
+        </div>
       </div>
     </form>
   );

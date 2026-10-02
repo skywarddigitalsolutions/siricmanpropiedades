@@ -24,7 +24,7 @@ export default function ResultsSort({ state }: { state: SearchState }) {
         id="results-sort"
         name="orden"
         defaultValue={state.sort}
-        onChange={(event) => event.currentTarget.form?.requestSubmit()}
+        onChange={(_value, form) => form?.requestSubmit()}
       >
         {OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

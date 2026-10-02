@@ -39,4 +39,16 @@ describe("AccountPage", () => {
     expect(screen.getByLabelText("Contraseña actual")).toBeInTheDocument();
     expect(screen.getByLabelText("Código de tu app de autenticación")).toBeInTheDocument();
   });
+
+  it("lays out profile and backup codes in one column and the password form in the other", async () => {
+    const { container } = render(await AccountPage());
+
+    const profile = container.querySelector('[data-column="profile"]')!;
+    const security = container.querySelector('[data-column="security"]')!;
+    expect(profile.contains(screen.getByRole("heading", { name: "Códigos de respaldo" }))).toBe(true);
+    expect(profile.contains(screen.getByLabelText("Perfil"))).toBe(true);
+    expect(security.contains(screen.getByRole("heading", { name: "Cambiar contraseña" }))).toBe(true);
+    expect(security.contains(screen.getByLabelText("Nueva contraseña"))).toBe(true);
+    expect(security.contains(screen.getByLabelText("Repetir nueva contraseña"))).toBe(true);
+  });
 });

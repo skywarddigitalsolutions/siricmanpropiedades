@@ -57,6 +57,65 @@ describe("AdminShell", () => {
     expect(screen.getAllByText("Gerente").length).toBeGreaterThan(0);
   });
 
+  it("puts the account gear on the user card, not in the nav", () => {
+    usePathname.mockReturnValue("/admin/propiedades");
+    render(
+      <AdminShell userName="gabriel" logout={<button>Cerrar sesión</button>}>
+        <p>x</p>
+      </AdminShell>,
+    );
+
+    const nav = screen.getByRole("navigation", { name: "Secciones del panel" });
+    expect(within(nav).queryByRole("link", { name: "Mi cuenta" })).toBeNull();
+    const gear = screen.getByRole("link", { name: "Mi cuenta" });
+    expect(gear).toHaveAttribute("href", "/admin/cuenta");
+    expect(gear).not.toHaveAttribute("aria-current");
+  });
+
+  it("marks the gear current on the account page", () => {
+    usePathname.mockReturnValue("/admin/cuenta");
+    render(
+      <AdminShell userName="gabriel" logout={<button>Cerrar sesión</button>}>
+        <p>x</p>
+      </AdminShell>,
+    );
+
+    expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("aria-current", "page");
+  });
+
+  it("puts Cerrar sesión above the divider that separates the user card", () => {
+    usePathname.mockReturnValue("/admin");
+    render(
+      <AdminShell userName="gabriel" logout={<button>Cerrar sesión</button>}>
+        <p>x</p>
+      </AdminShell>,
+    );
+
+    const logout = screen.getByRole("button", { name: "Cerrar sesión" });
+    const gear = screen.getByRole("link", { name: "Mi cuenta" });
+    const card = gear.closest("[data-user-row]")!;
+    expect(card).not.toBeNull();
+    expect(card.contains(logout)).toBe(false);
+    expect(logout.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("keeps the same order in the mobile drawer", async () => {
+    usePathname.mockReturnValue("/admin");
+    const user = userEvent.setup();
+    render(
+      <AdminShell userName="gabriel" logout={<button>Cerrar sesión</button>}>
+        <p>x</p>
+      </AdminShell>,
+    );
+
+    await user.click(screen.getByRole("button", { name: /menú/i }));
+    const dialog = screen.getByRole("dialog");
+    const logout = within(dialog).getByRole("button", { name: "Cerrar sesión" });
+    const card = within(dialog).getByRole("link", { name: "Mi cuenta" }).closest("[data-user-row]")!;
+    expect(within(dialog).queryByRole("navigation")!.contains(card)).toBe(false);
+    expect(logout.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("shows Usuarios in the nav only for admins", () => {
     usePathname.mockReturnValue("/admin");
     const { unmount } = render(

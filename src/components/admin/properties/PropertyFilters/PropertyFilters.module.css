@@ -64,17 +64,38 @@
   background: var(--color-navy);
 }
 
-/* The rest of the filters: collapsed on phones until "Filtros" is tapped. */
+/*
+ * The rest of the filters: collapsed on phones until "Filtros" is tapped.
+ * Every cell is a label-on-top field of the same height, so a grid keeps
+ * all controls on one baseline.
+ */
 .panel {
   display: none;
   grid-template-columns: 1fr;
-  gap: 12px;
-  padding-top: 12px;
+  gap: 14px 12px;
+  padding-top: 14px;
   border-top: 1px solid var(--color-border-soft);
 }
 
 .panel[data-open] {
   display: grid;
+}
+
+.cell {
+  min-width: 0;
+}
+
+/* "Sin fotos" on the left, notes in the middle, "Limpiar" on the right. */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  min-height: 44px;
+}
+
+.footer:not([data-open]) .check {
+  display: none;
 }
 
 .check {
@@ -83,9 +104,16 @@
   min-height: 44px;
 }
 
+.note {
+  flex: 1 1 200px;
+  font: 500 13px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
 .actions {
   display: flex;
   align-items: center;
+  margin-left: auto;
 }
 
 .actions:empty {
@@ -108,44 +136,28 @@
   }
 }
 
-/*
- * Desktop: one row. The panel and its wrapper dissolve (`display: contents`)
- * so search, selects, the toggle and "Limpiar" are siblings in the same flex
- * line; it only wraps when the viewport is too narrow for all of them.
- */
 @media (min-width: 960px) {
   .form {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 10px;
-    padding: 12px 14px;
+    padding: 16px 18px;
   }
 
   .searchRow {
-    flex: 1 1 200px;
-    min-width: 180px;
+    max-width: 520px;
   }
 
   .toggle {
     display: none;
   }
 
+  /* Always open on desktop: as many 170px+ columns as fit, one shared row height. */
   .panel,
   .panel[data-open] {
-    display: contents;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    align-items: end;
   }
 
-  .cell {
-    flex: 0 1 132px;
-    min-width: 108px;
-  }
-
-  .check {
-    flex: none;
-  }
-
-  .actions {
-    flex: none;
+  .footer:not([data-open]) .check {
+    display: flex;
   }
 }

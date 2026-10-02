@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { pick } from "@/test/dropdown";
 import NewUserPanel from "./NewUserPanel";
 
 afterEach(cleanup);
@@ -24,6 +25,7 @@ describe("NewUserPanel", () => {
     expect(screen.getByLabelText("Usuario")).toBeInTheDocument();
     expect(screen.getByLabelText("Contraseña")).toBeInTheDocument();
     expect(screen.getByText("De 6 a 50 caracteres, con mayúscula, minúscula y número.")).toBeInTheDocument();
+    await user.click(screen.getByRole("combobox", { name: "Rol" }));
     expect(screen.getByRole("option", { name: "Gerente" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "Usuario" })).toBeInTheDocument();
   });
@@ -36,7 +38,7 @@ describe("NewUserPanel", () => {
     await user.click(screen.getByRole("button", { name: "Nuevo usuario" }));
     await user.type(screen.getByLabelText("Usuario"), "ana");
     await user.type(screen.getByLabelText("Contraseña"), "Abcde1");
-    await user.selectOptions(screen.getByLabelText("Rol"), "r2");
+    await pick(user, screen.getByLabelText("Rol"), "Usuario");
     await user.click(screen.getByRole("button", { name: "Crear usuario" }));
 
     await waitFor(() => expect(action).toHaveBeenCalledTimes(1));

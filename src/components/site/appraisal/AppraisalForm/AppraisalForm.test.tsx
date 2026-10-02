@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { AppraisalState } from "@/lib/leads/appraisal-form";
+import { dropdownValue, openLabels, pick } from "@/test/dropdown";
 import AppraisalForm from "./AppraisalForm";
 
 type Action = (prev: AppraisalState, formData: FormData) => Promise<AppraisalState>;
@@ -14,14 +15,15 @@ function renderForm(action: Action) {
 }
 
 async function fillRequired(user: ReturnType<typeof userEvent.setup>) {
-  await user.selectOptions(screen.getByLabelText("Tipo de propiedad"), "house");
+  await pick(user, screen.getByLabelText("Tipo de propiedad"), "Casa");
   await user.type(screen.getByLabelText("Dirección y barrio"), "Boedo");
   await user.type(screen.getByLabelText("Nombre y apellido"), "Ana");
   await user.type(screen.getByLabelText("Teléfono"), "11 3896-7363");
 }
 
 describe("AppraisalForm", () => {
-  it("offers the operation toggle, labelled fields, property types and a hidden honeypot", () => {
+  it("offers the operation toggle, labelled fields, property types and a hidden honeypot", async () => {
+    const user = userEvent.setup();
     const { container } = render(<AppraisalForm action={vi.fn()} />);
 
     const group = screen.getByRole("radiogroup", { name: "Qué querés hacer" });
@@ -35,9 +37,8 @@ describe("AppraisalForm", () => {
     expect(screen.getByLabelText("Nombre y apellido")).toBeRequired();
     expect(screen.getByLabelText("Teléfono")).toBeRequired();
     expect(screen.getByLabelText("Comentarios (opcional)")).not.toBeRequired();
-    const options = screen.getAllByRole("option").map((option) => option.textContent);
+    const options = await openLabels(user, screen.getByLabelText("Tipo de propiedad"));
     expect(options).toEqual([
-      "Elegí una opción",
       "Departamento",
       "Casa",
       "PH",
@@ -57,7 +58,7 @@ describe("AppraisalForm", () => {
     const user = renderForm(action);
 
     await user.click(screen.getByRole("radio", { name: "Alquilar" }));
-    await user.selectOptions(screen.getByLabelText("Tipo de propiedad"), "ph");
+    await pick(user, screen.getByLabelText("Tipo de propiedad"), "PH");
     await user.type(screen.getByLabelText("Dirección y barrio"), "Las Casas 4054, Boedo");
     await user.type(screen.getByLabelText("Ambientes (opcional)"), "3");
     await user.type(screen.getByLabelText("Nombre y apellido"), "Ana García");
@@ -99,7 +100,7 @@ describe("AppraisalForm", () => {
     expect(screen.getByLabelText("Ambientes (opcional)")).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByLabelText("Ambientes (opcional)")).toHaveValue(99);
     expect(screen.getByRole("radio", { name: "Alquilar" })).toBeChecked();
-    expect(screen.getByLabelText("Tipo de propiedad")).toHaveValue("house");
+    expect(dropdownValue(screen.getByLabelText("Tipo de propiedad"))).toBe("house");
     expect(screen.getByLabelText("Dirección y barrio")).toHaveValue("Boedo");
     expect(screen.getByLabelText("Superficie aprox. (m²) (opcional)")).toHaveValue(80);
     expect(screen.getByLabelText("Comentarios (opcional)")).toHaveValue("Mi mensaje");

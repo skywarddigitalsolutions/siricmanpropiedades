@@ -2,7 +2,6 @@ import {
   Building2,
   Inbox,
   LayoutDashboard,
-  Settings,
   UserCog,
   Users,
   type LucideIcon,
@@ -28,5 +27,4 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { label: "Consultas", href: "/admin/consultas", icon: Inbox },
   { label: "Clientes", href: "/admin/clientes", icon: Users },
   { label: "Usuarios", href: "/admin/usuarios", icon: UserCog, adminOnly: true },
-  { label: "Mi cuenta", href: "/admin/cuenta", icon: Settings },
 ];

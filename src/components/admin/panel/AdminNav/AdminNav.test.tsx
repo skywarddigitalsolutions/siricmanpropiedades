@@ -81,7 +81,7 @@ describe("AdminNav", () => {
     ).not.toHaveAttribute("aria-current");
   });
 
-  it("lists the sections in order: Inicio, Propiedades, Consultas, Clientes, Usuarios, Mi cuenta", () => {
+  it("lists the sections in order: Inicio, Propiedades, Consultas, Clientes, Usuarios", () => {
     usePathname.mockReturnValue("/admin");
     render(<AdminNav isAdmin />);
 
@@ -92,7 +92,6 @@ describe("AdminNav", () => {
       "Consultas",
       "Clientes",
       "Usuarios",
-      "Mi cuenta",
     ]);
   });
 
@@ -110,7 +109,7 @@ describe("AdminNav", () => {
     render(<AdminNav />);
 
     expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Mi cuenta" })).toHaveAttribute("href", "/admin/cuenta");
+    expect(screen.queryByRole("link", { name: "Mi cuenta" })).not.toBeInTheDocument();
   });
 
   it("marks Inicio current only on /admin exactly", () => {

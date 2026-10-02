@@ -34,51 +34,59 @@ export default function ClientTable({ clients, now }: { clients: Client[]; now?:
           return (
             <tr key={client.email} className={styles.row}>
               <th scope="row" className={styles.who}>
-                <span className={styles.name}>{client.name}</span>
-                <a href={links.email} className={styles.email}>
-                  <Mail aria-hidden size={14} />
-                  {client.email}
-                </a>
+                <div className={styles.stack}>
+                  <span className={styles.name}>{client.name}</span>
+                  <a href={links.email} className={styles.email}>
+                    <Mail aria-hidden size={14} />
+                    {client.email}
+                  </a>
+                </div>
               </th>
               <td className={styles.cell} data-label="Contacto">
                 {client.phone ? (
-                  <span className={styles.actions}>
+                  <div className={styles.stack}>
                     <span className={styles.phone}>{client.phone}</span>
-                    {links.whatsapp && (
-                      <a
-                        href={links.whatsapp}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`${styles.action} ${styles.whatsapp}`}
-                      >
-                        <WhatsAppIcon size={16} />
-                        WhatsApp
-                      </a>
-                    )}
-                    {links.call && (
-                      <a href={links.call} className={styles.action}>
-                        <Phone aria-hidden size={15} />
-                        Llamar
-                      </a>
-                    )}
-                  </span>
+                    <span className={styles.actions}>
+                      {links.whatsapp && (
+                        <a
+                          href={links.whatsapp}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`${styles.action} ${styles.whatsapp}`}
+                        >
+                          <WhatsAppIcon size={16} />
+                          WhatsApp
+                        </a>
+                      )}
+                      {links.call && (
+                        <a href={links.call} className={styles.action}>
+                          <Phone aria-hidden size={15} />
+                          Llamar
+                        </a>
+                      )}
+                    </span>
+                  </div>
                 ) : (
                   <span className={styles.muted}>Sin teléfono</span>
                 )}
               </td>
               <td className={styles.cell} data-label="Consultas">
-                <span className={styles.count}>
-                  {client.inquiries} {client.inquiries === 1 ? "consulta" : "consultas"}
-                </span>
-                <Link href={inquiriesHref(client.email)} className={styles.more}>
-                  Ver consultas
-                </Link>
+                <div className={styles.stack}>
+                  <span className={styles.count}>
+                    {client.inquiries} {client.inquiries === 1 ? "consulta" : "consultas"}
+                  </span>
+                  <Link href={inquiriesHref(client.email)} className={styles.more}>
+                    Ver consultas
+                  </Link>
+                </div>
               </td>
               <td className={styles.cell} data-label="Última consulta">
-                <time dateTime={client.lastInquiryAt} className={styles.relative}>
-                  {formatRelativeDate(client.lastInquiryAt, now)}
-                </time>
-                <span className={styles.absolute}>{formatClientDate(client.lastInquiryAt)}</span>
+                <div className={styles.stack}>
+                  <time dateTime={client.lastInquiryAt} className={styles.relative}>
+                    {formatRelativeDate(client.lastInquiryAt, now)}
+                  </time>
+                  <span className={styles.absolute}>{formatClientDate(client.lastInquiryAt)}</span>
+                </div>
               </td>
               <td className={styles.cell} data-label="Propiedades">
                 {client.properties.length > 0 ? (

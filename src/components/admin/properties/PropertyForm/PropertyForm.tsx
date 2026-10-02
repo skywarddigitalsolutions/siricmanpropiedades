@@ -153,8 +153,7 @@ function DatosFields({ mode, neighborhoods, values, errors }: FieldsProps) {
             placeholder="Elegí una opción"
             options={OPERATION_OPTIONS}
             value={operation}
-            onChange={(event) => {
-              const next = event.target.value;
+            onChange={(next) => {
               setOperation(next);
               const suggestedCurrency = currencyForOperation(next);
               if (isCreate && !currencyTouched && suggestedCurrency) {
@@ -171,7 +170,7 @@ function DatosFields({ mode, neighborhoods, values, errors }: FieldsProps) {
             placeholder="Elegí una opción"
             options={TYPE_OPTIONS}
             value={type}
-            onChange={(event) => setType(event.target.value)}
+            onChange={setType}
             error={errors.type}
             required
           />
@@ -194,7 +193,7 @@ function DatosFields({ mode, neighborhoods, values, errors }: FieldsProps) {
           placeholder="Elegí un barrio"
           options={neighborhoodOptions}
           value={neighborhoodId}
-          onChange={(event) => setNeighborhoodId(event.target.value)}
+          onChange={setNeighborhoodId}
           error={errors.neighborhoodId}
           required
         />
@@ -217,8 +216,8 @@ function DatosFields({ mode, neighborhoods, values, errors }: FieldsProps) {
             placeholder="Elegí una moneda"
             options={CURRENCY_OPTIONS}
             value={currency}
-            onChange={(event) => {
-              setCurrency(event.target.value);
+            onChange={(next) => {
+              setCurrency(next);
               setCurrencyTouched(true);
             }}
             error={errors.currency}

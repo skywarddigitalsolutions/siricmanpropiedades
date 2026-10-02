@@ -6,6 +6,8 @@ vi.mock("@/lib/api/properties", () => ({ listNeighborhoods }));
 
 vi.mock("./actions", () => ({ createPropertyAction: vi.fn() }));
 
+import userEvent from "@testing-library/user-event";
+import { dropdownValue } from "@/test/dropdown";
 import NewPropertyPage from "./page";
 
 afterEach(() => cleanup());
@@ -21,9 +23,10 @@ describe("NewPropertyPage", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Nueva propiedad" }),
     ).toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText("Barrio"));
     expect(screen.getByRole("option", { name: "Palermo" })).toBeInTheDocument();
     expect(screen.getByLabelText("Título")).toHaveValue("");
-    expect(screen.getByLabelText("Moneda")).toHaveValue("USD");
+    expect(dropdownValue(screen.getByLabelText("Moneda"))).toBe("USD");
     expect(
       screen.getByRole("button", { name: "Guardar y continuar" }),
     ).toBeInTheDocument();

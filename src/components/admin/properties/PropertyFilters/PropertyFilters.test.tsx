@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { renderToStaticMarkup } from "react-dom/server";
+import { dropdownValue, openLabels, pick } from "@/test/dropdown";
 import PropertyFilters from "./PropertyFilters";
 
 afterEach(() => {
@@ -79,7 +81,8 @@ describe("PropertyFilters", () => {
     );
   });
 
-  it("renders the currency, operation, type, deal status and neighborhood selects", () => {
+  it("renders the currency, operation, type, deal status and neighborhood dropdowns", async () => {
+    const user = userEvent.setup();
     render(
       <PropertyFilters
         filters={{}}
@@ -94,8 +97,7 @@ describe("PropertyFilters", () => {
     expect(screen.getByLabelText("Estado comercial")).toBeInTheDocument();
     const neighborhoodSelect = screen.getByLabelText("Barrio");
     expect(neighborhoodSelect).toBeInTheDocument();
-    expect(screen.getByText("Palermo")).toBeInTheDocument();
-    expect(screen.getByText("Belgrano")).toBeInTheDocument();
+    expect(await openLabels(user, neighborhoodSelect)).toEqual(["Todos", "Palermo", "Belgrano"]);
   });
 
   it("has no visible Aplicar button (filters apply on change / Enter)", () => {
@@ -169,28 +171,32 @@ describe("PropertyFilters", () => {
     ).toHaveValue("draft");
   });
 
-  it("disables the price sorts with a hint until a currency is chosen", () => {
+  it("disables the price sorts with a hint until a currency is chosen", async () => {
+    const user = userEvent.setup();
     render(
       <PropertyFilters filters={{}} neighborhoods={[]} activeFilterCount={0} />,
     );
 
+    const hint = "Elegí una moneda para ordenar por precio.";
+    // The note is only shown while it is relevant, never inside the control grid.
+    expect(screen.queryByText(hint)).not.toBeInTheDocument();
+    await user.click(screen.getByLabelText("Ordenar por"));
+    expect(screen.getByText(hint).closest("[id='property-filters-panel']")).toBeNull();
     expect(
       screen.getByRole("option", { name: "Precio: menor a mayor" }),
-    ).toBeDisabled();
+    ).toHaveAttribute("aria-disabled", "true");
     expect(
       screen.getByRole("option", { name: "Precio: mayor a menor" }),
-    ).toBeDisabled();
-    expect(
-      screen.getByText("Elegí una moneda para ordenar por precio."),
-    ).toBeInTheDocument();
+    ).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByText(hint)).toBeInTheDocument();
+    await user.keyboard("{Escape}");
 
-    fireEvent.change(screen.getByLabelText("Moneda"), {
-      target: { value: "USD" },
-    });
+    await pick(user, screen.getByLabelText("Moneda"), "Dólares (USD)");
 
+    await user.click(screen.getByLabelText("Ordenar por"));
     expect(
       screen.getByRole("option", { name: "Precio: menor a mayor" }),
-    ).toBeEnabled();
+    ).not.toHaveAttribute("aria-disabled");
   });
 
   it("offers the Sin fotos toggle with value false", () => {
@@ -208,7 +214,8 @@ describe("PropertyFilters", () => {
     expect(toggle).toHaveAttribute("value", "false");
   });
 
-  it("submits the form when a select changes (filters apply on change)", () => {
+  it("submits the form when a dropdown changes (filters apply on change)", async () => {
+    const user = userEvent.setup();
     render(
       <PropertyFilters filters={{}} neighborhoods={[]} activeFilterCount={0} />,
     );
@@ -216,10 +223,9 @@ describe("PropertyFilters", () => {
     const onSubmit = vi.fn((event: Event) => event.preventDefault());
     form.addEventListener("submit", onSubmit);
 
-    fireEvent.change(screen.getByLabelText("Ordenar por"), {
-      target: { value: "editadas" },
-    });
+    await pick(user, screen.getByLabelText("Ordenar por"), "Última edición");
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(dropdownValue(screen.getByLabelText("Ordenar por"))).toBe("editadas");
   });
 });
