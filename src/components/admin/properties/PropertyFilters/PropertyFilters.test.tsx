@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { renderToStaticMarkup } from "react-dom/server";
 import PropertyFilters from "./PropertyFilters";
 
 afterEach(() => {
@@ -34,23 +35,36 @@ describe("PropertyFilters", () => {
     expect(screen.getByLabelText("Buscar")).toHaveValue("casa en venta");
   });
 
-  it("shows the active filter count on the collapsible summary", () => {
+  it("shows a Filtros toggle with the active count, announced in words", () => {
     render(
       <PropertyFilters filters={{}} neighborhoods={[]} activeFilterCount={2} />,
     );
 
-    expect(screen.getByText("Filtros (2)")).toBeInTheDocument();
+    const toggle = screen.getByRole("button", { name: "Filtros, 2 activos" });
+    expect(toggle).toHaveTextContent("2");
+    expect(toggle.querySelector("svg")).not.toBeNull();
   });
 
-  it("hides the count when there are no secondary filters", () => {
+  it("shows no count when there are no secondary filters", () => {
     render(
       <PropertyFilters filters={{}} neighborhoods={[]} activeFilterCount={0} />,
     );
 
-    expect(screen.getByText("Filtros")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Filtros" })).toBeInTheDocument();
   });
 
-  it("opens the details element when any secondary filter is active", () => {
+  it("starts collapsed and toggles the filter panel", () => {
+    render(
+      <PropertyFilters filters={{}} neighborhoods={[]} activeFilterCount={0} />,
+    );
+
+    const toggle = screen.getByRole("button", { name: "Filtros" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("starts expanded when any secondary filter is active", () => {
     render(
       <PropertyFilters
         filters={{ operation: "sale" }}
@@ -59,8 +73,10 @@ describe("PropertyFilters", () => {
       />,
     );
 
-    const details = screen.getByText("Filtros (1)").closest("details");
-    expect(details).toHaveAttribute("open");
+    expect(screen.getByRole("button", { name: "Filtros, 1 activo" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
   });
 
   it("renders the currency, operation, type, deal status and neighborhood selects", () => {
@@ -82,18 +98,50 @@ describe("PropertyFilters", () => {
     expect(screen.getByText("Belgrano")).toBeInTheDocument();
   });
 
-  it("renders an Aplicar submit and a Limpiar link back to the bare route", () => {
+  it("has no visible Aplicar button (filters apply on change / Enter)", () => {
     render(
       <PropertyFilters filters={{}} neighborhoods={[]} activeFilterCount={0} />,
     );
 
-    expect(
-      screen.getByRole("button", { name: "Aplicar" }),
-    ).toHaveAttribute("type", "submit");
+    expect(screen.queryByRole("button", { name: "Aplicar" })).not.toBeInTheDocument();
+  });
+
+  it("keeps an Aplicar submit inside <noscript> for no-JS browsers", () => {
+    const html = renderToStaticMarkup(
+      <PropertyFilters filters={{}} neighborhoods={[]} activeFilterCount={0} />,
+    );
+
+    expect(html).toContain("<noscript>");
+    expect(html).toContain("Aplicar");
+    expect(html.indexOf("Aplicar")).toBeGreaterThan(html.indexOf("<noscript>"));
+  });
+
+  it("shows a Limpiar ghost link back to the bare route only when something is filtered", () => {
+    const { unmount } = render(
+      <PropertyFilters filters={{}} neighborhoods={[]} activeFilterCount={0} />,
+    );
+    expect(screen.queryByRole("link", { name: "Limpiar" })).not.toBeInTheDocument();
+    unmount();
+
+    render(
+      <PropertyFilters
+        filters={{ q: "casa" }}
+        neighborhoods={[]}
+        activeFilterCount={0}
+      />,
+    );
     expect(screen.getByRole("link", { name: "Limpiar" })).toHaveAttribute(
       "href",
       "/admin/propiedades",
     );
+  });
+
+  it("puts a search icon in the search field", () => {
+    render(
+      <PropertyFilters filters={{}} neighborhoods={[]} activeFilterCount={0} />,
+    );
+
+    expect(screen.getByLabelText("Buscar").closest("div")?.querySelector("svg")).not.toBeNull();
   });
 
   it("uses the Código, título o dirección placeholder", () => {

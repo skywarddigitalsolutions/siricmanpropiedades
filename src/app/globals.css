@@ -24,6 +24,18 @@
   --color-whatsapp: #25d366;
   --color-whatsapp-dark: #1fbd5a;
 
+  /* Semantic tones (admin status badges): soft background + strong text, AA contrast. */
+  --tone-success-bg: #e2f3e8;
+  --tone-success-fg: #14602f;
+  --tone-warning-bg: #fcefd0;
+  --tone-warning-fg: #774805;
+  --tone-neutral-bg: #ecebe6;
+  --tone-neutral-fg: #44485c;
+  --tone-info-bg: #e0ebfa;
+  --tone-info-fg: #17468f;
+  --tone-danger-bg: #fbe3e1;
+  --tone-danger-fg: #9b2a22;
+
   /* Radii */
   --radius-sm: 10px;
   --radius-md: 16px;

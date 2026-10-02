@@ -1,9 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Building2, Plus, SearchX, X } from "lucide-react";
 import type { PropertyListItem } from "@/lib/api/properties";
 import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import { OPERATION_LABELS, PROPERTY_TYPE_LABELS, formatPrice } from "@/lib/properties/labels";
 import { publicSiteHref } from "@/lib/site-url";
+import EmptyState from "@/components/admin/ui/EmptyState/EmptyState";
+import { ButtonLink } from "@/components/admin/ui/Button/Button";
 import PublicationStatusBadge from "@/components/admin/properties/PublicationStatusBadge/PublicationStatusBadge";
 import DealStatusBadge from "@/components/admin/properties/DealStatusBadge/DealStatusBadge";
 import PropertyQuickActions from "@/components/admin/properties/PropertyQuickActions/PropertyQuickActions";
@@ -103,22 +106,32 @@ export default function PropertyList({
 }: PropertyListProps) {
   if (properties.length === 0) {
     return hasActiveFilters ? (
-      <div className={styles.empty}>
-        <p>No se encontraron propiedades con esos filtros.</p>
-        <Link href="/admin/propiedades" className={styles.emptyAction}>
+      <EmptyState
+        icon={SearchX}
+        title="No se encontraron propiedades con esos filtros."
+        description="Probá con otra búsqueda o quitá algún filtro."
+      >
+        <ButtonLink
+          href="/admin/propiedades"
+          variant="secondary"
+          icon={<X aria-hidden size={18} />}
+        >
           Limpiar filtros
-        </Link>
-      </div>
+        </ButtonLink>
+      </EmptyState>
     ) : (
-      <div className={styles.empty}>
-        <p>Todavía no hay propiedades cargadas.</p>
-        <Link
+      <EmptyState
+        icon={Building2}
+        title="Todavía no hay propiedades cargadas."
+        description="Cargá la primera y aparecerá acá."
+      >
+        <ButtonLink
           href="/admin/propiedades/nueva"
-          className={styles.emptyAction}
+          icon={<Plus aria-hidden size={18} />}
         >
           Crear la primera propiedad
-        </Link>
-      </div>
+        </ButtonLink>
+      </EmptyState>
     );
   }
 

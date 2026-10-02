@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { Download, SearchX, UsersRound, X } from "lucide-react";
 import { listClients, type Client } from "@/lib/api/clients";
 import {
   buildClientsHref,
@@ -9,6 +9,8 @@ import {
 import { getSessionToken } from "@/lib/session/dal";
 import { handleUnlessUnavailable } from "@/lib/session/session-error";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
+import EmptyState from "@/components/admin/ui/EmptyState/EmptyState";
+import { ButtonLink } from "@/components/admin/ui/Button/Button";
 import PageHeader from "@/components/admin/panel/PageHeader/PageHeader";
 import Pagination from "@/components/admin/panel/Pagination/Pagination";
 import SearchForm from "@/components/admin/panel/SearchForm/SearchForm";
@@ -49,10 +51,14 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
         description="Personas que dejaron su email en el sitio, sin duplicados."
         actions={
           // A plain link: the CSV comes from a route handler, not a client navigation.
-          <a href={buildExportHref(state)} className={styles.export}>
-            <Download aria-hidden size={18} />
+          <ButtonLink
+            href={buildExportHref(state)}
+            native
+            variant="secondary"
+            icon={<Download aria-hidden size={18} />}
+          >
             Exportar CSV
-          </a>
+          </ButtonLink>
         }
       />
       <SearchForm
@@ -66,11 +72,27 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
       {unavailable ? (
         <FormAlert>No se pudieron cargar los clientes. Intentá de nuevo en unos minutos.</FormAlert>
       ) : clients.length === 0 ? (
-        <p className={styles.empty}>
-          {state.q
-            ? `No encontramos clientes para “${state.q}”.`
-            : "Todavía no hay clientes: aparecen cuando alguien deja su email en una consulta."}
-        </p>
+        state.q ? (
+          <EmptyState
+            icon={SearchX}
+            title={`No encontramos clientes para “${state.q}”.`}
+            description="Revisá la ortografía o probá con otro dato."
+          >
+            <ButtonLink
+              href={CLIENTS_PATH}
+              variant="secondary"
+              icon={<X aria-hidden size={18} />}
+            >
+              Limpiar búsqueda
+            </ButtonLink>
+          </EmptyState>
+        ) : (
+          <EmptyState
+            icon={UsersRound}
+            title="Todavía no hay clientes."
+            description="Aparecen cuando alguien deja su email en una consulta."
+          />
+        )
       ) : (
         <>
           <ClientTable clients={clients} />
@@ -79,12 +101,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             page={state.page}
             totalPages={totalPages}
             totalLabel={`${total} ${total === 1 ? "cliente" : "clientes"}`}
-            previousHref={
-              state.page > 1 ? buildClientsHref(state, { page: state.page - 1 }) : undefined
-            }
-            nextHref={
-              state.page < totalPages ? buildClientsHref(state, { page: state.page + 1 }) : undefined
-            }
+            hrefFor={(target) => buildClientsHref(state, { page: target })}
           />
         </>
       )}

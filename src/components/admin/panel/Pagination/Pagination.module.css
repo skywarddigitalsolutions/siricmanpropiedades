@@ -1,6 +1,7 @@
 .nav {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
   margin-top: 16px;
   padding: 12px 0;
@@ -13,42 +14,63 @@
 
 .controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: center;
+  gap: 4px;
+  list-style: none;
 }
 
-.link,
-.disabled {
-  min-height: 44px;
+/* 36px on phones keeps 7 numbers + 2 arrows inside 358px; 40px from 640px. */
+.control {
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
-  padding: 0 12px;
-  border-radius: var(--radius-sm);
-  font: 600 14px var(--font-body), sans-serif;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  font: 700 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+  background: transparent;
 }
 
-.link {
+a.control:hover {
+  background: var(--color-border-soft);
   color: var(--color-navy);
 }
 
-.link:hover {
-  background: var(--color-border-soft);
+a.control:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
 }
 
-.disabled {
+.control[aria-disabled="true"] {
   color: var(--color-text-faint);
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
-.status {
-  font: 500 13px var(--font-body), sans-serif;
-  color: var(--color-text-muted-2);
+/* Current page: filled navy circle, white number. */
+.control.current {
+  color: var(--color-white);
+  background: var(--color-navy);
+}
+
+.ellipsis {
+  width: 24px;
+  text-align: center;
+  font: 700 14px var(--font-body), sans-serif;
+  color: var(--color-text-faint);
 }
 
 @media (min-width: 640px) {
-  .controls {
-    justify-content: center;
-    gap: 24px;
+  .nav {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .control {
+    width: 40px;
+    height: 40px;
   }
 }

@@ -1,0 +1,99 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  font: 700 18px var(--font-body), sans-serif;
+  color: var(--color-navy);
+}
+
+.all {
+  font: 700 14px var(--font-body), sans-serif;
+  text-decoration: underline;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.row:hover {
+  background: var(--color-bg);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* The name link stretches over the whole row so it is one big tap target. */
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 700 15px var(--font-body), sans-serif;
+  color: var(--color-navy);
+}
+
+.name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.name:focus-visible {
+  outline: none;
+}
+
+.row:focus-within {
+  outline: 2px solid var(--color-gold);
+  outline-offset: -2px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font: 500 13px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
+.chip {
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font: 700 12px var(--font-body), sans-serif;
+  color: var(--color-navy-dark);
+  background: #f3ecdb;
+}

@@ -157,6 +157,17 @@ describe("AdminPropertiesPage", () => {
     expect(screen.getAllByText("Casa en Palermo").length).toBeGreaterThan(0);
   });
 
+  it("puts a plus icon on the Nueva propiedad action", async () => {
+    listProperties.mockResolvedValue({ items: [], total: 0, counts: COUNTS });
+
+    const page = await AdminPropertiesPage({ searchParams: searchParamsOf({}) });
+    render(page);
+
+    expect(
+      screen.getByRole("link", { name: "Nueva propiedad" }).querySelector("svg"),
+    ).not.toBeNull();
+  });
+
   it("passes the fetched neighborhoods into the filters' barrio select", async () => {
     listProperties.mockResolvedValue({ items: [], total: 0, counts: COUNTS });
     listNeighborhoods.mockResolvedValue([

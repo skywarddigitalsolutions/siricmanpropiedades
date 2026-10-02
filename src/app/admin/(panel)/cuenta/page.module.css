@@ -1,0 +1,74 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 16px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  font: 800 20px var(--font-body), sans-serif;
+  color: var(--color-navy-dark);
+  background: var(--color-gold);
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font: 700 18px var(--font-body), sans-serif;
+  color: var(--color-text);
+}
+
+.roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 18px var(--font-body), sans-serif;
+  color: var(--color-navy);
+}
+
+.cardIntro {
+  font: 500 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 960px) {
+  .card {
+    padding: 24px;
+  }
+}

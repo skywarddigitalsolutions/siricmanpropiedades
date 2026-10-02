@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import TextField from "@/components/admin/forms/TextField/TextField";
+import Button, { ButtonLink } from "@/components/admin/ui/Button/Button";
 import styles from "./SearchForm.module.css";
 
 type SearchFormProps = {
@@ -44,13 +44,17 @@ export default function SearchForm({
           icon={<Search aria-hidden size={18} />}
         />
       </div>
-      <button type="submit" className={styles.submit}>
+      <Button type="submit" className={styles.submit}>
         Buscar
-      </button>
+      </Button>
       {value && (
-        <Link href={clearHref} className={styles.clear}>
+        <ButtonLink
+          href={clearHref}
+          variant="ghost"
+          icon={<X aria-hidden size={18} />}
+        >
           Limpiar
-        </Link>
+        </ButtonLink>
       )}
     </form>
   );

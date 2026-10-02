@@ -38,6 +38,7 @@
 }
 
 .whatsapp:hover {
+  color: var(--color-white);
   border-color: var(--color-whatsapp-dark);
   filter: brightness(0.95);
 }
