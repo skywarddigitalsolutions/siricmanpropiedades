@@ -28,9 +28,9 @@
 | ID | Task | Route | Status | Commit |
 |----|------|-------|--------|--------|
 | T0 | New hero photo (optimized to 2560px) + remove unused images | inline (mechanical) | ✅ | b5e7cb9 |
-| T1 | Custom `Dropdown` (listbox) + adopt in public `Select` and admin `SelectField` | delegated | ⬜ | |
-| T2 | Admin shell: gear on user card, logout above divider, no "Mi cuenta" nav; Mi cuenta two columns | delegated | ⬜ | |
-| T3 | Clientes / Consultas / dashboard list spacing; Propiedades filters alignment | delegated | ⬜ | |
+| T1 | Custom `Dropdown` (listbox) + adopt in public `Select` and admin `SelectField` | delegated | ✅ | 2d6b1f2 |
+| T2 | Admin shell: gear on user card, logout above divider, no "Mi cuenta" nav; Mi cuenta two columns | delegated | ✅ | 4f317a8 |
+| T3 | Clientes / Consultas / dashboard list spacing; Propiedades filters alignment | delegated | ✅ | 4ce6c83 |
 
 ## Acceptance criteria
 
@@ -41,7 +41,11 @@
 ## Progress
 
 - 2026-10-02: branch `feat/ux-corrections`; T0 committed. RDD: off (default).
+- T1: RED = `Dropdown.test.tsx` failed (module missing); GREEN = 18/18. Public `Select` keeps its `<option>`-children API (parsed into options) and `SelectField` keeps its props; `onChange` is now `(value, form)` and the hidden input is written before it fires so call sites can `form.requestSubmit()`. Existing tests moved to `src/test/dropdown.ts` helpers (`pick`, `openLabels`, `dropdownValue`). Screenshots (public, 1440 and 390, owner dev server): `f22-hero-ubicacion-*`, `f22-hero-tipo-*`, `f22-hero-ambientes-*`, `f22-sort-*`, `f22-contact-*` in the session scratchpad; the panel matches the Ubicación card (flips above when no room, right-aligns near the viewport edge).
+- T2: RED = 6 failing panel tests, GREEN = 42/42 panel tests plus the account page column test. Gear link (`Mi cuenta`) on the user card, logout above the divider (sidebar and drawer), two-column account page from 1024px (profile + backup codes left, password right; form is 2-column by container query).
+- T3: ClientTable cells wrap their lines in a flex stack (table cells cannot be flex, which glued the lines); inbox and dashboard rows get gaps and a dot separator; property filters are an auto-fill grid with the Sin fotos / note / Limpiar footer, the price-sort note shows only while the sort control is focused. Admin layouts are not screenshot-verified (MFA); described from CSS.
+- Verification: `npm run lint` 0 errors (1 pre-existing img warning), `npm test` 1178 passed, `npm run build` OK.
 
 ## Next step
 
-T1.
+Push, PR, deploy.
