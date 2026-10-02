@@ -20,6 +20,7 @@ const NAV_LINKS = [
   { label: "Comprar", href: "/propiedades?operacion=venta" },
   { label: "Alquilar", href: "/propiedades?operacion=alquiler" },
   { label: "Tasaciones", href: "/tasaciones" },
+  { label: "Consorcios", href: "/administracion-de-consorcios" },
   { label: "Nosotros", href: "/nosotros" },
   { label: "Contacto", href: "/contacto" },
 ];

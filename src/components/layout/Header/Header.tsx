@@ -26,6 +26,11 @@ const NAV_ITEMS: NavItem[] = [
     operation: "alquiler",
   },
   { label: "Tasaciones", href: "/tasaciones", path: "/tasaciones" },
+  {
+    label: "Consorcios",
+    href: "/administracion-de-consorcios",
+    path: "/administracion-de-consorcios",
+  },
   { label: "Nosotros", href: "/nosotros", path: "/nosotros" },
   { label: "Contacto", href: "/contacto", path: "/contacto" },
 ];

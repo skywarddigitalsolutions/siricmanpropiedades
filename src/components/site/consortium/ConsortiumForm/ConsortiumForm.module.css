@@ -1,0 +1,121 @@
+.form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.label {
+  font: 600 13px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
+}
+
+.hint {
+  font-weight: 500;
+  color: var(--color-text-faint);
+}
+
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 13px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 12px;
+  font: 500 16px / 1.45 var(--font-body), sans-serif;
+  color: var(--color-text);
+  background: var(--color-white);
+  resize: vertical;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 1px;
+}
+
+.input[aria-invalid="true"] {
+  border-color: #c65a5a;
+}
+
+.error {
+  font: 500 13px var(--font-body), sans-serif;
+  color: #a13d3d;
+}
+
+.alert {
+  padding: 12px 14px;
+  border: 1px solid #e6b8b8;
+  border-radius: var(--radius-sm);
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--color-navy-dark);
+  background: #fbeaea;
+}
+
+/* Off-screen, not display:none, so naive bots still fill it in. */
+.trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.submit {
+  min-height: 52px;
+  border-radius: var(--radius-pill);
+  font: 800 15px var(--font-body), sans-serif;
+  color: var(--color-white);
+  background: var(--color-navy);
+  cursor: pointer;
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--color-navy-dark);
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.submit:focus-visible,
+.thanks:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.thanks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.thanksTitle {
+  font: 800 20px var(--font-body), sans-serif;
+  color: var(--color-navy);
+}
+
+.thanksText {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 640px) {
+  .row {
+    grid-template-columns: 1fr 1fr;
+  }
+}

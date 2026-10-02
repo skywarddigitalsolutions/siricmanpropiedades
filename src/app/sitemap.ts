@@ -24,6 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/propiedades?operacion=venta"), changeFrequency: "daily", priority: 0.8 },
     { url: absoluteUrl("/propiedades?operacion=alquiler"), changeFrequency: "daily", priority: 0.8 },
     { url: absoluteUrl("/tasaciones"), changeFrequency: "monthly", priority: 0.7 },
+    { url: absoluteUrl("/administracion-de-consorcios"), changeFrequency: "monthly", priority: 0.7 },
     { url: absoluteUrl("/nosotros"), changeFrequency: "yearly", priority: 0.5 },
     { url: absoluteUrl("/contacto"), changeFrequency: "yearly", priority: 0.5 },
     { url: absoluteUrl("/terminos"), changeFrequency: "yearly", priority: 0.2 },
