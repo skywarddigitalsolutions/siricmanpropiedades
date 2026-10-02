@@ -128,12 +128,7 @@ export default function PropertyLightbox({
             <span className={styles.counter}>
               {index + 1} / {total}
             </span>
-            <button
-              type="button"
-              aria-label="Cerrar"
-              className={styles.close}
-              onClick={onClose}
-            >
+            <button type="button" aria-label="Cerrar" className={styles.close} onClick={onClose}>
               <X aria-hidden size={22} />
             </button>
           </div>

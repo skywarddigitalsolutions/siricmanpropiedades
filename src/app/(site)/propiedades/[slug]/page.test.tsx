@@ -67,7 +67,7 @@ describe("PropertyPage", () => {
     render(await PropertyPage(params()));
 
     const aside = screen.getByRole("complementary", { name: "Consultá por esta propiedad" });
-    expect(within(aside).getByLabelText("Mensaje")).toHaveValue(
+    expect(within(aside).getByLabelText("Mensaje (opcional)")).toHaveValue(
       whatsappInquiry(makePublicPropertyDetail()).message,
     );
     expect(within(aside).getByRole("button", { name: "Enviar consulta" })).toBeInTheDocument();

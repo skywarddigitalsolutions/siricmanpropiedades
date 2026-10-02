@@ -326,7 +326,7 @@
 /* White on the brand green fails contrast; the dark green passes. */
 .bottomWhatsapp {
   color: var(--color-white);
-  background: #128c4a;
+  background: #0f7d3f;
 }
 
 .bottomCall {
