@@ -60,7 +60,7 @@ describe("PropertyPage", () => {
     const links = screen.getAllByRole("link", { name: /WhatsApp/ });
     expect(links.length).toBeGreaterThan(0);
     for (const link of links) expect(link).toHaveAttribute("href", href);
-    expect(screen.getByRole("link", { name: "Consultar" })).toHaveAttribute("href", "#consulta");
+    expect(screen.getByRole("link", { name: "Llamar" })).toHaveAttribute("href", expect.stringMatching(/^tel:/));
   });
 
   it("offers the inquiry form prefilled with the property", async () => {

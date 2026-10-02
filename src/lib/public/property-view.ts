@@ -142,6 +142,37 @@ export function serviceLabels(property: PublicProperty): string[] {
 }
 
 export function whatsappInquiry(property: Pick<PublicProperty, "code" | "title">) {
-  const message = `Hola, me interesa la propiedad ${property.code} (${property.title}). ¿Podemos coordinar una visita?`;
+  const message = `Hola, me interesa la propiedad ${property.code} (${displayTitle(property.title)}). ¿Podemos coordinar una visita?`;
   return { message, href: buildWhatsAppLink(WHATSAPP_PHONE, message) };
+}
+
+const ACRONYMS = new Set(["PH", "CABA", "USD", "US", "ARS", "EEUU"]);
+const CONNECTORS = new Set([
+  "a", "al", "con", "de", "del", "e", "el", "en", "la", "las", "lo", "los",
+  "o", "para", "por", "sin", "sobre", "u", "un", "una", "y",
+]);
+
+/**
+ * Display form of a stored title. Titles typed in ALL CAPS become title case
+ * (connectors lowercase, known acronyms like PH/CABA/USD kept); anything with
+ * lowercase letters, or no letters at all, is returned as typed.
+ */
+export function displayTitle(title: string): string {
+  if (title !== title.toUpperCase() || title === title.toLowerCase()) return title;
+
+  let first = true;
+  return title.replace(/\p{L}[\p{L}'’]*/gu, (word, offset: number) => {
+    const isFirst = first;
+    first = false;
+    const afterDigit = /\d/.test(title[offset - 1] ?? "");
+    if (ACRONYMS.has(word) && !afterDigit) return word;
+    const lower = word.toLowerCase();
+    if (afterDigit || (!isFirst && CONNECTORS.has(lower))) return lower;
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
+  });
+}
+
+/** Google Maps search URL for an address or barrio (opens in the Maps app on phones). */
+export function propertyMapsHref(query: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
