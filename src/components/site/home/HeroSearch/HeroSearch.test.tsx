@@ -45,15 +45,17 @@ describe("HeroSearch", () => {
     expect(within(tipo).getByRole("option", { name: "Departamento" })).toHaveValue("departamento");
   });
 
-  it("offers rooms as segmented pills, Indistinto by default", () => {
+  it("offers rooms through the shared select, Indistinto by default", () => {
     const { form } = setup();
 
-    const rooms = within(form).getByRole("group", { name: "Ambientes" });
-    const radios = within(rooms).getAllByRole("radio");
-    expect(radios.map((r) => r.getAttribute("value"))).toEqual(["", "1", "2", "3", "4", "5"]);
-    expect(radios.every((r) => r.getAttribute("name") === "ambientes")).toBe(true);
-    expect(within(rooms).getByRole("radio", { name: "Indistinto" })).toBeChecked();
-    expect(within(rooms).getByRole("radio", { name: "5+" })).toHaveAttribute("value", "5");
+    const rooms = within(form).getByRole("combobox", { name: "Ambientes" });
+    expect(rooms.tagName).toBe("SELECT");
+    expect(rooms).toHaveAttribute("name", "ambientes");
+    expect(rooms).toHaveValue("");
+    const options = within(rooms).getAllByRole("option");
+    expect(options.map((o) => o.getAttribute("value"))).toEqual(["", "1", "2", "3", "4", "5"]);
+    expect(within(rooms).getByRole("option", { name: "Indistinto" })).toHaveValue("");
+    expect(within(rooms).getByRole("option", { name: "5+" })).toHaveValue("5");
   });
 
   it("keeps the code search reachable under the panel", () => {

@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, Menu, X } from "lucide-react";
+import { ChevronRight, Heart, Menu, X } from "lucide-react";
+import { useFavorites } from "@/lib/favorites/use-favorites";
 import styles from "./Header.module.css";
 
 type NavItem = {
@@ -21,6 +22,9 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { count, mounted } = useFavorites();
+  // Nothing until mounted: the server cannot know the visitor's saved list.
+  const badge = mounted && count > 0 ? count : null;
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -62,6 +66,14 @@ export default function Header() {
         </nav>
 
         <div className={styles.actions}>
+          <Link
+            href="/favoritos"
+            className={styles.favoritesLink}
+            aria-label={badge ? `Favoritos, ${badge} guardadas` : "Favoritos"}
+          >
+            <Heart size={20} aria-hidden="true" />
+            {badge !== null && <span className={styles.favoritesBadge}>{badge}</span>}
+          </Link>
           <Link href="/tasaciones" className={styles.cta}>
             Tasá tu propiedad
           </Link>
@@ -111,6 +123,18 @@ export default function Header() {
               </Link>
             ))}
           </nav>
+
+          <Link
+            href="/favoritos"
+            className={styles.mobileNavLink}
+            onClick={() => setMenuOpen(false)}
+          >
+            <span className={styles.mobileFavorites}>
+              Favoritos
+              {badge !== null && <span className={styles.favoritesBadge}>{badge}</span>}
+            </span>
+            <Heart size={20} aria-hidden="true" />
+          </Link>
 
           <Link
             href="/tasaciones"

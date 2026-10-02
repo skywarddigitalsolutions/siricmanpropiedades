@@ -129,6 +129,15 @@ describe("PropertyForm step datos", () => {
     expect(screen.getByLabelText("Moneda")).toHaveValue("USD");
   });
 
+  it("shows the currency symbol next to the price and follows the chosen currency", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    expect(screen.getByLabelText("Precio").parentElement).toHaveTextContent("US$");
+    await user.selectOptions(screen.getByLabelText("Moneda"), "ARS");
+    expect(screen.getByLabelText("Precio").parentElement).not.toHaveTextContent("US$");
+  });
+
   it("switches the currency to ARS for rent until the user picks one manually", async () => {
     const user = userEvent.setup();
     renderForm();

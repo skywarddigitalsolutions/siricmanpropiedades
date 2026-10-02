@@ -1,6 +1,6 @@
 /*
  * Layout at 375px: title, segmented operation control, then one white card
- * with the segments stacked (Ubicación, Tipo, Ambientes pills) separated by
+ * with the segments stacked (Ubicación, Tipo, Ambientes) separated by
  * hairlines and a full-width Buscar button.
  * At 1280px (>= 900px): the card becomes one row: Ubicación (wide) | Tipo |
  * Ambientes | Buscar, with vertical dividers.
@@ -8,7 +8,10 @@
 .hero {
   position: relative;
   isolation: isolate;
-  /* No overflow clipping: the barrio suggestions can extend past the hero. */
+  /* Above the following sections (which are positioned too): the barrio
+     suggestions extend past the hero and must paint over them. */
+  z-index: 5;
+  /* No overflow clipping, for the same reason. */
   /* Fallback while the photo loads or if it fails. */
   background: var(--color-navy-dark);
 }
@@ -100,8 +103,7 @@
   background: var(--color-white);
 }
 
-.operation:has(.radio:focus-visible),
-.pill:has(.radio:focus-visible) {
+.operation:has(.radio:focus-visible) {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
@@ -155,78 +157,17 @@
   color: var(--color-text-muted);
 }
 
-.type select {
+.type select,
+.rooms select {
   min-height: 28px;
   font-size: 16px;
   font-weight: 600;
 }
 
-/* Rooms: compact segmented pills */
-.rooms {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 8px;
-}
-
-.rooms:focus-within {
-  outline: 0;
-}
-
-.roomsLegend {
-  float: left;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0;
-  font: 700 11px var(--font-body), sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.roomsLegend svg {
-  color: var(--color-gold-dark);
-}
-
-.pills {
-  clear: both;
-  display: flex;
-  gap: 6px;
-}
-
-.pill {
-  position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 8px;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-pill);
-  font: 700 14px var(--font-body), sans-serif;
-  color: var(--color-text);
-  background: var(--color-white);
-  cursor: pointer;
-}
-
-/* "Indistinto" needs more room than the digits. */
-.pill:first-child {
-  flex: 0 0 auto;
-  padding: 0 14px;
-}
-
-.pill:has(.radio:checked) {
-  color: var(--color-white);
-  border-color: var(--color-navy);
-  background: var(--color-navy);
-}
-
 .submit {
-  min-height: 56px;
+  min-height: 50px;
   margin-top: 6px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -325,13 +266,18 @@
   }
 
   .rooms {
-    flex: 1.6 1 0;
-    justify-content: center;
+    flex: 1 1 0;
   }
 
+  .segment:nth-last-child(2) {
+    border-right: 0;
+  }
+
+  /* Normal-height button centred at the end of the card, not stretched. */
   .submit {
     flex: none;
-    margin: 0 0 0 8px;
-    padding: 0 32px;
+    align-self: center;
+    margin: 0 4px 0 8px;
+    padding: 0 28px;
   }
 }

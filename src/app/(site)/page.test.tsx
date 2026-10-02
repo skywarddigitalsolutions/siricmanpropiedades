@@ -124,6 +124,21 @@ describe("Home page", () => {
     );
   });
 
+  it("shows the appraisal call to action with benefits and a WhatsApp alternative", async () => {
+    render(await Home());
+
+    const cta = screen.getByRole("region", { name: "¿Querés vender o alquilar?" });
+    expect(within(cta).getAllByRole("listitem").length).toBeGreaterThanOrEqual(3);
+    expect(within(cta).getByRole("link", { name: /Solicitar tasación/ })).toHaveAttribute(
+      "href",
+      "/tasaciones",
+    );
+    expect(within(cta).getByRole("link", { name: /WhatsApp/ })).toHaveAttribute(
+      "href",
+      expect.stringContaining("https://wa.me/5491138967363"),
+    );
+  });
+
   it("describes the agency as schema.org JSON-LD", async () => {
     const { container } = render(await Home());
 

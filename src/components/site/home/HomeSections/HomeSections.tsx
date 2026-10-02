@@ -1,8 +1,18 @@
 import Link from "next/link";
-import { Building2, ChartLine, House, KeyRound } from "lucide-react";
+import { ArrowRight, Building2, ChartLine, Handshake, House, KeyRound, Megaphone } from "lucide-react";
 import { PROPERTY_TYPES, type PropertyType } from "@/lib/properties/enums";
 import { EMPTY_SEARCH, buildSearchHref } from "@/lib/public/search-params";
+import { WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
+import WhatsAppIcon from "../../WhatsAppIcon/WhatsAppIcon";
 import styles from "./HomeSections.module.css";
+
+const CTA_BENEFITS = [
+  { icon: ChartLine, text: "Tasación profesional" },
+  { icon: Megaphone, text: "Estrategia de publicación" },
+  { icon: Handshake, text: "Te acompañamos en todo el proceso" },
+];
+
+const CTA_WHATSAPP_MESSAGE = "Hola! Quiero tasar mi propiedad.";
 
 const TYPE_CHIP_LABELS: Record<PropertyType, string> = {
   apartment: "Departamentos",
@@ -86,6 +96,7 @@ export function AppraisalCta() {
     <section aria-labelledby="home-cta-title" className={`${styles.section} ${styles.last}`}>
       <div className={styles.cta}>
         <div className={styles.ctaText}>
+          <p className={styles.ctaEyebrow}>Tasaciones</p>
           <h2 id="home-cta-title" className={styles.ctaTitle}>
             ¿Querés vender o alquilar?
           </h2>
@@ -93,9 +104,34 @@ export function AppraisalCta() {
             Pedí una tasación profesional y te armamos la estrategia de publicación.
           </p>
         </div>
-        <Link href="/tasaciones" className={styles.ctaButton}>
-          Solicitar tasación
-        </Link>
+
+        <div className={styles.ctaSide}>
+          <ul className={styles.ctaBenefits}>
+            {CTA_BENEFITS.map(({ icon: Icon, text }) => (
+              <li key={text} className={styles.ctaBenefit}>
+                <span className={styles.ctaBenefitIcon}>
+                  <Icon aria-hidden size={18} />
+                </span>
+                {text}
+              </li>
+            ))}
+          </ul>
+          <div className={styles.ctaActions}>
+            <Link href="/tasaciones" className={styles.ctaButton}>
+              Solicitar tasación
+              <ArrowRight aria-hidden size={18} />
+            </Link>
+            <a
+              href={buildWhatsAppLink(WHATSAPP_PHONE, CTA_WHATSAPP_MESSAGE)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.ctaSecondary}
+            >
+              <WhatsAppIcon size={18} />
+              Escribinos por WhatsApp
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   );

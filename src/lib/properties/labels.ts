@@ -58,7 +58,7 @@ export function allowedDealStatuses(operation: Operation): DealStatus[] {
 }
 
 /**
- * Formats a price for display: `"USD 120.000"` or `"$ 850.000"`, es-AR
+ * Formats a price for display: `"US$ 120.000"` or `"$ 850.000"`, es-AR
  * grouping, no decimals (properties are always listed in whole currency
  * units).
  */
@@ -66,5 +66,10 @@ export function formatPrice(currency: Currency, amount: number): string {
   const formatted = new Intl.NumberFormat("es-AR", {
     maximumFractionDigits: 0,
   }).format(amount);
-  return currency === "USD" ? `USD ${formatted}` : `$ ${formatted}`;
+  return `${currencySymbol(currency)} ${formatted}`;
+}
+
+/** Symbol shown next to amounts and inside price inputs: `US$` or `$`. */
+export function currencySymbol(currency: Currency): string {
+  return currency === "USD" ? "US$" : "$";
 }

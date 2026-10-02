@@ -77,3 +77,40 @@ describe("Header", () => {
     );
   });
 });
+
+describe("Header favorites link", () => {
+  it("links to /favoritos in desktop and mobile menus with a count once mounted", async () => {
+    const item = (slug: string, savedAt: number) => ({
+      slug,
+      title: slug,
+      price: 1,
+      currency: "USD",
+      operation: "sale",
+      cover: null,
+      neighborhood: "X",
+      savedAt,
+    });
+    localStorage.setItem("siricman:favorites:v1", JSON.stringify([item("a", 1), item("b", 2)]));
+    render(<Header />);
+
+    const link = screen.getByRole("link", { name: /Favoritos, 2 guardadas/ });
+    expect(link).toHaveAttribute("href", "/favoritos");
+    expect(within(link).getByText("2")).toBeInTheDocument();
+
+    await userEvent.setup().click(screen.getByRole("button", { name: "Menú" }));
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByRole("link", { name: /Favoritos/ })).toHaveAttribute(
+      "href",
+      "/favoritos",
+    );
+    localStorage.clear();
+  });
+
+  it("shows no badge when there are no favorites", () => {
+    localStorage.clear();
+    render(<Header />);
+    const link = screen.getByRole("link", { name: "Favoritos" });
+    expect(link).toHaveAttribute("href", "/favoritos");
+    expect(within(link).queryByText(/\d/)).toBeNull();
+  });
+});

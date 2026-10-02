@@ -16,6 +16,7 @@ import {
 import { EMPTY_SEARCH, buildSearchHref } from "@/lib/public/search-params";
 import type { InquiryState } from "@/lib/leads/inquiry-form";
 import type { PublicPropertyDetail } from "@/lib/public/types";
+import FavoriteToggle from "../../FavoriteToggle/FavoriteToggle";
 import MapEmbed from "../../MapEmbed/MapEmbed";
 import PropertyIcon from "../../PropertyIcon/PropertyIcon";
 import WhatsAppIcon from "../../WhatsAppIcon/WhatsAppIcon";
@@ -96,7 +97,23 @@ export default function PropertyDetailView({
           )}
 
           <header className={styles.heading}>
-            <span className={styles.price}>{price}</span>
+            <div className={styles.priceRow}>
+              <span className={styles.price}>{price}</span>
+              {!preview && (
+                <FavoriteToggle
+                  variant="labeled"
+                  property={{
+                    slug: property.slug,
+                    title: property.title,
+                    price: property.price,
+                    currency: property.currency,
+                    operation: property.operation,
+                    cover: property.images[0]?.thumbnailUrl ?? null,
+                    neighborhood: property.neighborhood.name,
+                  }}
+                />
+              )}
+            </div>
             {expenses && <span className={styles.expenses}>{expenses}</span>}
             <h1 className={styles.title}>{property.title}</h1>
             <span className={styles.location}>

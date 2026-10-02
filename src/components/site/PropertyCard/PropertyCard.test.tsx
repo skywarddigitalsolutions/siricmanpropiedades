@@ -12,7 +12,7 @@ describe("PropertyCard", () => {
       "href",
       "/propiedades/luminoso-3-ambientes-con-balcon",
     );
-    expect(within(card).getByText("USD 185.000")).toBeInTheDocument();
+    expect(within(card).getByText("US$ 185.000")).toBeInTheDocument();
     expect(within(card).getByText("SP-0101")).toBeInTheDocument();
     expect(within(card).getByText("+ $ 145.000 expensas")).toBeInTheDocument();
     expect(within(card).getByText("Venta")).toBeInTheDocument();
@@ -44,5 +44,14 @@ describe("PropertyCard", () => {
     render(<PropertyCard property={makePublicProperty()} headingLevel={2} />);
 
     expect(screen.getByRole("heading", { level: 2 })).toBeInTheDocument();
+  });
+});
+
+describe("PropertyCard favorite heart", () => {
+  it("has a heart toggle that is not nested inside the title link", () => {
+    render(<PropertyCard property={makePublicProperty()} />);
+    const card = screen.getByRole("article");
+    const heart = within(card).getByRole("button", { name: "Guardar en favoritos" });
+    expect(heart.closest("a")).toBeNull();
   });
 });

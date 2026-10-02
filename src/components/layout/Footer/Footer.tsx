@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import {
   CONTACT_EMAIL,
   OFFICE_ADDRESS,
@@ -12,50 +13,126 @@ import {
   PHONE_HREF,
 } from "@/lib/contact";
 import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
+import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
 import styles from "./Footer.module.css";
+
+const NAV_LINKS = [
+  { label: "Comprar", href: "/propiedades?operacion=venta" },
+  { label: "Alquilar", href: "/propiedades?operacion=alquiler" },
+  { label: "Tasaciones", href: "/tasaciones" },
+  { label: "Nosotros", href: "/nosotros" },
+  { label: "Contacto", href: "/contacto" },
+];
+
+/** Instagram glyph (lucide-react no longer ships brand icons). */
+function InstagramIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+    </svg>
+  );
+}
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const whatsappHref = buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE);
 
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
-        <div className={styles.brand}>
-          <Image
-            src="/brand/logo-emblem.png"
-            alt=""
-            width={256}
-            height={242}
-            className={styles.logoImg}
-          />
-          <span className={styles.wordmark}>
-            <span className={styles.brandName}>SIRICMAN</span>
-            <span className={styles.brandSub}>PROPIEDADES</span>
-          </span>
+        <div className={styles.brandColumn}>
+          <div className={styles.brand}>
+            <Image
+              src="/brand/logo-emblem.png"
+              alt=""
+              width={256}
+              height={242}
+              className={styles.logoImg}
+            />
+            <span className={styles.wordmark}>
+              <span className={styles.brandName}>SIRICMAN</span>
+              <span className={styles.brandSub}>PROPIEDADES</span>
+            </span>
+          </div>
+          <p className={styles.tagline}>
+            Venta y alquiler en CABA con asesoramiento personal, de principio a fin.
+          </p>
+          <p className={styles.professional}>
+            Gabriel Siricman · Martillero Público y Corredor Inmobiliario
+          </p>
+          <div className={styles.social}>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className={styles.socialButton}
+            >
+              <InstagramIcon size={20} />
+            </a>
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp"
+              className={styles.socialButton}
+            >
+              <WhatsAppIcon size={20} />
+            </a>
+          </div>
         </div>
 
-        <div className={styles.address}>
-          <span>
-            {OFFICE_ADDRESS} · {OFFICE_NEIGHBORHOOD}, {OFFICE_CITY}
-          </span>
-          <span>{OFFICE_HOURS} · con cita previa</span>
-          <ul className={styles.contactLinks}>
-            <li>
+        <div className={styles.column}>
+          <h2 className={styles.heading}>Contacto</h2>
+          <ul className={styles.list}>
+            <li className={styles.item}>
+              <MapPin aria-hidden size={18} className={styles.itemIcon} />
+              <span>
+                {OFFICE_ADDRESS} · {OFFICE_NEIGHBORHOOD}, {OFFICE_CITY}
+              </span>
+            </li>
+            <li className={styles.item}>
+              <Clock aria-hidden size={18} className={styles.itemIcon} />
+              <span>{OFFICE_HOURS} · con cita previa</span>
+            </li>
+            <li className={styles.item}>
+              <Phone aria-hidden size={18} className={styles.itemIcon} />
               <a href={PHONE_HREF} className={styles.link}>
                 {PHONE_DISPLAY}
               </a>
             </li>
-            <li>
+            <li className={styles.item}>
+              <WhatsAppIcon size={18} className={styles.itemIcon} />
               <a
-                href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE)}
+                href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.link}
               >
-                WhatsApp
+                Escribinos por WhatsApp
               </a>
             </li>
-            <li>
+            <li className={styles.item}>
+              <Mail aria-hidden size={18} className={styles.itemIcon} />
+              <a href={`mailto:${CONTACT_EMAIL}`} className={`${styles.link} ${styles.email}`}>
+                {CONTACT_EMAIL}
+              </a>
+            </li>
+            <li className={styles.item}>
+              <InstagramIcon size={18} />
               <a
                 href={INSTAGRAM_URL}
                 target="_blank"
@@ -66,14 +143,20 @@ export default function Footer() {
               </a>
             </li>
           </ul>
-          <a href={`mailto:${CONTACT_EMAIL}`} className={styles.email}>
-            {CONTACT_EMAIL}
-          </a>
         </div>
 
-        <div className={styles.professional}>
-          <span>Gabriel Siricman · Martillero Público y Corredor Inmobiliario</span>
-        </div>
+        <nav aria-label="Navegación del sitio" className={styles.column}>
+          <h2 className={styles.heading}>Navegación</h2>
+          <ul className={styles.list}>
+            {NAV_LINKS.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className={styles.link}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
 
       <div className={styles.bottomBar}>

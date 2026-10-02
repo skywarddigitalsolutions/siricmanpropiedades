@@ -34,4 +34,10 @@ describe("TextField", () => {
       "Complete todos los campos.",
     );
   });
+
+  it("renders a leading text adornment inside the control", () => {
+    render(<TextField id="price" name="price" label="Precio" adornment="US$" />);
+
+    expect(screen.getByLabelText("Precio").parentElement).toHaveTextContent("US$");
+  });
 });
