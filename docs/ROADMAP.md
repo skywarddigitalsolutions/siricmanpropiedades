@@ -26,7 +26,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 18 | Admin: home dashboard, my account, users, visual polish (icons, status colors, numbered pagination, user card, buttons) (`odd/tasks/admin-home-account.md`) | front | ODD | ✅ Done |
 | 19 | Public favorites (browser-stored) | front | ODD | ✅ Done |
 | 20 | Results, property detail redesign, forms and accessibility | front | ODD | ✅ Done |
-| 21 | Consortium administration section (separate branch, owner reviews before merge) | front | ODD | ⬜ |
+| 21 | Consortium administration section (separate branch, owner reviews before merge) | front | ODD | ✅ Done |
 
 ## Pending product decisions
 
