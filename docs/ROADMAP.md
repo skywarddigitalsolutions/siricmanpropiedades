@@ -24,7 +24,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 16 | Admin: property list (thumbnails, search, sort) + editor (steps, validated address + map, photos, preview) | both | ODD | ✅ Done |
 | 17 | Public site polish: CTA and footer redesign, WhatsApp overlap, hero search fixes (ambientes dropdown, smaller Buscar, dropdown stacking), currency symbols site-wide (`odd/tasks/public-polish.md`) | front | ODD | ✅ Done |
 | 18 | Admin: home dashboard, my account, users, visual polish (icons, status colors, numbered pagination, user card, buttons) (`odd/tasks/admin-home-account.md`) | front | ODD | 🟡 In progress |
-| 19 | Public favorites (browser-stored) | front | ODD | 🟡 In progress |
+| 19 | Public favorites (browser-stored) | front | ODD | ✅ Done |
 | 20 | Results, property detail redesign, forms and accessibility | front | ODD | ⬜ |
 | 21 | Consortium administration section (separate branch, owner reviews before merge) | front | ODD | ⬜ |
 
