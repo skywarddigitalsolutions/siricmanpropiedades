@@ -1,4 +1,4 @@
-# Feature 18 — Admin: home, my account, users and visual polish
+✅ | 6a16e9b |✅ | 8d84649 |✅ | 6ccb89c |✅ | 8f15bf4 |# Feature 18 — Admin: home, my account, users and visual polish
 
 **Objective:** a panel that feels friendly and complete: a home dashboard, self-service account settings, users management, and a polished look (icons where they help, clear status colors, real pagination).
 
@@ -26,10 +26,10 @@
 
 | ID | Task | Route | Status | Commit |
 |----|------|-------|--------|--------|
-| T1 | Visual system: semantic status badges, buttons states, numbered pagination, sidebar user card + logout, nav icons, "+" on Nueva propiedad, filter layout | delegated | ⬜ | |
-| T2 | Home dashboard | delegated | ⬜ | |
-| T3 | Mi cuenta: change password (cookie swap) + regenerate backup codes | delegated | ⬜ | |
-| T4 | Usuarios (admin only) | delegated | ⬜ | |
+| T1 | Visual system: semantic status badges, buttons states, numbered pagination, sidebar user card + logout, nav icons, "+" on Nueva propiedad, filter layout | delegated | ✅ | 8f15bf4 |
+| T2 | Home dashboard | delegated | ✅ | 6ccb89c |
+| T3 | Mi cuenta: change password (cookie swap) + regenerate backup codes | delegated | ✅ | 8d84649 |
+| T4 | Usuarios (admin only) | delegated | ✅ | 6a16e9b |
 
 ## Acceptance criteria
 
@@ -38,7 +38,12 @@
 ## Progress
 
 - 2026-10-01: feature started in worktree `front-siricmanpropiedades-worktrees/admin-home-account`, branch `feat/admin-home-account`. RDD: off (default).
+- T1 RED: 12 test files failing (missing modules/new behavior); GREEN: 960 tests. Shared tone tokens + StatusBadge, Button/ButtonLink (no gold-on-navy states; also fixed gold hover on StepNav next, ClientTable/LeadQuickActions WhatsApp, PreviewBanner), numbered Pagination (`hrefFor`), nav icons + Inicio/Usuarios/Mi cuenta, UserCard, ghost logout, PropertyFilters single row + mobile Filtros panel (no Aplicar; noscript fallback), EmptyState.
+- T2 RED: dashboard page/API tests failing (redirect still in place); GREEN: 970 tests.
+- T3 RED: 7 files failing (modules missing); GREEN: 1012 tests. Cookie swap via `setSessionCookie`.
+- T4 RED: modules missing; GREEN: 1038 tests. Admin gate in page and every action; self-deactivate blocked in UI and action.
+- Verification: lint 0 errors (1 pre-existing warning), test 1038 passed, build OK.
 
 ## Next step
 
-T1.
+Push, PR, deploy.
