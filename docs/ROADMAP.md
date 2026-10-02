@@ -27,6 +27,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 19 | Public favorites (browser-stored) | front | ODD | ✅ Done |
 | 20 | Results, property detail redesign, forms and accessibility | front | ODD | ✅ Done |
 | 21 | Consortium administration section (separate branch, owner reviews before merge) | front | ODD | ✅ Done |
+| 22 | UX corrections: styled dropdowns everywhere, account from the user card, roomier admin lists, aligned filters, landscape hero photo (`odd/tasks/ux-corrections.md`) | front | ODD | ✅ Done |
 
 ## Pending product decisions
 
