@@ -1,4 +1,4 @@
-✅ | 6a16e9b |✅ | 8d84649 |✅ | 6ccb89c |✅ | 8f15bf4 |# Feature 18 — Admin: home, my account, users and visual polish
+# Feature 18 — Admin: home, my account, users and visual polish
 
 **Objective:** a panel that feels friendly and complete: a home dashboard, self-service account settings, users management, and a polished look (icons where they help, clear status colors, real pagination).
 
