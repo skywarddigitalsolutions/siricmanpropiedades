@@ -4,6 +4,7 @@ import { MapPin } from "lucide-react";
 import { OPERATION_LABELS, PROPERTY_TYPE_LABELS } from "@/lib/properties/labels";
 import {
   dealStatusNotice,
+  displayTitle,
   expensesLabel,
   propertyPriceLabel,
   propertySpecs,
@@ -42,7 +43,7 @@ export default function PropertyCard({
         {property.coverImage ? (
           <Image
             src={property.coverImage}
-            alt={property.title}
+            alt={displayTitle(property.title)}
             fill
             sizes={sizes}
             className={styles.photo}
@@ -84,7 +85,7 @@ export default function PropertyCard({
         {expenses && <span className={styles.expenses}>{expenses}</span>}
         <Heading className={styles.title}>
           <Link href={`/propiedades/${property.slug}`} className={styles.link}>
-            {property.title}
+            {displayTitle(property.title)}
           </Link>
         </Heading>
         <span className={styles.location}>

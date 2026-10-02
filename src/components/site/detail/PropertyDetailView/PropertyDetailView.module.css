@@ -142,18 +142,21 @@
 
 .facts {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 10px;
   list-style: none;
 }
 
+/* Same-size cards: icon on the left, label over value, rows stretch together. */
 .fact {
+  min-height: 72px;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px;
   border-radius: var(--radius-md);
   background: var(--color-white);
+  box-shadow: inset 0 0 0 1px var(--color-border);
 }
 
 .factIcon {
@@ -217,11 +220,21 @@
   font: 800 17px var(--font-body), sans-serif;
 }
 
-.paragraph {
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--color-text-muted-2);
-  text-wrap: pretty;
+.mapLink {
+  align-self: flex-start;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 700 14px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.mapLink:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
 }
 
 .chip {
@@ -241,6 +254,21 @@
   background: var(--color-white);
   box-shadow: var(--shadow-card);
   scroll-margin-top: calc(var(--site-header-height) + 16px);
+}
+
+/* Desktop only: on phones the fixed bottom bar carries the price. */
+.asideSummary {
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.asidePrice {
+  font: 800 28px var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
 }
 
 .asideTitle {
@@ -283,37 +311,37 @@
   color: var(--color-text-muted);
 }
 
-.bottomWhatsapp {
+.bottomWhatsapp,
+.bottomCall {
   flex: none;
-  width: 50px;
-  height: 50px;
+  height: 48px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
   border-radius: var(--radius-pill);
-  color: var(--color-white);
-  background: var(--color-whatsapp);
+  font: 800 14px var(--font-body), sans-serif;
 }
 
-.bottomCta {
-  flex: none;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  padding: 0 22px;
-  border-radius: var(--radius-pill);
-  font: 800 15px var(--font-body), sans-serif;
+/* White on the brand green fails contrast; the dark green passes. */
+.bottomWhatsapp {
+  color: var(--color-white);
+  background: #0f7d3f;
+}
+
+.bottomCall {
   color: var(--color-white);
   background: var(--color-navy);
 }
 
-.bottomCta:hover {
+.bottomWhatsapp:hover,
+.bottomCall:hover {
   color: var(--color-white);
 }
 
 .back:focus-visible,
 .bottomWhatsapp:focus-visible,
-.bottomCta:focus-visible {
+.bottomCall:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
@@ -340,6 +368,10 @@
     position: sticky;
     top: calc(var(--site-header-height) + 20px);
     flex: 0 0 340px;
+  }
+
+  .asideSummary {
+    display: flex;
   }
 
   .bottomBar {

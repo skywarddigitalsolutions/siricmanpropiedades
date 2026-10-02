@@ -1,13 +1,16 @@
 import Link from "next/link";
-import { Check, ChevronLeft, MapPin } from "lucide-react";
+import { Check, ChevronLeft, ExternalLink, MapPin, Phone } from "lucide-react";
+import { PHONE_HREF } from "@/lib/contact";
 import { OPERATION_LABELS } from "@/lib/properties/labels";
 import {
   conditionLabels,
   dealStatusNotice,
+  displayTitle,
   expensesLabel,
   propertyFacts,
   propertyLocation,
   propertyMap,
+  propertyMapsHref,
   propertyPriceLabel,
   serviceLabels,
   tagLabel,
@@ -20,6 +23,7 @@ import FavoriteToggle from "../../FavoriteToggle/FavoriteToggle";
 import MapEmbed from "../../MapEmbed/MapEmbed";
 import PropertyIcon from "../../PropertyIcon/PropertyIcon";
 import WhatsAppIcon from "../../WhatsAppIcon/WhatsAppIcon";
+import ExpandableText from "../ExpandableText/ExpandableText";
 import PropertyGallery from "../PropertyGallery/PropertyGallery";
 import PropertyInquiryForm from "../PropertyInquiryForm/PropertyInquiryForm";
 import styles from "./PropertyDetailView.module.css";
@@ -46,6 +50,7 @@ export default function PropertyDetailView({
   inquiryAction,
   preview = false,
 }: PropertyDetailViewProps) {
+  const title = displayTitle(property.title);
   const price = propertyPriceLabel(property);
   const expenses = expensesLabel(property);
   const location = propertyLocation(property);
@@ -79,7 +84,7 @@ export default function PropertyDetailView({
 
       <PropertyGallery
         images={property.images}
-        title={property.title}
+        title={title}
         overlay={
           <>
             <span className={styles.badge}>{OPERATION_LABELS[property.operation]}</span>
@@ -115,7 +120,7 @@ export default function PropertyDetailView({
               )}
             </div>
             {expenses && <span className={styles.expenses}>{expenses}</span>}
-            <h1 className={styles.title}>{property.title}</h1>
+            <h1 className={styles.title}>{title}</h1>
             <span className={styles.location}>
               <MapPin aria-hidden size={15} className={styles.pin} />
               {location.label}
@@ -152,11 +157,7 @@ export default function PropertyDetailView({
               <h2 id="detail-description" className={styles.cardTitle}>
                 Descripción
               </h2>
-              {paragraphs.map((paragraph, position) => (
-                <p key={position} className={styles.paragraph}>
-                  {paragraph}
-                </p>
-              ))}
+              <ExpandableText paragraphs={paragraphs} />
             </section>
           )}
 
@@ -185,6 +186,17 @@ export default function PropertyDetailView({
               label={map.label}
               title="Mapa de la ubicación"
             />
+            {!preview && (
+              <a
+                href={propertyMapsHref(map.query)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.mapLink}
+              >
+                <ExternalLink aria-hidden size={15} />
+                Abrir en Google Maps
+              </a>
+            )}
             {!location.exact && (
               <p className={styles.muted}>
                 Te compartimos la dirección exacta cuando coordinemos la visita.
@@ -194,6 +206,10 @@ export default function PropertyDetailView({
         </article>
 
         <aside id="consulta" aria-labelledby="detail-inquiry" className={styles.aside}>
+          <div className={styles.asideSummary}>
+            <span className={styles.asidePrice}>{price}</span>
+            {expenses && <span className={styles.expenses}>{expenses}</span>}
+          </div>
           <h2 id="detail-inquiry" className={styles.asideTitle}>
             Consultá por esta propiedad
           </h2>
@@ -222,13 +238,14 @@ export default function PropertyDetailView({
           href={inquiry.href}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Consultar por WhatsApp"
           className={styles.bottomWhatsapp}
         >
-          <WhatsAppIcon size={26} />
+          <WhatsAppIcon size={20} />
+          WhatsApp
         </a>
-        <a href="#consulta" className={styles.bottomCta}>
-          Consultar
+        <a href={PHONE_HREF} className={styles.bottomCall}>
+          <Phone aria-hidden size={18} />
+          Llamar
         </a>
       </div>
       )}

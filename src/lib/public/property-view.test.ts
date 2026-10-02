@@ -3,10 +3,12 @@ import { makePublicProperty } from "@/test/fixtures/public-property";
 import {
   conditionLabels,
   dealStatusNotice,
+  displayTitle,
   expensesLabel,
   propertyFacts,
   propertyLocation,
   propertyMap,
+  propertyMapsHref,
   propertyPriceLabel,
   propertySpecs,
   serviceLabels,
@@ -153,5 +155,31 @@ describe("propertyMap", () => {
 
   it("treats a blank address as hidden", () => {
     expect(propertyMap(makePublicProperty({ address: "   " })).precision).toBe("approximate");
+  });
+});
+
+describe("displayTitle", () => {
+  it("turns an ALL CAPS title into title case, keeping acronyms and connectors", () => {
+    expect(displayTitle("PH AVENIDA BOEDO 123 FRENTE A LA PLAZA")).toBe(
+      "PH Avenida Boedo 123 Frente a la Plaza",
+    );
+    expect(displayTitle("DEPARTAMENTO 3 AMBIENTES EN CABA")).toBe("Departamento 3 Ambientes en CABA");
+    expect(displayTitle("AV. SANTA FE 1234 - PRECIO EN USD")).toBe("Av. Santa Fe 1234 - Precio en USD");
+    expect(displayTitle("SEMI-PISO CON COCHERA")).toBe("Semi-Piso con Cochera");
+  });
+
+  it("leaves titles that are not all caps, or have no letters, untouched", () => {
+    expect(displayTitle("Luminoso 3 ambientes con balcón")).toBe("Luminoso 3 ambientes con balcón");
+    expect(displayTitle("Casa en PALERMO")).toBe("Casa en PALERMO");
+    expect(displayTitle("123")).toBe("123");
+    expect(displayTitle("PH")).toBe("PH");
+  });
+});
+
+describe("propertyMapsHref", () => {
+  it("links to a Google Maps search for the address or the barrio", () => {
+    expect(propertyMapsHref("Gorriti 4800, Palermo, CABA")).toBe(
+      "https://www.google.com/maps/search/?api=1&query=Gorriti%204800%2C%20Palermo%2C%20CABA",
+    );
   });
 });

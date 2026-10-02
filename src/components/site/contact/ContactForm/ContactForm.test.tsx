@@ -20,7 +20,7 @@ describe("ContactForm", () => {
     expect(screen.getByRole("heading", { name: "Envianos un mensaje" })).toBeInTheDocument();
     expect(screen.getByLabelText("Nombre y apellido")).toBeRequired();
     expect(screen.getByLabelText("Teléfono o email")).toBeRequired();
-    expect(screen.getByLabelText("Tu mensaje")).toBeInTheDocument();
+    expect(screen.getByLabelText("Tu mensaje (opcional)")).toBeInTheDocument();
     const options = screen.getAllByRole("option").map((option) => option.textContent);
     expect(options).toEqual([
       "Quiero comprar",
@@ -68,7 +68,7 @@ describe("ContactForm", () => {
     expect(screen.getByLabelText("Teléfono o email")).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByLabelText("Nombre y apellido")).toHaveValue("Ana");
     expect(screen.getByLabelText("Motivo de consulta")).toHaveValue("sell");
-    expect(screen.getByLabelText("Tu mensaje")).toHaveValue("Mi mensaje");
+    expect(screen.getByLabelText("Tu mensaje (opcional)")).toHaveValue("Mi mensaje");
   });
 
   it("shows general errors as an alert", async () => {
@@ -85,5 +85,59 @@ describe("ContactForm", () => {
     await user.click(screen.getByRole("button", { name: "Enviar" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Probá de nuevo en un minuto.");
+  });
+});
+
+describe("ContactForm accessibility", () => {
+  it("moves focus to the first invalid field after a failed submit and announces the count", async () => {
+    const user = renderForm(
+      vi.fn<Action>(async () => ({
+        status: "error",
+        fieldErrors: {
+          name: "Escribí tu nombre (2 a 100 caracteres).",
+          contact: "Dejanos un teléfono o un email para responderte.",
+        },
+        values: {},
+      })),
+    );
+
+    await user.type(screen.getByLabelText("Nombre y apellido"), "A");
+    await user.type(screen.getByLabelText("Teléfono o email"), "x");
+    await user.click(screen.getByRole("button", { name: "Enviar" }));
+
+    await screen.findByText("Escribí tu nombre (2 a 100 caracteres).");
+    expect(screen.getByLabelText("Nombre y apellido")).toHaveFocus();
+    expect(screen.getByLabelText("Nombre y apellido")).toHaveAccessibleDescription(
+      "Escribí tu nombre (2 a 100 caracteres).",
+    );
+    expect(document.querySelector('[aria-live="polite"]')).toHaveTextContent(
+      "Hay 2 campos para revisar.",
+    );
+  });
+
+  it("explains the combined field with a hint and does not autofill an email into it", () => {
+    render(<ContactForm action={vi.fn()} />);
+
+    const field = screen.getByLabelText("Teléfono o email");
+    expect(field).toHaveAttribute("autocomplete", "off");
+    expect(field).toHaveAccessibleDescription(/teléfono o un email/);
+  });
+
+  it("offers next steps after sending", async () => {
+    const user = renderForm(vi.fn<Action>(async () => ({ status: "sent" })));
+
+    await user.type(screen.getByLabelText("Nombre y apellido"), "Ana García");
+    await user.type(screen.getByLabelText("Teléfono o email"), "11 3896-7363");
+    await user.click(screen.getByRole("button", { name: "Enviar" }));
+
+    await screen.findByText("¡Mensaje enviado!");
+    expect(screen.getByRole("link", { name: "Seguir viendo propiedades" })).toHaveAttribute(
+      "href",
+      "/propiedades",
+    );
+    expect(screen.getByRole("link", { name: /WhatsApp/ })).toHaveAttribute(
+      "href",
+      expect.stringContaining("wa.me"),
+    );
   });
 });

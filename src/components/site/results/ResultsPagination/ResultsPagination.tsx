@@ -1,34 +1,64 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { pageItems } from "@/lib/public/pagination";
 import { buildSearchHref, type SearchState } from "@/lib/public/search-params";
 import styles from "./ResultsPagination.module.css";
 
 type ResultsPaginationProps = { state: SearchState; totalPages: number };
 
-/** Crawlable previous/next links (real URLs) with the current position. */
+/** Crawlable numbered pages (real URLs): previous, numbers with ellipsis, next. */
 export default function ResultsPagination({ state, totalPages }: ResultsPaginationProps) {
   if (totalPages <= 1) return null;
   const { page } = state;
   return (
     <nav aria-label="Paginación" className={styles.pagination}>
+      <p className="sr-only">
+        Página {page} de {totalPages}
+      </p>
       {page > 1 ? (
-        <Link href={buildSearchHref(state, { page: page - 1 })} rel="prev" className={styles.link}>
+        <Link
+          href={buildSearchHref(state, { page: page - 1 })}
+          rel="prev"
+          aria-label="Anterior"
+          className={styles.step}
+        >
           <ChevronLeft aria-hidden size={18} />
-          Anterior
         </Link>
       ) : (
-        <span className={styles.placeholder} />
+        <span className={styles.stepPlaceholder} aria-hidden />
       )}
-      <span className={styles.position}>
-        Página {page} de {totalPages}
-      </span>
+      <ol className={styles.pages}>
+        {pageItems(page, totalPages).map((item, index) => (
+          <li key={item === "ellipsis" ? `gap-${index}` : item}>
+            {item === "ellipsis" ? (
+              <span className={styles.ellipsis}>…</span>
+            ) : item === page ? (
+              <span aria-current="page" className={styles.current}>
+                {item}
+              </span>
+            ) : (
+              <Link
+                href={buildSearchHref(state, { page: item })}
+                aria-label={`Página ${item}`}
+                className={styles.number}
+              >
+                {item}
+              </Link>
+            )}
+          </li>
+        ))}
+      </ol>
       {page < totalPages ? (
-        <Link href={buildSearchHref(state, { page: page + 1 })} rel="next" className={styles.link}>
-          Siguiente
+        <Link
+          href={buildSearchHref(state, { page: page + 1 })}
+          rel="next"
+          aria-label="Siguiente"
+          className={styles.step}
+        >
           <ChevronRight aria-hidden size={18} />
         </Link>
       ) : (
-        <span className={styles.placeholder} />
+        <span className={styles.stepPlaceholder} aria-hidden />
       )}
     </nav>
   );

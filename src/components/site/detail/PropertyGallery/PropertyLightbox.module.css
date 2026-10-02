@@ -1,0 +1,157 @@
+/* Native modal dialog, forced full-screen over a dark backdrop. */
+.dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--color-white);
+  background: #0b0e24;
+}
+
+.dialog[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: 1fr;
+}
+
+.dialog::backdrop {
+  background: rgba(5, 7, 20, 0.9);
+}
+
+.header {
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 10px 20px;
+}
+
+.counter {
+  font: 700 14px var(--font-body), sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.close,
+.nav {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  color: var(--color-white);
+  background: rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+}
+
+.close:hover,
+.nav:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.stage {
+  grid-row: 2;
+  position: relative;
+  min-height: 0;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+}
+
+.photo {
+  object-fit: contain;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.prev {
+  left: 12px;
+}
+
+.next {
+  right: 12px;
+}
+
+/* Thumbnail strip: wide screens only (phones swipe). */
+.thumbs {
+  grid-row: 3;
+  display: none;
+  gap: 8px;
+  padding: 12px 16px 16px;
+  overflow-x: auto;
+  list-style: none;
+  justify-content: center;
+}
+
+.thumb {
+  display: block;
+  width: 84px;
+  height: 63px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  opacity: 0.6;
+  background: none;
+  cursor: pointer;
+}
+
+.thumb[aria-current="true"] {
+  border-color: var(--color-gold);
+  opacity: 1;
+}
+
+.thumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.close:focus-visible,
+.nav:focus-visible,
+.thumb:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+@media (min-width: 960px) {
+  .thumbs {
+    display: flex;
+  }
+
+  .prev {
+    left: 24px;
+  }
+
+  .next {
+    right: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .photo {
+    animation: lightbox-fade-in 0.18s ease-out;
+  }
+}
+
+@keyframes lightbox-fade-in {
+  from {
+    opacity: 0.2;
+  }
+  to {
+    opacity: 1;
+  }
+}

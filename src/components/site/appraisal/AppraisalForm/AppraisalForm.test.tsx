@@ -30,8 +30,8 @@ describe("AppraisalForm", () => {
     expect(screen.getByRole("radio", { name: "Alquilar" })).not.toBeChecked();
     expect(screen.getByLabelText("Tipo de propiedad")).toBeRequired();
     expect(screen.getByLabelText("Dirección y barrio")).toBeRequired();
-    expect(screen.getByLabelText("Ambientes")).not.toBeRequired();
-    expect(screen.getByLabelText("Superficie aprox. (m²)")).not.toBeRequired();
+    expect(screen.getByLabelText("Ambientes (opcional)")).not.toBeRequired();
+    expect(screen.getByLabelText("Superficie aprox. (m²) (opcional)")).not.toBeRequired();
     expect(screen.getByLabelText("Nombre y apellido")).toBeRequired();
     expect(screen.getByLabelText("Teléfono")).toBeRequired();
     expect(screen.getByLabelText("Comentarios (opcional)")).not.toBeRequired();
@@ -59,7 +59,7 @@ describe("AppraisalForm", () => {
     await user.click(screen.getByRole("radio", { name: "Alquilar" }));
     await user.selectOptions(screen.getByLabelText("Tipo de propiedad"), "ph");
     await user.type(screen.getByLabelText("Dirección y barrio"), "Las Casas 4054, Boedo");
-    await user.type(screen.getByLabelText("Ambientes"), "3");
+    await user.type(screen.getByLabelText("Ambientes (opcional)"), "3");
     await user.type(screen.getByLabelText("Nombre y apellido"), "Ana García");
     await user.type(screen.getByLabelText("Teléfono"), "11 3896-7363");
     await user.click(screen.getByRole("button", { name: "Solicitar tasación" }));
@@ -96,12 +96,12 @@ describe("AppraisalForm", () => {
     await user.click(screen.getByRole("button", { name: "Solicitar tasación" }));
 
     expect(await screen.findByText("Los ambientes deben ser un número entero de 0 a 50.")).toBeInTheDocument();
-    expect(screen.getByLabelText("Ambientes")).toHaveAttribute("aria-invalid", "true");
-    expect(screen.getByLabelText("Ambientes")).toHaveValue(99);
+    expect(screen.getByLabelText("Ambientes (opcional)")).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByLabelText("Ambientes (opcional)")).toHaveValue(99);
     expect(screen.getByRole("radio", { name: "Alquilar" })).toBeChecked();
     expect(screen.getByLabelText("Tipo de propiedad")).toHaveValue("house");
     expect(screen.getByLabelText("Dirección y barrio")).toHaveValue("Boedo");
-    expect(screen.getByLabelText("Superficie aprox. (m²)")).toHaveValue(80);
+    expect(screen.getByLabelText("Superficie aprox. (m²) (opcional)")).toHaveValue(80);
     expect(screen.getByLabelText("Comentarios (opcional)")).toHaveValue("Mi mensaje");
   });
 
@@ -118,5 +118,34 @@ describe("AppraisalForm", () => {
     await user.click(screen.getByRole("button", { name: "Solicitar tasación" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Probá de nuevo en un minuto.");
+  });
+});
+
+describe("AppraisalForm accessibility", () => {
+  it("focuses the first invalid field after a failed submit", async () => {
+    const user = renderForm(
+      vi.fn<Action>(async () => ({
+        status: "error",
+        fieldErrors: { address: "Escribí la dirección.", phone: "Revisá el teléfono." },
+        values: {},
+      })),
+    );
+
+    await fillRequired(user);
+    await user.click(screen.getByRole("button", { name: "Solicitar tasación" }));
+
+    await screen.findByText("Escribí la dirección.");
+    expect(screen.getByLabelText("Dirección y barrio")).toHaveFocus();
+  });
+
+  it("offers next steps after sending", async () => {
+    const user = renderForm(vi.fn<Action>(async () => ({ status: "sent" })));
+
+    await fillRequired(user);
+    await user.click(screen.getByRole("button", { name: "Solicitar tasación" }));
+
+    await screen.findByText("Recibimos tu solicitud");
+    expect(screen.getByRole("link", { name: "Seguir viendo propiedades" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /WhatsApp/ })).toBeInTheDocument();
   });
 });

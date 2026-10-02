@@ -13,9 +13,23 @@
 .empty {
   flex: 0 0 100%;
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   scroll-snap-align: start;
   background: repeating-linear-gradient(135deg, #ebe7dc 0 12px, #e3ded1 12px 24px);
+}
+
+.slide {
+  display: block;
+  padding: 0;
+  border: 0;
+  cursor: zoom-in;
+}
+
+.slide:focus-visible,
+.viewAll:focus-visible,
+.nav:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: -3px;
 }
 
 .empty {
@@ -36,6 +50,24 @@
   left: 12px;
   display: flex;
   gap: 6px;
+  pointer-events: none;
+}
+
+.viewAll {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  font: 700 13px var(--font-body), sans-serif;
+  color: var(--color-navy);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
 }
 
 .counter {
@@ -47,6 +79,7 @@
   font: 700 12px var(--font-body), sans-serif;
   color: var(--color-white);
   background: rgba(19, 28, 77, 0.8);
+  pointer-events: none;
 }
 
 .nav {
@@ -65,14 +98,11 @@
   cursor: pointer;
 }
 
+/* Visible but dim at either end, so the control does not vanish and reappear. */
 .nav:disabled {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.nav:focus-visible {
-  outline: 2px solid var(--color-gold);
-  outline-offset: 2px;
+  opacity: 0.45;
+  cursor: default;
+  box-shadow: none;
 }
 
 .prev {
@@ -94,16 +124,23 @@
 
   .slide,
   .empty {
-    aspect-ratio: 16 / 7;
+    aspect-ratio: 16 / 9;
+    max-height: 70vh;
   }
 
   .overlay,
-  .prev {
+  .prev,
+  .viewAll {
     left: 30px;
   }
 
   .counter,
   .next {
     right: 30px;
+  }
+
+  .viewAll,
+  .counter {
+    bottom: 16px;
   }
 }
