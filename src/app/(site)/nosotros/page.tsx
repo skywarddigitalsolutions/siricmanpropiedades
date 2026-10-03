@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BROKER_LICENSE } from "@/lib/contact";
 import styles from "./page.module.css";
 
 const DESCRIPTION =
@@ -25,7 +26,12 @@ const VALUES = [
 
 // Only real people ship here; the design's `[Nombre]` placeholders are intentionally left out.
 const TEAM = [
-  { name: "Gabriel Siricman", role: "Martillero Público y Corredor Inmobiliario", initials: "GS" },
+  {
+    name: "Gabriel Siricman",
+    role: "Martillero Público y Corredor Inmobiliario",
+    license: BROKER_LICENSE,
+    initials: "GS",
+  },
 ];
 
 /** `/nosotros` — who we are, mission, vision, values and team. */
@@ -98,6 +104,7 @@ export default function AboutPage() {
               </span>
               <span className={styles.memberName}>{member.name}</span>
               <span className={styles.memberRole}>{member.role}</span>
+              <span className={styles.memberLicense}>{member.license}</span>
             </li>
           ))}
         </ul>

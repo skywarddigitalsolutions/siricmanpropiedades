@@ -13,6 +13,7 @@ describe("Footer", () => {
     expect(
       screen.getByText("Gabriel Siricman · Martillero Público y Corredor Inmobiliario"),
     ).toBeInTheDocument();
+    expect(screen.getByText("Matrícula N° 10024")).toBeInTheDocument();
     expect(screen.getByText("© 2026 Siricman Propiedades")).toBeInTheDocument();
   });
 

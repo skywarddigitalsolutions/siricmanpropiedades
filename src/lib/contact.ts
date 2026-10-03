@@ -10,6 +10,9 @@ export const PHONE_DISPLAY = "11 3896-7363";
 /** Dialable form of the office mobile (same line as the WhatsApp number). */
 export const PHONE_HREF = "tel:+5491138967363";
 
+/** Gabriel Siricman's professional license, shown wherever he is presented as a broker. */
+export const BROKER_LICENSE = "Matrícula N° 10024";
+
 export const INSTAGRAM_HANDLE = "@gabrielsiricman";
 export const INSTAGRAM_URL = "https://www.instagram.com/gabrielsiricman/";
 

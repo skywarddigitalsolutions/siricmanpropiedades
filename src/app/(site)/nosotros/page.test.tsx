@@ -48,6 +48,7 @@ describe("AboutPage", () => {
     expect(within(team).getAllByRole("listitem")).toHaveLength(1);
     expect(within(team).getByText("Gabriel Siricman")).toBeInTheDocument();
     expect(within(team).getByText("Martillero Público y Corredor Inmobiliario")).toBeInTheDocument();
+    expect(within(team).getByText("Matrícula N° 10024")).toBeInTheDocument();
     expect(within(team).getByText("GS")).toBeInTheDocument();
     expect(container.textContent).not.toContain("[Nombre]");
   });
