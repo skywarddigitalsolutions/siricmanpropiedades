@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import {
+  BROKER_LICENSE,
   CONTACT_EMAIL,
   OFFICE_ADDRESS,
   OFFICE_CITY,
@@ -73,6 +74,7 @@ export default function Footer() {
           </p>
           <p className={styles.professional}>
             Gabriel Siricman · Martillero Público y Corredor Inmobiliario
+            <span className={styles.license}>{BROKER_LICENSE}</span>
           </p>
           <div className={styles.social}>
             <a
