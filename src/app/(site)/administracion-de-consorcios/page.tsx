@@ -10,7 +10,6 @@ import {
   Handshake,
   MapPin,
   MessageCircle,
-  Quote,
   ReceiptText,
   Scale,
   ShieldCheck,
@@ -133,13 +132,6 @@ const REASONS: { icon: LucideIcon; title: string; text: string }[] = [
   },
 ];
 
-/** Trust strip: only claims already approved on this page. */
-const TRUST = [
-  { value: "+11", label: "años en CABA" },
-  { value: "Trato directo", label: "con Gabriel Siricman" },
-  { value: "Cuentas claras", label: "para cada propietario" },
-];
-
 const FAQ = [
   {
     question: "¿Cómo es el cambio de administración?",
@@ -193,7 +185,7 @@ export default function ConsortiumPage() {
             </div>
           </div>
 
-          <div className={styles.panel}>
+          <aside aria-label="Datos de la administración" className={styles.panel}>
             <p className={styles.stat}>
               <span className={styles.statNumber}>+11</span>
               <span className={styles.statLabel}>años administrando edificios en CABA</span>
@@ -208,20 +200,9 @@ export default function ConsortiumPage() {
                 </li>
               ))}
             </ul>
-          </div>
+          </aside>
         </section>
       </div>
-
-      <section aria-label="Datos de confianza" className={styles.trust}>
-        <ul className={styles.trustList}>
-          {TRUST.map((item) => (
-            <li key={item.value} className={styles.trustItem}>
-              <span className={styles.trustValue}>{item.value}</span>
-              <span className={styles.trustLabel}>{item.label}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
 
       <div className={styles.band}>
         <section aria-labelledby="consortium-includes" className={`${styles.inner} ${styles.block}`}>
@@ -266,26 +247,22 @@ export default function ConsortiumPage() {
           <h2 id="consortium-why" className={styles.heading}>
             Por qué elegirnos
           </h2>
-          <div className={styles.why}>
-            <ul className={styles.reasons}>
-              {REASONS.map(({ icon: Icon, title, text }) => (
-                <li key={title} className={styles.reason}>
-                  <span className={styles.reasonIcon}>
-                    <Icon aria-hidden size={20} />
-                  </span>
-                  <span className={styles.reasonBody}>
-                    <span className={styles.reasonTitle}>{title}</span>
-                    <span className={styles.reasonText}>{text}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <aside className={styles.quote}>
-              <Quote aria-hidden size={32} className={styles.quoteMark} />
-              <h3 className={styles.quoteTitle}>Trato directo con Gabriel Siricman</h3>
-              <p className={styles.quoteText}>Sin intermediarios ni call centers.</p>
-            </aside>
-          </div>
+          <p className={styles.whyIntro}>
+            Trato directo con Gabriel Siricman, sin intermediarios ni call centers.
+          </p>
+          <ul className={styles.reasons}>
+            {REASONS.map(({ icon: Icon, title, text }) => (
+              <li key={title} className={styles.reason}>
+                <span className={styles.reasonIcon}>
+                  <Icon aria-hidden size={20} />
+                </span>
+                <span className={styles.reasonBody}>
+                  <span className={styles.reasonTitle}>{title}</span>
+                  <span className={styles.reasonText}>{text}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
         </section>
       </div>
 
