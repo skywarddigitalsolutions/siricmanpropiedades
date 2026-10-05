@@ -90,7 +90,7 @@
 }
 
 .socialButton:hover {
-  color: var(--color-navy-dark);
+  color: var(--color-white);
   border-color: var(--color-gold);
   background: var(--color-gold);
 }

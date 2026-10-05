@@ -211,12 +211,12 @@
 }
 
 .ctaButton {
-  color: var(--color-navy-dark);
+  color: var(--color-white);
   background: var(--color-gold);
 }
 
 .ctaButton:hover {
-  color: var(--color-navy-dark);
+  color: var(--color-white);
   background: #d4b268;
 }
 
