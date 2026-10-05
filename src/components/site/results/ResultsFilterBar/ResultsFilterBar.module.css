@@ -4,10 +4,7 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-/*
- * Phones: two rows. Row 1 = barrio search; row 2 = Filtros + operation. The
- * wrappers dissolve (display: contents) so `order` can rearrange their children.
- */
+/* Phones: two rows. Row 1 = barrio search; row 2 = Filtros + operation (via `order`). */
 .inner {
   max-width: var(--content-max-width);
   margin: 0 auto;
@@ -16,11 +13,6 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 10px 8px;
-}
-
-.row,
-.chipsRow {
-  display: contents;
 }
 
 .segment {
@@ -70,43 +62,12 @@
   background: none;
 }
 
-/* The Filtros button (first child) goes to row 2, before the operation. */
-.chipsRow > button {
+/* The Filtros button goes to row 2, before the operation. */
+.inner > button {
   order: 2;
 }
 
-/* Phones: no quick chips; they come back from 1024 px. */
-.chips {
-  display: none;
-  list-style: none;
-}
-
-.chip {
-  min-height: 38px;
-  display: inline-flex;
-  align-items: center;
-  padding: 0 14px;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-pill);
-  font: 600 13px var(--font-body), sans-serif;
-  white-space: nowrap;
-  color: var(--color-text);
-  background: var(--color-white);
-}
-
-.chip:hover {
-  color: var(--color-text);
-  border-color: var(--color-navy);
-}
-
-.chip[data-active] {
-  color: var(--color-white);
-  background: var(--color-navy);
-  border-color: var(--color-navy);
-}
-
-.segmentLink:focus-visible,
-.chip:focus-visible {
+.segmentLink:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
@@ -140,31 +101,7 @@
     padding: 10px 16px;
   }
 
-  .row {
-    flex: 1 1 0;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0;
-  }
-
-  .chipsRow {
-    flex: 1 1 0;
-    min-width: 0;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 0;
-  }
-
-  .chipsRow > button {
+  .inner > button {
     order: 0;
-  }
-
-  /* The chips flow straight into the row, next to and below the Filtros button. */
-  .chips {
-    display: contents;
   }
 }

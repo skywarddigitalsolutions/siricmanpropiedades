@@ -77,7 +77,7 @@ describe("ResultsFilterBar", () => {
     );
   });
 
-  it("toggles quick filters through links", () => {
+  it("keeps the bar to operation, barrio and the filters button (no quick chips)", () => {
     render(
       <ResultsFilterBar
         state={parseSearchParams({ tipo: "casa", credito: "1" })}
@@ -85,18 +85,9 @@ describe("ResultsFilterBar", () => {
       />,
     );
 
-    const quick = screen.getByRole("list", { name: "Filtros rápidos" });
-    expect(within(quick).getByRole("link", { name: /Casa/ })).toHaveAttribute(
-      "href",
-      "/propiedades?credito=1",
-    );
-    expect(within(quick).getByRole("link", { name: /PH/ })).toHaveAttribute(
-      "href",
-      "/propiedades?tipo=ph&credito=1",
-    );
-    expect(within(quick).getByRole("link", { name: /Apto crédito/ })).toHaveTextContent(
-      "(activo)",
-    );
+    expect(screen.queryByRole("list", { name: "Filtros rápidos" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Departamento|Apto crédito|Mascotas|Cochera/ })).toBeNull();
+    expect(screen.getByRole("button", { name: "Filtros · 2" })).toBeInTheDocument();
   });
 });
 
