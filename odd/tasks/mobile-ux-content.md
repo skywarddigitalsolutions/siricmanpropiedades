@@ -26,10 +26,10 @@
 
 | ID | Task | Route | Status | Commit |
 |----|------|-------|--------|--------|
-| T1 | Mobile results bar + operation and multi-barrio in the filters sheet (URL/API multi-barrio) | delegated | ⬜ | |
-| T2 | Type chips wrap (home + results); appraisal form alignment (mobile); footer credit | delegated | ⬜ | |
-| T3 | Consorcios page redesign (step line, friendlier why-us, richer sections) | delegated | ⬜ | |
-| T4 | Nosotros page redesign (team section) | delegated | ⬜ | |
+| T1 | Mobile results bar + operation and multi-barrio in the filters sheet (URL/API multi-barrio) | delegated | ✅ | 409961f |
+| T2 | Type chips wrap (home + results); appraisal form alignment (mobile); footer credit | delegated | ✅ | fb470ac |
+| T3 | Consorcios page redesign (step line, friendlier why-us, richer sections) | delegated | ✅ | 539de09 |
+| T4 | Nosotros page redesign (team section) | delegated | ✅ | see git log |
 
 ## Acceptance criteria
 
@@ -39,7 +39,12 @@
 ## Progress
 
 - 2026-10-05: branch `feat/mobile-ux-content`. Demo properties seeded in the LOCAL dev DB (SP-102..SP-109) for visual checks. RDD: off (default).
+- T1 RED: 13 failing (parse/serialize/activeFilters/seo, sheet Operación + Barrios, combobox "2 barrios"); GREEN after `neighborhoods: string[]` in SearchState (comma URL, max 10, API `neighborhood=a,b`). Screenshots f24-mobile-results-bar, f24-mobile-sheet, f24-desktop-results-before/after/2barrios.
+- T2 RED: footer credit + "Superficie (m²)" label tests; GREEN. Chips wrap (home + results, `display: contents` on the quick list); appraisal pair aligned with subgrid. Screenshots f24-*-home-chips, f24-*-results-chips, f24-mobile-appraisal, f24-*-footer.
+- T3 RED: trust strip + quote panel tests; GREEN. Bands, step line, icon list, why-us + quote panel. Screenshots f24-*-consorcios(.png, -steps, -trust).
+- T4 RED: team profile card test; GREEN. Screenshots f24-*-nosotros, f24-mobile-nosotros-team.
+- Checks: lint 0 errors (1 pre-existing warning), 1191 tests pass, build OK.
 
 ## Next step
 
-T1.
+Push, PR, deploy.
