@@ -168,7 +168,7 @@ export default function AppraisalForm({ action }: AppraisalFormProps) {
           />
           <Field
             name="area"
-            label="Superficie aprox. (m²)"
+            label="Superficie (m²)"
             optional
             type="number"
             inputMode="numeric"

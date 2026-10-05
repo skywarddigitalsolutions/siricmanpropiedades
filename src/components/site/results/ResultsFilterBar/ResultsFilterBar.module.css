@@ -63,17 +63,18 @@
   background: none;
 }
 
+/* Filtros + quick chips wrap onto several lines instead of scrolling. */
 .chipsRow {
   display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 8px;
-  overflow-x: auto;
   padding: 0 16px;
-  scrollbar-width: none;
 }
 
+/* The chips flow straight into the row, next to and below the Filtros button. */
 .chips {
-  display: flex;
-  gap: 8px;
+  display: contents;
   list-style: none;
 }
 

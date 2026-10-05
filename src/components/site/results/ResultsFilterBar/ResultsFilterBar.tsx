@@ -97,7 +97,7 @@ export default function ResultsFilterBar({ state, neighborhoods }: ResultsFilter
 
         <div className={styles.chipsRow}>
           <FiltersSheet state={state} neighborhoods={neighborhoods} />
-          <ul aria-label="Filtros rápidos" className={styles.chips}>
+          <ul role="list" aria-label="Filtros rápidos" className={styles.chips}>
             {quickFilters(state).map((filter) => (
               <li key={filter.label}>
                 <Link
