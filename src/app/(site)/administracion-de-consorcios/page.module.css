@@ -2,13 +2,19 @@
   flex: 1;
 }
 
-.page {
+/* Full-width bands alternate background; .inner centers the content. */
+.band {
+  width: 100%;
+}
+
+.bandAlt {
+  background: var(--color-white);
+}
+
+.inner {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 28px 16px 80px;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
+  padding: 44px 16px;
 }
 
 /* Hero */
@@ -17,6 +23,8 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap: 20px;
   align-items: center;
+  padding-top: 28px;
+  padding-bottom: 36px;
 }
 
 .intro {
@@ -149,11 +157,49 @@
   background: var(--color-gold);
 }
 
+/* Trust strip */
+.trust {
+  border-block: 1px solid var(--color-border);
+  background: var(--color-white);
+}
+
+.trustList {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 8px 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  list-style: none;
+}
+
+.trustItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.trustItem:last-child {
+  border-bottom: 0;
+}
+
+.trustValue {
+  font: 800 clamp(20px, 3vw, 26px) var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
+}
+
+.trustLabel {
+  font: 600 14px var(--font-body), sans-serif;
+  color: var(--color-text-muted);
+}
+
 /* Sections */
 .block {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 
 .heading {
@@ -161,33 +207,31 @@
   letter-spacing: -0.01em;
 }
 
-.includes,
-.reasons {
+/* What is included: a light icon list, not boxed cards. */
+.includes {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+  gap: 4px 28px;
   list-style: none;
 }
 
 .include {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 20px;
-  border-radius: var(--radius-lg);
-  background: var(--color-white);
+  gap: 14px;
+  padding: 16px 0;
+  border-top: 1px solid var(--color-border-strong);
 }
 
 .includeIcon {
-  width: 44px;
-  height: 44px;
+  flex: none;
+  margin-top: 2px;
+  color: var(--color-gold-dark);
+}
+
+.includeBody {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 4px;
-  border-radius: 14px;
-  color: var(--color-navy);
-  background: #eef0f8;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .includeTitle {
@@ -201,37 +245,54 @@
   color: var(--color-text-muted);
 }
 
+/* How we work: numbered nodes joined by a line (vertical on phones). */
 .steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 12px;
+  grid-template-columns: 1fr;
   list-style: none;
-  counter-reset: none;
 }
 
 .step {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 20px;
-  border-radius: var(--radius-lg);
-  background: var(--color-white);
+  gap: 4px;
+  padding: 0 0 28px 56px;
+}
+
+.step:last-child {
+  padding-bottom: 0;
 }
 
 .stepNumber {
-  width: 34px;
-  height: 34px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 6px;
   border-radius: 50%;
   font: 800 15px var(--font-body), sans-serif;
   color: var(--color-white);
   background: var(--color-navy);
+  box-shadow: 0 0 0 4px var(--color-white);
+}
+
+.step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  bottom: -18px;
+  left: 17px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--color-gold), rgba(198, 160, 82, 0.35));
 }
 
 .stepTitle {
+  padding-top: 6px;
   font: 800 16px var(--font-body), sans-serif;
 }
 
@@ -241,14 +302,42 @@
   color: var(--color-text-muted);
 }
 
+/* Why us: icon features beside an accent panel. */
+.why {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  align-items: stretch;
+}
+
+.reasons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px 28px;
+  list-style: none;
+}
+
 .reason {
   display: flex;
+  gap: 14px;
+}
+
+.reasonIcon {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--color-navy);
+  background: rgba(198, 160, 82, 0.2);
+}
+
+.reasonBody {
+  display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 20px;
-  border-radius: var(--radius-lg);
-  border-left: 4px solid var(--color-gold);
-  background: var(--color-white);
+  gap: 4px;
 }
 
 .reasonTitle {
@@ -262,6 +351,34 @@
   color: var(--color-text-muted);
 }
 
+.quote {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  padding: clamp(24px, 4vw, 36px);
+  border-radius: var(--radius-2xl);
+  color: var(--color-white);
+  background: linear-gradient(150deg, var(--color-navy) 0%, var(--color-navy-dark) 100%);
+  box-shadow: var(--shadow-card);
+}
+
+.quoteMark {
+  color: var(--color-gold);
+}
+
+.quoteTitle {
+  font: 800 clamp(22px, 3vw, 28px) / 1.2 var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.quoteText {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-on-dark-muted);
+}
+
 /* FAQ */
 .faq {
   display: flex;
@@ -271,7 +388,7 @@
 
 .faqItem {
   border-radius: var(--radius-md);
-  background: var(--color-white);
+  background: var(--color-bg);
 }
 
 .faqQuestion {
@@ -314,6 +431,10 @@
 }
 
 /* Proposal */
+.proposalWrap {
+  padding-bottom: 80px;
+}
+
 .proposal {
   display: grid;
   grid-template-columns: 1fr;
@@ -350,7 +471,65 @@
   background: var(--color-white);
 }
 
+@media (min-width: 640px) {
+  .trustList {
+    grid-template-columns: repeat(3, 1fr);
+    padding-block: 20px;
+  }
+
+  .trustItem {
+    padding: 4px 24px;
+    border-bottom: 0;
+    border-left: 1px solid var(--color-border-strong);
+  }
+
+  .trustItem:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .reasons {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Steps turn horizontal: the line runs through the nodes. */
 @media (min-width: 860px) {
+  .inner {
+    padding-block: 64px;
+  }
+
+  .steps {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .step {
+    padding: 52px 20px 0 0;
+  }
+
+  .step:last-child {
+    padding-bottom: 0;
+  }
+
+  .step:not(:last-child)::before {
+    top: 17px;
+    bottom: auto;
+    left: 44px;
+    right: 8px;
+    width: auto;
+    height: 2px;
+    background: linear-gradient(to right, var(--color-gold), rgba(198, 160, 82, 0.35));
+  }
+
+  .stepTitle {
+    padding-top: 0;
+  }
+
+  .why {
+    grid-template-columns: 1.5fr 1fr;
+    gap: 40px;
+  }
+
   .proposal {
     grid-template-columns: 1fr 1.15fr;
     gap: 40px;

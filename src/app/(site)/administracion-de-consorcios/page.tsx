@@ -4,8 +4,13 @@ import {
   Calculator,
   Check,
   ChevronDown,
+  Clock,
+  Eye,
   HandCoins,
+  Handshake,
+  MapPin,
   MessageCircle,
+  Quote,
   ReceiptText,
   Scale,
   ShieldCheck,
@@ -105,23 +110,34 @@ const STEPS = [
   },
 ];
 
-const REASONS = [
+const REASONS: { icon: LucideIcon; title: string; text: string }[] = [
   {
+    icon: Handshake,
     title: "Trato directo",
     text: "Hablás con Gabriel Siricman, sin intermediarios ni call centers.",
   },
   {
+    icon: Eye,
     title: "Transparencia en las cuentas",
     text: "Cada gasto respaldado y explicado, para que los propietarios sepan en qué se usa su dinero.",
   },
   {
+    icon: Clock,
     title: "Respuesta rápida",
     text: "Consultas y reclamos atendidos a tiempo, por WhatsApp o por el canal que prefieras.",
   },
   {
+    icon: MapPin,
     title: "Experiencia en CABA",
     text: "Más de 11 años administrando edificios en la Ciudad de Buenos Aires.",
   },
+];
+
+/** Trust strip: only claims already approved on this page. */
+const TRUST = [
+  { value: "+11", label: "años en CABA" },
+  { value: "Trato directo", label: "con Gabriel Siricman" },
+  { value: "Cuentas claras", label: "para cada propietario" },
 ];
 
 const FAQ = [
@@ -151,8 +167,8 @@ const FAQ = [
 export default function ConsortiumPage() {
   return (
     <main className={styles.main}>
-      <div className={styles.page}>
-        <section className={styles.hero}>
+      <div className={styles.band}>
+        <section className={`${styles.inner} ${styles.hero}`}>
           <div className={styles.intro}>
             <span className={styles.eyebrow}>CONSORCIOS</span>
             <h1 className={styles.title}>Administración de consorcios en CABA</h1>
@@ -194,25 +210,40 @@ export default function ConsortiumPage() {
             </ul>
           </div>
         </section>
+      </div>
 
-        <section aria-labelledby="consortium-includes" className={styles.block}>
+      <section aria-label="Datos de confianza" className={styles.trust}>
+        <ul className={styles.trustList}>
+          {TRUST.map((item) => (
+            <li key={item.value} className={styles.trustItem}>
+              <span className={styles.trustValue}>{item.value}</span>
+              <span className={styles.trustLabel}>{item.label}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div className={styles.band}>
+        <section aria-labelledby="consortium-includes" className={`${styles.inner} ${styles.block}`}>
           <h2 id="consortium-includes" className={styles.heading}>
             Qué incluye
           </h2>
           <ul className={styles.includes}>
             {INCLUDES.map(({ icon: Icon, title, text }) => (
               <li key={title} className={styles.include}>
-                <span className={styles.includeIcon}>
-                  <Icon aria-hidden size={22} />
+                <Icon aria-hidden size={22} className={styles.includeIcon} />
+                <span className={styles.includeBody}>
+                  <span className={styles.includeTitle}>{title}</span>
+                  <span className={styles.includeText}>{text}</span>
                 </span>
-                <span className={styles.includeTitle}>{title}</span>
-                <span className={styles.includeText}>{text}</span>
               </li>
             ))}
           </ul>
         </section>
+      </div>
 
-        <section aria-labelledby="consortium-process" className={styles.block}>
+      <div className={`${styles.band} ${styles.bandAlt}`}>
+        <section aria-labelledby="consortium-process" className={`${styles.inner} ${styles.block}`}>
           <h2 id="consortium-process" className={styles.heading}>
             Cómo trabajamos
           </h2>
@@ -228,22 +259,38 @@ export default function ConsortiumPage() {
             ))}
           </ol>
         </section>
+      </div>
 
-        <section aria-labelledby="consortium-why" className={styles.block}>
+      <div className={styles.band}>
+        <section aria-labelledby="consortium-why" className={`${styles.inner} ${styles.block}`}>
           <h2 id="consortium-why" className={styles.heading}>
             Por qué elegirnos
           </h2>
-          <ul className={styles.reasons}>
-            {REASONS.map((reason) => (
-              <li key={reason.title} className={styles.reason}>
-                <span className={styles.reasonTitle}>{reason.title}</span>
-                <span className={styles.reasonText}>{reason.text}</span>
-              </li>
-            ))}
-          </ul>
+          <div className={styles.why}>
+            <ul className={styles.reasons}>
+              {REASONS.map(({ icon: Icon, title, text }) => (
+                <li key={title} className={styles.reason}>
+                  <span className={styles.reasonIcon}>
+                    <Icon aria-hidden size={20} />
+                  </span>
+                  <span className={styles.reasonBody}>
+                    <span className={styles.reasonTitle}>{title}</span>
+                    <span className={styles.reasonText}>{text}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <aside className={styles.quote}>
+              <Quote aria-hidden size={32} className={styles.quoteMark} />
+              <h3 className={styles.quoteTitle}>Trato directo con Gabriel Siricman</h3>
+              <p className={styles.quoteText}>Sin intermediarios ni call centers.</p>
+            </aside>
+          </div>
         </section>
+      </div>
 
-        <section aria-labelledby="consortium-faq" className={styles.block}>
+      <div className={`${styles.band} ${styles.bandAlt}`}>
+        <section aria-labelledby="consortium-faq" className={`${styles.inner} ${styles.block}`}>
           <h2 id="consortium-faq" className={styles.heading}>
             Preguntas frecuentes
           </h2>
@@ -259,20 +306,28 @@ export default function ConsortiumPage() {
             ))}
           </div>
         </section>
+      </div>
 
-        <section id="propuesta" aria-labelledby="consortium-proposal" className={styles.proposal}>
-          <div className={styles.proposalText}>
-            <span className={styles.eyebrowLight}>PROPUESTA</span>
-            <h2 id="consortium-proposal" className={styles.proposalTitle}>
-              Contanos de tu edificio y armamos tu propuesta
-            </h2>
-            <p className={styles.proposalLead}>
-              Dejanos los datos básicos y Gabriel se comunica con vos para conocer el consorcio y
-              cotizar la administración.
-            </p>
-          </div>
-          <div className={styles.card}>
-            <ConsortiumForm action={sendConsortiumAction} />
+      <div className={styles.band}>
+        <section
+          id="propuesta"
+          aria-labelledby="consortium-proposal"
+          className={`${styles.inner} ${styles.proposalWrap}`}
+        >
+          <div className={styles.proposal}>
+            <div className={styles.proposalText}>
+              <span className={styles.eyebrowLight}>PROPUESTA</span>
+              <h2 id="consortium-proposal" className={styles.proposalTitle}>
+                Contanos de tu edificio y armamos tu propuesta
+              </h2>
+              <p className={styles.proposalLead}>
+                Dejanos los datos básicos y Gabriel se comunica con vos para conocer el consorcio y
+                cotizar la administración.
+              </p>
+            </div>
+            <div className={styles.card}>
+              <ConsortiumForm action={sendConsortiumAction} />
+            </div>
           </div>
         </section>
       </div>
