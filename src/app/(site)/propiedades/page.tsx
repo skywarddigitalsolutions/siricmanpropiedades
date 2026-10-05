@@ -40,8 +40,9 @@ async function neighborhoodsOrEmpty(): Promise<PublicNeighborhood[]> {
 
 export async function generateMetadata({ searchParams }: ResultsPageProps): Promise<Metadata> {
   const state = parseSearchParams(await searchParams);
-  const neighborhood = state.neighborhood
-    ? (await neighborhoodsOrEmpty()).find((item) => item.slug === state.neighborhood)
+  const single = state.neighborhoods?.length === 1 ? state.neighborhoods[0] : undefined;
+  const neighborhood = single
+    ? (await neighborhoodsOrEmpty()).find((item) => item.slug === single)
     : undefined;
   const seo = resultsSeo(state, neighborhood?.name);
   return {

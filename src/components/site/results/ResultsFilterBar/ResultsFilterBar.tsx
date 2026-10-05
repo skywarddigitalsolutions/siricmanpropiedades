@@ -79,7 +79,12 @@ export default function ResultsFilterBar({ state, neighborhoods }: ResultsFilter
               id="results-barrio"
               variant="bar"
               neighborhoods={neighborhoods}
-              defaultSlug={state.neighborhood}
+              defaultSlug={state.neighborhoods?.join(",")}
+              defaultLabel={
+                state.neighborhoods && state.neighborhoods.length > 1
+                  ? `${state.neighborhoods.length} barrios`
+                  : undefined
+              }
               autoSubmit
             />
             <noscript>
@@ -91,7 +96,7 @@ export default function ResultsFilterBar({ state, neighborhoods }: ResultsFilter
         </div>
 
         <div className={styles.chipsRow}>
-          <FiltersSheet state={state} />
+          <FiltersSheet state={state} neighborhoods={neighborhoods} />
           <ul aria-label="Filtros rápidos" className={styles.chips}>
             {quickFilters(state).map((filter) => (
               <li key={filter.label}>

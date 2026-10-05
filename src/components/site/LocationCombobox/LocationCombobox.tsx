@@ -17,6 +17,8 @@ type LocationComboboxProps = {
   neighborhoods: PublicNeighborhood[];
   /** Slug of the barrio selected on first render. */
   defaultSlug?: string;
+  /** Text shown instead of a name when `defaultSlug` holds several comma-separated slugs. */
+  defaultLabel?: string;
   /** Name of the hidden input carrying the slug. */
   name?: string;
   id?: string;
@@ -51,6 +53,7 @@ function Highlighted({ name, match }: { name: string; match?: NeighborhoodMatch 
 export default function LocationCombobox({
   neighborhoods,
   defaultSlug,
+  defaultLabel,
   name = "barrio",
   id,
   label = "Barrio",
@@ -64,8 +67,8 @@ export default function LocationCombobox({
   const optionId = (index: number) => `${generatedId}-option-${index}`;
 
   const initial = neighborhoods.find((n) => n.slug === defaultSlug);
-  const [query, setQuery] = useState(initial?.name ?? "");
-  const [slug, setSlug] = useState(initial?.slug ?? "");
+  const [query, setQuery] = useState(initial?.name ?? defaultLabel ?? "");
+  const [slug, setSlug] = useState(initial?.slug ?? (defaultLabel ? (defaultSlug ?? "") : ""));
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
 

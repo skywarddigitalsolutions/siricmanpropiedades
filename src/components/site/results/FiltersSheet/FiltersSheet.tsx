@@ -4,9 +4,13 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import { PROPERTY_TYPES, type Currency } from "@/lib/properties/enums";
+import { matchNeighborhoods } from "@/lib/public/neighborhood-match";
+import type { PublicNeighborhood } from "@/lib/public/types";
 import { PROPERTY_TYPE_LABELS, currencySymbol } from "@/lib/properties/labels";
 import {
   EMPTY_SEARCH,
+  MAX_NEIGHBORHOODS,
+  OPERATION_SLUGS,
   RESULTS_PATH,
   TYPE_SLUGS,
   buildSearchHref,
@@ -18,6 +22,8 @@ import styles from "./FiltersSheet.module.css";
 
 /** URL params edited inside the sheet (the rest travel as hidden inputs). */
 const SHEET_PARAMS = [
+  "operacion",
+  "barrio",
   "tipo",
   "ambientes",
   "dormitorios",
@@ -65,6 +71,100 @@ function PillGroup({
   );
 }
 
+const OPERATION_OPTIONS: PillOption[] = [
+  { label: "Todas", value: "" },
+  { label: "Comprar", value: OPERATION_SLUGS.sale },
+  { label: "Alquilar", value: OPERATION_SLUGS.rent },
+];
+
+/**
+ * Multi-select barrio picker: removable chips for the selection, a search box
+ * (accent-insensitive) and a checkbox list. The selection travels as one
+ * comma-separated `barrio` value, like the URL.
+ */
+function BarriosPicker({
+  neighborhoods,
+  initial,
+}: {
+  neighborhoods: PublicNeighborhood[];
+  initial: string[];
+}) {
+  const [selected, setSelected] = useState(initial);
+  const [query, setQuery] = useState("");
+  const nameOf = (slug: string) => neighborhoods.find((item) => item.slug === slug)?.name ?? slug;
+  const visible = query.trim()
+    ? matchNeighborhoods(query, neighborhoods, neighborhoods.length).map((m) => m.neighborhood)
+    : neighborhoods;
+  const full = selected.length >= MAX_NEIGHBORHOODS;
+  const toggle = (slug: string) =>
+    setSelected((current) =>
+      current.includes(slug) ? current.filter((item) => item !== slug) : [...current, slug],
+    );
+
+  return (
+    <fieldset className={styles.group}>
+      <legend className={styles.legend}>Barrios</legend>
+      <input type="hidden" name="barrio" value={selected.join(",")} />
+      {selected.length > 0 && (
+        <ul className={styles.selectedList} aria-label="Barrios elegidos">
+          {selected.map((slug) => (
+            <li key={slug}>
+              <button
+                type="button"
+                className={styles.selectedChip}
+                aria-label={`Quitar ${nameOf(slug)}`}
+                onClick={() => toggle(slug)}
+              >
+                {nameOf(slug)}
+                <X aria-hidden size={14} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <input
+        type="search"
+        aria-label="Buscar barrio"
+        placeholder="Buscar barrio"
+        autoComplete="off"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        onKeyDown={(event) => {
+          // Enter must not submit the form while searching.
+          if (event.key === "Enter") event.preventDefault();
+        }}
+        className={styles.input}
+      />
+      <div className={styles.barrioList}>
+        {visible.length === 0 ? (
+          <p role="status" className={styles.hint}>
+            Sin coincidencias
+          </p>
+        ) : (
+          visible.map((item) => {
+            const checked = selected.includes(item.slug);
+            return (
+              <label key={item.slug} className={styles.barrioOption}>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  disabled={full && !checked}
+                  onChange={() => toggle(item.slug)}
+                  className={styles.check}
+                />
+                <span>{item.name}</span>
+              </label>
+            );
+          })
+        )}
+      </div>
+      <p className={styles.hint}>
+        {full ? `Máximo ${MAX_NEIGHBORHOODS} barrios.` : "Podés elegir más de uno."}
+      </p>
+    </fieldset>
+  );
+}
+
 const ANY: PillOption = { label: "Indistinto", value: "" };
 const upTo = (max: number) => Array.from({ length: max }, (_, index) => index + 1);
 /** Rooms are exact up to 4, then "5+"; the API treats every value as a minimum. */
@@ -78,7 +178,13 @@ const minimumOptions = (max: number) => [
  * "Filtros" button and its sheet: a modal `<dialog>` (bottom sheet on phones,
  * side panel from 960 px) holding a GET form with every secondary filter.
  */
-export default function FiltersSheet({ state }: { state: SearchState }) {
+export default function FiltersSheet({
+  state,
+  neighborhoods,
+}: {
+  state: SearchState;
+  neighborhoods: PublicNeighborhood[];
+}) {
   const [open, setOpen] = useState(false);
   const [priceCurrency, setPriceCurrency] = useState<Currency | undefined>(state.currency);
   const symbol = currencySymbol(
@@ -99,7 +205,7 @@ export default function FiltersSheet({ state }: { state: SearchState }) {
   const clearHref = buildSearchHref({
     ...EMPTY_SEARCH,
     operation: state.operation,
-    neighborhood: state.neighborhood,
+    neighborhoods: state.neighborhoods,
     sort: state.sort,
   });
 
@@ -141,6 +247,17 @@ export default function FiltersSheet({ state }: { state: SearchState }) {
             </div>
 
             <div className={styles.body}>
+              {/* Phones only: from 1024 px the bar has its own operation and barrio controls. */}
+              <div className={styles.mobileOnly}>
+                <PillGroup
+                  legend="Operación"
+                  name="operacion"
+                  selected={state.operation ? OPERATION_SLUGS[state.operation] : ""}
+                  options={OPERATION_OPTIONS}
+                />
+                <BarriosPicker neighborhoods={neighborhoods} initial={state.neighborhoods ?? []} />
+              </div>
+
               <PillGroup
                 legend="Tipo de propiedad"
                 name="tipo"

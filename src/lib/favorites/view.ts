@@ -104,6 +104,6 @@ export function similarHref(
   return buildSearchHref(EMPTY_SEARCH, {
     operation: property.operation,
     type: property.type,
-    neighborhood: property.neighborhood.slug,
+    neighborhoods: [property.neighborhood.slug],
   });
 }
