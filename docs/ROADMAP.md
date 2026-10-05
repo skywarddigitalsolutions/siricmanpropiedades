@@ -28,6 +28,8 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 20 | Results, property detail redesign, forms and accessibility | front | ODD | ✅ Done |
 | 21 | Consortium administration section (separate branch, owner reviews before merge) | front | ODD | ✅ Done |
 | 22 | UX corrections: styled dropdowns everywhere, account from the user card, roomier admin lists, aligned filters, landscape hero photo (`odd/tasks/ux-corrections.md`) | front | ODD | ✅ Done |
+| 23 | Demo properties CLI for client presentations: seed/remove (back `odd/tasks/demo-properties.md`, back #32); broker license in footer and Nosotros (front #52) | both | ODD | ✅ Done |
+| 24 | Mobile results bar + multi-barrio filter (back #33), wrapped chips, aligned appraisal form, developer credit, richer Consorcios and Nosotros (`odd/tasks/mobile-ux-content.md`) | both | ODD | ✅ Done |
 
 ## Pending product decisions
 
