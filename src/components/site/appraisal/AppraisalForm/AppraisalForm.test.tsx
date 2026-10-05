@@ -33,7 +33,7 @@ describe("AppraisalForm", () => {
     expect(screen.getByLabelText("Tipo de propiedad")).toBeRequired();
     expect(screen.getByLabelText("Dirección y barrio")).toBeRequired();
     expect(screen.getByLabelText("Ambientes (opcional)")).not.toBeRequired();
-    expect(screen.getByLabelText("Superficie aprox. (m²) (opcional)")).not.toBeRequired();
+    expect(screen.getByLabelText("Superficie (m²) (opcional)")).not.toBeRequired();
     expect(screen.getByLabelText("Nombre y apellido")).toBeRequired();
     expect(screen.getByLabelText("Teléfono")).toBeRequired();
     expect(screen.getByLabelText("Comentarios (opcional)")).not.toBeRequired();
@@ -102,7 +102,7 @@ describe("AppraisalForm", () => {
     expect(screen.getByRole("radio", { name: "Alquilar" })).toBeChecked();
     expect(dropdownValue(screen.getByLabelText("Tipo de propiedad"))).toBe("house");
     expect(screen.getByLabelText("Dirección y barrio")).toHaveValue("Boedo");
-    expect(screen.getByLabelText("Superficie aprox. (m²) (opcional)")).toHaveValue(80);
+    expect(screen.getByLabelText("Superficie (m²) (opcional)")).toHaveValue(80);
     expect(screen.getByLabelText("Comentarios (opcional)")).toHaveValue("Mi mensaje");
   });
 

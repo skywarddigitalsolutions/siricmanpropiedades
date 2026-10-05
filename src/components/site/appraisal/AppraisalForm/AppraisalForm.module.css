@@ -84,10 +84,31 @@
 }
 
 .submit:focus-visible,
+/*
+ * Two fields side by side: each spans the same three rows (label, input,
+ * error) through subgrid, so inputs line up even when one label wraps.
+ */
 .pair {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-rows: auto auto auto;
+  column-gap: 12px;
+  row-gap: 0;
+}
+
+.pair > .field {
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  gap: 0;
+}
+
+.pair .label {
+  margin-bottom: 6px;
+}
+
+.pair .error {
+  margin-top: 6px;
 }
 
 /* Segmented Vender / Alquilar control built on native radios. */

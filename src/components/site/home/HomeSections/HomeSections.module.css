@@ -17,20 +17,13 @@
   padding-top: 28px;
 }
 
+/* Chips wrap onto as many lines as needed: no horizontal scroll. */
 .chips {
   display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 16px 8px;
   list-style: none;
-  scrollbar-width: none;
-}
-
-.chips {
-  gap: 10px;
-  padding: 4px 24px 8px;
-  scroll-padding-inline: 24px;
-  /* Fade the edges so it is clear the row scrolls. */
-  mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 28px), transparent 100%);
 }
 
 .chip {
@@ -38,7 +31,6 @@
   display: inline-flex;
   align-items: center;
   padding: 0 18px;
-  scroll-snap-align: start;
   border: 1px solid #e6e2d8;
   border-radius: var(--radius-pill);
   font: 600 14px var(--font-body), sans-serif;

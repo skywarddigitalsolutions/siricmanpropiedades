@@ -12,8 +12,8 @@ export type ResultsSort = "recientes" | "menor-precio" | "mayor-precio";
 export type SearchState = {
   operation?: Operation;
   type?: PropertyType;
-  /** Neighborhood slug. */
-  neighborhood?: string;
+  /** Neighborhood slugs (up to {@link MAX_NEIGHBORHOODS}). */
+  neighborhoods?: string[];
   /** Minimum rooms (5 means "5 or more"). */
   rooms?: number;
   bedrooms?: number;
@@ -38,6 +38,25 @@ export const EMPTY_SEARCH: SearchState = {
 };
 
 export const RESULTS_PATH = "/propiedades";
+
+/** The back accepts at most 10 comma-separated slugs in `neighborhood`. */
+export const MAX_NEIGHBORHOODS = 10;
+
+const SLUG_PATTERN = /^[a-z0-9-]{1,120}$/;
+
+/** "palermo,belgrano" → valid, de-duplicated slugs (first 10); undefined when none. */
+function parseNeighborhoods(value: string | undefined): string[] | undefined {
+  if (!value) return undefined;
+  const slugs = [
+    ...new Set(
+      value
+        .split(",")
+        .map((slug) => slug.trim())
+        .filter((slug) => SLUG_PATTERN.test(slug)),
+    ),
+  ].slice(0, MAX_NEIGHBORHOODS);
+  return slugs.length > 0 ? slugs : undefined;
+}
 
 export const OPERATION_SLUGS: Record<Operation, string> = {
   sale: "venta",
@@ -84,7 +103,6 @@ function amount(value: string | undefined): number | undefined {
 }
 
 export function parseSearchParams(raw: RawParams): SearchState {
-  const neighborhood = first(raw, "barrio");
   const currency = first(raw, "moneda");
   const sort = first(raw, "orden");
   const code = first(raw, "codigo")?.toUpperCase();
@@ -98,8 +116,7 @@ export function parseSearchParams(raw: RawParams): SearchState {
     ...EMPTY_SEARCH,
     operation: fromSlug(OPERATION_SLUGS, first(raw, "operacion")),
     type: fromSlug(TYPE_SLUGS, first(raw, "tipo")),
-    neighborhood:
-      neighborhood && /^[a-z0-9-]{1,120}$/.test(neighborhood) ? neighborhood : undefined,
+    neighborhoods: parseNeighborhoods(first(raw, "barrio")),
     rooms: intInRange(first(raw, "ambientes"), 1, 5),
     bedrooms: intInRange(first(raw, "dormitorios"), 1, 4),
     bathrooms: intInRange(first(raw, "banos"), 1, 3),
@@ -139,7 +156,7 @@ export function toApiFilters(state: SearchState, pageSize: number): PublicProper
   const filters: PublicPropertyFilters = {
     operation: state.operation,
     type: state.type,
-    neighborhood: state.neighborhood,
+    neighborhood: state.neighborhoods?.join(","),
     minRooms: state.rooms,
     minBedrooms: state.bedrooms,
     minBathrooms: state.bathrooms,
@@ -169,7 +186,7 @@ export function buildSearchHref(state: SearchState, patch: Partial<SearchState> 
 
   set("operacion", next.operation && OPERATION_SLUGS[next.operation]);
   set("tipo", next.type && TYPE_SLUGS[next.type]);
-  set("barrio", next.neighborhood);
+  set("barrio", next.neighborhoods?.join(","));
   set("ambientes", next.rooms);
   set("dormitorios", next.bedrooms);
   set("banos", next.bathrooms);
@@ -183,7 +200,8 @@ export function buildSearchHref(state: SearchState, patch: Partial<SearchState> 
   set("pagina", next.page > 1 && next.page);
   set("codigo", next.code);
 
-  const query = params.toString();
+  // Commas stay readable in the URL (`barrio=palermo,belgrano`).
+  const query = params.toString().replace(/%2C/gi, ",");
   return query ? `${RESULTS_PATH}?${query}` : RESULTS_PATH;
 }
 
@@ -229,9 +247,13 @@ export function activeFilters(
   neighborhoods: PublicNeighborhood[],
 ): ActiveFilter[] {
   const filters: { label: string; patch: Partial<SearchState> }[] = [];
-  if (state.neighborhood) {
-    const name = neighborhoods.find((item) => item.slug === state.neighborhood)?.name;
-    filters.push({ label: name ?? state.neighborhood, patch: { neighborhood: undefined } });
+  for (const slug of state.neighborhoods ?? []) {
+    const name = neighborhoods.find((item) => item.slug === slug)?.name;
+    const rest = (state.neighborhoods ?? []).filter((item) => item !== slug);
+    filters.push({
+      label: name ?? slug,
+      patch: { neighborhoods: rest.length > 0 ? rest : undefined },
+    });
   }
   if (state.type) {
     filters.push({ label: PROPERTY_TYPE_LABELS[state.type], patch: { type: undefined } });
@@ -313,12 +335,14 @@ export function resultsSeo(
   const noun = state.type ? TYPE_PLURALS[state.type] : "Propiedades";
   const operation =
     state.operation === "sale" ? " en venta" : state.operation === "rent" ? " en alquiler" : "";
-  const place = neighborhoodName ? ` en ${neighborhoodName}` : " en CABA";
+  const several = (state.neighborhoods?.length ?? 0) > 1;
+  const place = neighborhoodName && !several ? ` en ${neighborhoodName}` : " en CABA";
   const extra =
     countActiveFilters({ ...state, type: undefined }) > 0 ||
     state.currency !== undefined ||
     state.sort !== "recientes" ||
     state.page > 1 ||
-    state.code !== undefined;
+    state.code !== undefined ||
+    several;
   return { title: `${noun}${operation}${place}`, indexable: !extra };
 }

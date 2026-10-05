@@ -49,7 +49,21 @@ describe("ConsortiumPage", () => {
     expect(steps.length).toBeGreaterThanOrEqual(3);
     expect(steps.length).toBeLessThanOrEqual(4);
     const why = screen.getByRole("region", { name: "Por qué elegirnos" });
-    expect(within(why).getByText(/Gabriel Siricman/)).toBeInTheDocument();
+    expect(within(why).getAllByText(/Gabriel Siricman/).length).toBeGreaterThanOrEqual(1);
+    expect(within(why).getByRole("heading", { level: 3, name: "Trato directo con Gabriel Siricman" })).toBeInTheDocument();
+    expect(within(why).getAllByRole("listitem")).toHaveLength(4);
+  });
+
+  it("shows a trust strip made only of the approved claims", () => {
+    render(<ConsortiumPage />);
+
+    const strip = screen.getByRole("region", { name: "Datos de confianza" });
+    const items = within(strip).getAllByRole("listitem");
+    expect(items.map((item) => item.textContent)).toEqual([
+      expect.stringContaining("+11"),
+      expect.stringContaining("Trato directo"),
+      expect.stringContaining("Cuentas claras"),
+    ]);
   });
 
   it("answers the frequent questions with native disclosures", () => {

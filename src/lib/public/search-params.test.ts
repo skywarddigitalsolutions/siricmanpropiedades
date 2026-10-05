@@ -36,7 +36,7 @@ describe("parseSearchParams", () => {
     ).toEqual({
       operation: "rent",
       type: "apartment",
-      neighborhood: "palermo",
+      neighborhoods: ["palermo"],
       rooms: 3,
       bedrooms: 2,
       bathrooms: 1,
@@ -77,6 +77,52 @@ describe("parseSearchParams", () => {
 
     expect(state.operation).toBe("sale");
     expect([state.priceMin, state.priceMax]).toEqual([100000, 200000]);
+  });
+});
+
+describe("multi-barrio", () => {
+  const cb = (barrio: string) => parseSearchParams({ barrio }).neighborhoods;
+
+  it("parses comma-separated slugs, dropping invalid and duplicated ones", () => {
+    expect(cb("palermo,belgrano")).toEqual(["palermo", "belgrano"]);
+    expect(cb("palermo")).toEqual(["palermo"]);
+    expect(cb("palermo,../etc,belgrano,palermo,")).toEqual(["palermo", "belgrano"]);
+    expect(cb("../etc")).toBeUndefined();
+  });
+
+  it("keeps at most 10 barrios", () => {
+    const slugs = Array.from({ length: 12 }, (_, i) => `barrio-${i}`);
+    expect(cb(slugs.join(","))).toEqual(slugs.slice(0, 10));
+  });
+
+  it("serializes with plain commas and sends them to the API as `neighborhood`", () => {
+    const state = parseSearchParams({ operacion: "venta", barrio: "palermo,belgrano" });
+    expect(buildSearchHref(state)).toBe("/propiedades?operacion=venta&barrio=palermo,belgrano");
+    expect(toApiFilters(state, 12).neighborhood).toBe("palermo,belgrano");
+    expect(toApiFilters(parseSearchParams({ barrio: "palermo" }), 12).neighborhood).toBe("palermo");
+  });
+
+  it("treats the comma URL as canonical", () => {
+    const raw = { barrio: "palermo,belgrano" };
+    expect(isCanonicalQuery(raw, parseSearchParams(raw))).toBe(true);
+    const messy = { barrio: "palermo,belgrano,palermo" };
+    expect(isCanonicalQuery(messy, parseSearchParams(messy))).toBe(false);
+  });
+
+  it("lists one active filter per barrio, each removing only itself", () => {
+    const state = parseSearchParams({ operacion: "venta", barrio: "palermo,belgrano" });
+    const filters = activeFilters(state, [
+      { id: "1", name: "Palermo", slug: "palermo" },
+      { id: "2", name: "Belgrano", slug: "belgrano" },
+    ]);
+    expect(filters.map((f) => f.label)).toEqual(["Palermo", "Belgrano"]);
+    expect(filters[0].removeHref).toBe("/propiedades?operacion=venta&barrio=belgrano");
+    expect(filters[1].removeHref).toBe("/propiedades?operacion=venta&barrio=palermo");
+  });
+
+  it("only indexes the single-barrio case", () => {
+    const state = parseSearchParams({ barrio: "palermo,belgrano" });
+    expect(resultsSeo(state)).toEqual({ title: "Propiedades en CABA", indexable: false });
   });
 });
 

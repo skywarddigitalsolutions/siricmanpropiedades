@@ -63,6 +63,20 @@ describe("ResultsFilterBar", () => {
     submit.mockRestore();
   });
 
+  it("summarizes several barrios in the combobox and keeps them in the form", () => {
+    render(
+      <ResultsFilterBar
+        state={parseSearchParams({ barrio: "palermo,belgrano" })}
+        neighborhoods={NEIGHBORHOODS}
+      />,
+    );
+    const combobox = screen.getByRole("combobox", { name: "Barrio" });
+    expect(combobox).toHaveValue("2 barrios");
+    expect(combobox.closest("form")!.querySelector('input[name="barrio"]')).toHaveValue(
+      "palermo,belgrano",
+    );
+  });
+
   it("toggles quick filters through links", () => {
     render(
       <ResultsFilterBar
@@ -91,6 +105,7 @@ describe("FiltersSheet", () => {
     const user = userEvent.setup();
     render(
       <FiltersSheet
+        neighborhoods={NEIGHBORHOODS}
         state={parseSearchParams({
           operacion: "venta",
           barrio: "palermo",
@@ -112,7 +127,7 @@ describe("FiltersSheet", () => {
     expect(within(dialog).getByLabelText("Desde")).toHaveValue("100000");
     expect(within(dialog).getByRole("checkbox", { name: "Acepta mascotas" })).toBeChecked();
     const form = within(dialog).getByRole("button", { name: "Ver resultados" }).closest("form")!;
-    expect(form.querySelector('input[type="hidden"][name="operacion"]')).toHaveValue("venta");
+    expect(within(dialog).getByRole("radio", { name: "Comprar" })).toBeChecked();
     expect(form.querySelector('input[type="hidden"][name="barrio"]')).toHaveValue("palermo");
     expect(within(dialog).getByRole("link", { name: "Limpiar" })).toHaveAttribute(
       "href",
@@ -122,7 +137,7 @@ describe("FiltersSheet", () => {
 
   it("shows the currency symbol inside the price inputs and follows the toggle", async () => {
     const user = userEvent.setup();
-    render(<FiltersSheet state={parseSearchParams({ operacion: "venta", moneda: "USD" })} />);
+    render(<FiltersSheet neighborhoods={NEIGHBORHOODS} state={parseSearchParams({ operacion: "venta", moneda: "USD" })} />);
 
     await user.click(screen.getByRole("button", { name: "Filtros" }));
     const dialog = screen.getByRole("dialog", { name: "Filtros" });
@@ -133,9 +148,78 @@ describe("FiltersSheet", () => {
     expect(within(dialog).getByLabelText("Desde").parentElement).not.toHaveTextContent("US$");
   });
 
+  it("changes the operation from the sheet", async () => {
+    const user = userEvent.setup();
+    render(
+      <FiltersSheet neighborhoods={NEIGHBORHOODS} state={parseSearchParams({ operacion: "venta" })} />,
+    );
+    await user.click(screen.getByRole("button", { name: "Filtros" }));
+    const dialog = screen.getByRole("dialog", { name: "Filtros" });
+    const group = within(dialog).getByRole("group", { name: "Operación" });
+    expect(within(group).getAllByRole("radio").map((r) => r.getAttribute("value"))).toEqual([
+      "",
+      "venta",
+      "alquiler",
+    ]);
+    expect(within(group).getByRole("radio", { name: "Comprar" })).toBeChecked();
+    await user.click(within(group).getByRole("radio", { name: "Alquilar" }));
+    expect(within(group).getByRole("radio", { name: "Alquilar" })).toBeChecked();
+  });
+
+  it("selects several barrios and submits them as one comma-separated param", async () => {
+    const user = userEvent.setup();
+    render(
+      <FiltersSheet neighborhoods={NEIGHBORHOODS} state={parseSearchParams({ barrio: "palermo" })} />,
+    );
+    await user.click(screen.getByRole("button", { name: "Filtros" }));
+    const dialog = screen.getByRole("dialog", { name: "Filtros" });
+    const form = within(dialog).getByRole("button", { name: "Ver resultados" }).closest("form")!;
+    const hidden = () => form.querySelector('input[type="hidden"][name="barrio"]');
+
+    expect(within(dialog).getByRole("button", { name: "Quitar Palermo" })).toBeInTheDocument();
+    await user.click(within(dialog).getByRole("checkbox", { name: "Belgrano" }));
+    expect(hidden()).toHaveValue("palermo,belgrano");
+
+    await user.click(within(dialog).getByRole("button", { name: "Quitar Palermo" }));
+    expect(hidden()).toHaveValue("belgrano");
+    expect(within(dialog).getByRole("checkbox", { name: "Palermo" })).not.toBeChecked();
+  });
+
+  it("filters the barrio list ignoring accents and case", async () => {
+    const user = userEvent.setup();
+    render(
+      <FiltersSheet
+        neighborhoods={[...NEIGHBORHOODS, { id: "n3", name: "Núñez", slug: "nunez" }]}
+        state={parseSearchParams({})}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Filtros" }));
+    const dialog = screen.getByRole("dialog", { name: "Filtros" });
+    await user.type(within(dialog).getByRole("searchbox", { name: "Buscar barrio" }), "NUNE");
+
+    expect(within(dialog).getByRole("checkbox", { name: "Núñez" })).toBeInTheDocument();
+    expect(within(dialog).queryByRole("checkbox", { name: "Palermo" })).toBeNull();
+  });
+
+  it("stops at 10 barrios", async () => {
+    const user = userEvent.setup();
+    const many = Array.from({ length: 11 }, (_, i) => ({
+      id: `${i}`,
+      name: `Barrio ${i}`,
+      slug: `b-${i}`,
+    }));
+    render(<FiltersSheet neighborhoods={many} state={parseSearchParams({})} />);
+    await user.click(screen.getByRole("button", { name: "Filtros" }));
+    const dialog = screen.getByRole("dialog", { name: "Filtros" });
+    for (const n of many.slice(0, 10)) {
+      await user.click(within(dialog).getByRole("checkbox", { name: n.name }));
+    }
+    expect(within(dialog).getByRole("checkbox", { name: "Barrio 10" })).toBeDisabled();
+  });
+
   it("closes the dialog", async () => {
     const user = userEvent.setup();
-    render(<FiltersSheet state={parseSearchParams({})} />);
+    render(<FiltersSheet neighborhoods={NEIGHBORHOODS} state={parseSearchParams({})} />);
 
     await user.click(screen.getByRole("button", { name: "Filtros" }));
     await user.click(screen.getByRole("button", { name: "Cerrar filtros" }));

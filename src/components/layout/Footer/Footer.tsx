@@ -163,7 +163,9 @@ export default function Footer() {
       </div>
 
       <div className={styles.bottomBar}>
-        <span>© {year} Siricman Propiedades</span>
+        <span>
+          © {year} Siricman Propiedades · Sitio desarrollado por Skyward Digital Solutions
+        </span>
         <nav aria-label="Legales" className={styles.legal}>
           <Link href="/terminos">Términos y condiciones</Link>
           <Link href="/privacidad">Privacidad</Link>

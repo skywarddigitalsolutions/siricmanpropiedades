@@ -28,7 +28,6 @@ const TYPE_CHIP_LABELS: Record<PropertyType, string> = {
 export function TypeChips() {
   return (
     <nav aria-label="Tipos de propiedad" className={styles.chipsSection}>
-      {/* Edge fades hint that the row scrolls. */}
       <ul className={styles.chips}>
         {PROPERTY_TYPES.map((type) => (
           <li key={type}>

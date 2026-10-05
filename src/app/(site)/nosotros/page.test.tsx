@@ -53,6 +53,22 @@ describe("AboutPage", () => {
     expect(container.textContent).not.toContain("[Nombre]");
   });
 
+  it("gives Gabriel a profile card with a bio and direct contact buttons", () => {
+    render(<AboutPage />);
+
+    const team = screen.getByRole("list", { name: "Equipo" });
+    expect(within(team).getByText(/Más de 11 años administrando consorcios/)).toBeInTheDocument();
+    expect(within(team).getByRole("link", { name: "WhatsApp" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("https://wa.me/5491138967363"),
+    );
+    expect(within(team).getByRole("link", { name: "Escribinos" })).toHaveAttribute("href", "/contacto");
+    expect(within(team).getByRole("link", { name: "Instagram" })).toHaveAttribute(
+      "href",
+      "https://www.instagram.com/gabrielsiricman/",
+    );
+  });
+
   it("closes with links to the appraisal and contact pages", () => {
     render(<AboutPage />);
 

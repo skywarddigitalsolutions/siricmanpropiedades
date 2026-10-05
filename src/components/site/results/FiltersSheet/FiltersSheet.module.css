@@ -285,3 +285,78 @@
 .priceField .input {
   padding-left: 44px;
 }
+
+/* Operation and barrios: phones only (the desktop bar has its own controls). */
+.mobileOnly {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .mobileOnly {
+    display: none;
+  }
+}
+
+.selectedList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.selectedChip {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+  font: 600 13px var(--font-body), sans-serif;
+  color: var(--color-white);
+  background: var(--color-navy);
+  cursor: pointer;
+}
+
+.selectedChip:focus-visible,
+.check:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.barrioList {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 12px;
+  padding: 4px 12px;
+}
+
+.barrioOption {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--color-border-soft);
+  font: 600 15px var(--font-body), sans-serif;
+  cursor: pointer;
+}
+
+.barrioOption:last-child {
+  border-bottom: 0;
+}
+
+.check {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--color-navy);
+  cursor: pointer;
+}
+
+.barrioOption:has(.check:disabled) {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
