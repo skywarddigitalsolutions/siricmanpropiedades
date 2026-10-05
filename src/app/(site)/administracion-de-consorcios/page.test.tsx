@@ -50,20 +50,38 @@ describe("ConsortiumPage", () => {
     expect(steps.length).toBeLessThanOrEqual(4);
     const why = screen.getByRole("region", { name: "Por qué elegirnos" });
     expect(within(why).getAllByText(/Gabriel Siricman/).length).toBeGreaterThanOrEqual(1);
-    expect(within(why).getByRole("heading", { level: 3, name: "Trato directo con Gabriel Siricman" })).toBeInTheDocument();
     expect(within(why).getAllByRole("listitem")).toHaveLength(4);
   });
 
-  it("shows a trust strip made only of the approved claims", () => {
+  it("shows the hero stat card with the years and the three highlights", () => {
     render(<ConsortiumPage />);
 
-    const strip = screen.getByRole("region", { name: "Datos de confianza" });
-    const items = within(strip).getAllByRole("listitem");
+    const card = screen.getByRole("complementary", { name: "Datos de la administración" });
+    expect(within(card).getByText("+11")).toBeInTheDocument();
+    expect(within(card).getByText("años administrando edificios en CABA")).toBeInTheDocument();
+    const items = within(card).getAllByRole("listitem");
     expect(items.map((item) => item.textContent)).toEqual([
-      expect.stringContaining("+11"),
-      expect.stringContaining("Trato directo"),
-      expect.stringContaining("Cuentas claras"),
+      "Trato directo con Gabriel Siricman",
+      "Cuentas claras para cada propietario",
+      "Respuesta rápida a cada consulta",
     ]);
+  });
+
+  it("does not repeat the hero claims in a trust strip", () => {
+    render(<ConsortiumPage />);
+
+    expect(screen.queryByRole("region", { name: "Datos de confianza" })).not.toBeInTheDocument();
+  });
+
+  it("introduces why choose us in plain text without a quote panel", () => {
+    render(<ConsortiumPage />);
+
+    const why = screen.getByRole("region", { name: "Por qué elegirnos" });
+    expect(
+      within(why).getByText("Trato directo con Gabriel Siricman, sin intermediarios ni call centers."),
+    ).toBeInTheDocument();
+    expect(within(why).queryByRole("heading", { level: 3 })).not.toBeInTheDocument();
+    expect(why.querySelector("aside")).toBeNull();
   });
 
   it("answers the frequent questions with native disclosures", () => {

@@ -18,13 +18,22 @@
   inset: auto 0 0 0;
   width: 100%;
   max-width: 100%;
+  height: auto;
   max-height: 88dvh;
   margin: 0;
   padding: 0;
   border: 0;
+  overflow: hidden;
+  overscroll-behavior: contain;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   background: var(--color-white);
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* Header and footer stay put; only the body scrolls (flex only when open). */
+.sheet[open] {
+  display: flex;
+  flex-direction: column;
 }
 
 .sheet::backdrop {
@@ -32,12 +41,15 @@
 }
 
 .form {
+  flex: 1;
+  min-height: 0;
   max-height: 88dvh;
   display: flex;
   flex-direction: column;
 }
 
 .header {
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -63,7 +75,9 @@
 
 .body {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -214,6 +228,7 @@
 }
 
 .footer {
+  flex: none;
   display: flex;
   align-items: center;
   gap: 10px;

@@ -10,7 +10,6 @@ import { PROPERTY_TYPE_LABELS, currencySymbol } from "@/lib/properties/labels";
 import {
   EMPTY_SEARCH,
   MAX_NEIGHBORHOODS,
-  OPERATION_SLUGS,
   RESULTS_PATH,
   TYPE_SLUGS,
   buildSearchHref,
@@ -20,9 +19,11 @@ import {
 import PreservedParams from "../PreservedParams/PreservedParams";
 import styles from "./FiltersSheet.module.css";
 
-/** URL params edited inside the sheet (the rest travel as hidden inputs). */
+/**
+ * URL params edited inside the sheet (the rest travel as hidden inputs).
+ * `operacion` is not here: the bar owns it, so it travels as a hidden input.
+ */
 const SHEET_PARAMS = [
-  "operacion",
   "barrio",
   "tipo",
   "ambientes",
@@ -70,12 +71,6 @@ function PillGroup({
     </fieldset>
   );
 }
-
-const OPERATION_OPTIONS: PillOption[] = [
-  { label: "Todas", value: "" },
-  { label: "Comprar", value: OPERATION_SLUGS.sale },
-  { label: "Alquilar", value: OPERATION_SLUGS.rent },
-];
 
 /**
  * Multi-select barrio picker: removable chips for the selection, a search box
@@ -200,6 +195,12 @@ export default function FiltersSheet({
     // attribute where it is missing (older browsers, jsdom).
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
+    // The page behind must not scroll while the sheet is open.
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
   }, [open]);
 
   const clearHref = buildSearchHref({
@@ -247,14 +248,8 @@ export default function FiltersSheet({
             </div>
 
             <div className={styles.body}>
-              {/* Phones only: from 1024 px the bar has its own operation and barrio controls. */}
+              {/* Phones only: from 1024 px the bar has its own barrio control. */}
               <div className={styles.mobileOnly}>
-                <PillGroup
-                  legend="Operación"
-                  name="operacion"
-                  selected={state.operation ? OPERATION_SLUGS[state.operation] : ""}
-                  options={OPERATION_OPTIONS}
-                />
                 <BarriosPicker neighborhoods={neighborhoods} initial={state.neighborhoods ?? []} />
               </div>
 

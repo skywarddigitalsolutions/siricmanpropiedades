@@ -4,26 +4,30 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/*
+ * Phones: two rows. Row 1 = barrio search; row 2 = Filtros + operation. The
+ * wrappers dissolve (display: contents) so `order` can rearrange their children.
+ */
 .inner {
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 12px 0 10px;
+  padding: 12px 16px 10px;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.row {
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  padding: 0 16px;
+  gap: 10px 8px;
 }
 
-/* Phones: the operation lives in the filters sheet; the barrio search takes the row. */
+.row,
+.chipsRow {
+  display: contents;
+}
+
 .segment {
-  flex: none;
-  display: none;
+  order: 3;
+  flex: 1;
+  min-width: 0;
+  display: flex;
   padding: 4px;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-pill);
@@ -31,10 +35,12 @@
 }
 
 .segmentLink {
+  flex: 1;
   min-height: 36px;
   display: inline-flex;
   align-items: center;
-  padding: 0 13px;
+  justify-content: center;
+  padding: 0 10px;
   border-radius: var(--radius-pill);
   font: 700 13px var(--font-body), sans-serif;
   color: var(--color-text);
@@ -50,7 +56,8 @@
 }
 
 .barrio {
-  flex: 1;
+  order: 1;
+  flex: 1 1 100%;
   min-width: 0;
   display: flex;
   align-items: center;
@@ -63,18 +70,14 @@
   background: none;
 }
 
-/* Filtros + quick chips wrap onto several lines instead of scrolling. */
-.chipsRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 0 16px;
+/* The Filtros button (first child) goes to row 2, before the operation. */
+.chipsRow > button {
+  order: 2;
 }
 
-/* The chips flow straight into the row, next to and below the Filtros button. */
+/* Phones: no quick chips; they come back from 1024 px. */
 .chips {
-  display: contents;
+  display: none;
   list-style: none;
 }
 
@@ -111,7 +114,18 @@
 /* Desktop: one compact sticky row. */
 @media (min-width: 1024px) {
   .segment {
-    display: flex;
+    order: 0;
+    flex: none;
+  }
+
+  .segmentLink {
+    flex: none;
+    padding: 0 13px;
+  }
+
+  .barrio {
+    order: 0;
+    flex: 1;
   }
 
   .bar {
@@ -121,20 +135,36 @@
   }
 
   .inner {
-    flex-direction: row;
-    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
     padding: 10px 16px;
   }
 
   .row {
     flex: 1 1 0;
     min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     padding: 0;
   }
 
   .chipsRow {
     flex: 1 1 0;
     min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
     padding: 0;
+  }
+
+  .chipsRow > button {
+    order: 0;
+  }
+
+  /* The chips flow straight into the row, next to and below the Filtros button. */
+  .chips {
+    display: contents;
   }
 }

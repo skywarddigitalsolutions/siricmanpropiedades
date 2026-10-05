@@ -127,7 +127,6 @@ describe("FiltersSheet", () => {
     expect(within(dialog).getByLabelText("Desde")).toHaveValue("100000");
     expect(within(dialog).getByRole("checkbox", { name: "Acepta mascotas" })).toBeChecked();
     const form = within(dialog).getByRole("button", { name: "Ver resultados" }).closest("form")!;
-    expect(within(dialog).getByRole("radio", { name: "Comprar" })).toBeChecked();
     expect(form.querySelector('input[type="hidden"][name="barrio"]')).toHaveValue("palermo");
     expect(within(dialog).getByRole("link", { name: "Limpiar" })).toHaveAttribute(
       "href",
@@ -148,22 +147,17 @@ describe("FiltersSheet", () => {
     expect(within(dialog).getByLabelText("Desde").parentElement).not.toHaveTextContent("US$");
   });
 
-  it("changes the operation from the sheet", async () => {
+  it("does not repeat the operation in the sheet but keeps it as a hidden param", async () => {
     const user = userEvent.setup();
     render(
       <FiltersSheet neighborhoods={NEIGHBORHOODS} state={parseSearchParams({ operacion: "venta" })} />,
     );
     await user.click(screen.getByRole("button", { name: "Filtros" }));
     const dialog = screen.getByRole("dialog", { name: "Filtros" });
-    const group = within(dialog).getByRole("group", { name: "Operación" });
-    expect(within(group).getAllByRole("radio").map((r) => r.getAttribute("value"))).toEqual([
-      "",
-      "venta",
-      "alquiler",
-    ]);
-    expect(within(group).getByRole("radio", { name: "Comprar" })).toBeChecked();
-    await user.click(within(group).getByRole("radio", { name: "Alquilar" }));
-    expect(within(group).getByRole("radio", { name: "Alquilar" })).toBeChecked();
+    expect(within(dialog).queryByRole("group", { name: "Operación" })).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole("radio", { name: "Comprar" })).not.toBeInTheDocument();
+    const form = within(dialog).getByRole("button", { name: "Ver resultados" }).closest("form")!;
+    expect(form.querySelector('input[type="hidden"][name="operacion"]')).toHaveValue("venta");
   });
 
   it("selects several barrios and submits them as one comma-separated param", async () => {
