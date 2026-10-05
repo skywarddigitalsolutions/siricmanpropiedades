@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import AppraisalForm from "@/components/site/appraisal/AppraisalForm/AppraisalForm";
+import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
+import { OFFICE_HOURS, PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
+import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 import { sendAppraisalAction } from "./actions";
 import styles from "./page.module.css";
 
@@ -39,19 +42,38 @@ export default function AppraisalPage() {
         </div>
 
         <div className={styles.columns}>
-          <ol className={styles.steps} aria-label="Cómo funciona">
-            {STEPS.map((step, index) => (
-              <li key={step.title} className={styles.step}>
-                <span className={styles.stepNumber} aria-hidden="true">
-                  {index + 1}
-                </span>
-                <span className={styles.stepText}>
-                  <span className={styles.stepTitle}>{step.title}</span>
-                  <span className={styles.stepBody}>{step.text}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
+          <div className={styles.aside}>
+            <ol className={styles.steps} aria-label="Cómo funciona">
+              {STEPS.map((step, index) => (
+                <li key={step.title} className={styles.step}>
+                  <span className={styles.stepNumber} aria-hidden="true">
+                    {index + 1}
+                  </span>
+                  <span className={styles.stepText}>
+                    <span className={styles.stepTitle}>{step.title}</span>
+                    <span className={styles.stepBody}>{step.text}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+
+            <aside aria-label="Contacto directo" className={styles.contact}>
+              <p className={styles.contactTitle}>¿Preferís hablarlo?</p>
+              <a
+                href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.whatsapp}
+              >
+                <WhatsAppIcon size={18} aria-hidden="true" />
+                Escribinos por WhatsApp
+              </a>
+              <a href={PHONE_HREF} className={styles.phone}>
+                {PHONE_DISPLAY}
+              </a>
+              <p className={styles.hours}>{OFFICE_HOURS} · con cita previa</p>
+            </aside>
+          </div>
 
           <div className={styles.card}>
             <AppraisalForm action={sendAppraisalAction} />

@@ -34,6 +34,22 @@ describe("AppraisalPage", () => {
     expect(steps[2]).toHaveTextContent("Valor sugerido, fotos y plan de difusión.");
   });
 
+  it("offers a contact alternative with the office data", () => {
+    render(<AppraisalPage />);
+
+    const contact = screen.getByRole("complementary", { name: "Contacto directo" });
+    expect(within(contact).getByText("¿Preferís hablarlo?")).toBeInTheDocument();
+    expect(within(contact).getByRole("link", { name: /WhatsApp/ })).toHaveAttribute(
+      "href",
+      "https://wa.me/5491138967363?text=Hola%20Gabriel%2C%20te%20escribo%20desde%20la%20web.",
+    );
+    expect(within(contact).getByRole("link", { name: /11 3896-7363/ })).toHaveAttribute(
+      "href",
+      "tel:+5491138967363",
+    );
+    expect(contact).toHaveTextContent("10:30 a 18:00 · con cita previa");
+  });
+
   it("offers the appraisal form", () => {
     render(<AppraisalPage />);
 
