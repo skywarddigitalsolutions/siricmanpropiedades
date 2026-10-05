@@ -2,26 +2,47 @@
   flex: 1;
 }
 
-.page {
+.band {
+  width: 100%;
+  background: var(--color-white);
+}
+
+.inner {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 28px 16px 80px;
+  padding: 40px 16px;
+}
+
+.block {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+}
+
+/* Hero: short story with the emblem as a faint watermark. */
+.heroBand {
+  position: relative;
+  overflow: hidden;
+}
+
+.watermark {
+  position: absolute;
+  right: -60px;
+  top: 50%;
+  translate: 0 -50%;
+  width: min(70vw, 420px);
+  height: auto;
+  opacity: 0.08;
+  pointer-events: none;
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
-  gap: 20px;
-  align-items: center;
-}
-
-.intro {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  padding-top: 40px;
+  padding-bottom: 28px;
 }
 
 .eyebrow {
@@ -30,66 +51,78 @@
   color: var(--color-gold-dark);
 }
 
+.eyebrowLight {
+  font: 700 12px var(--font-body), sans-serif;
+  letter-spacing: 0.16em;
+  color: var(--color-gold);
+}
+
 .title {
-  font: 800 clamp(28px, 4vw, 44px) / 1.1 var(--font-body), sans-serif;
+  max-width: 720px;
+  font: 800 clamp(28px, 4.4vw, 46px) / 1.1 var(--font-body), sans-serif;
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
 .lead {
-  font-size: 16px;
+  max-width: 640px;
+  padding-left: 18px;
+  border-left: 3px solid var(--color-gold);
+  font-size: 17px;
   line-height: 1.7;
   color: var(--color-text-muted-2);
 }
 
-.logoTile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 1;
-  max-height: 420px;
-  overflow: hidden;
-  border-radius: var(--radius-2xl);
-  background: var(--color-white);
-  box-shadow: var(--shadow-card);
-}
-
-/* Transparent emblem on a soft tile (never a navy box behind the logo). */
-.logoImg {
-  display: block;
-  width: 58%;
-  height: auto;
-}
-
+/* Mission and vision side by side. */
 .pillars {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  padding-top: 12px;
+  padding-bottom: 44px;
 }
 
 .pillar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 24px;
-  border-radius: var(--radius-xl);
+  gap: 12px;
+  padding: clamp(24px, 4vw, 36px);
+  border-radius: var(--radius-2xl);
+}
+
+.pillarDark {
+  color: var(--color-white);
+  background: linear-gradient(150deg, var(--color-navy) 0%, var(--color-navy-dark) 100%);
+}
+
+.pillarLight {
   background: var(--color-white);
+  box-shadow: var(--shadow-card);
+}
+
+.pillarIcon {
+  color: var(--color-gold);
+}
+
+.pillarIconDark {
+  color: var(--color-gold-dark);
 }
 
 .pillarText {
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .heading {
-  margin-top: 16px;
-  font: 800 24px var(--font-body), sans-serif;
+  font: 800 clamp(22px, 3vw, 28px) var(--font-body), sans-serif;
+  letter-spacing: -0.01em;
 }
 
+/* Values: an icon grid, no boxed cards. */
 .values {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
-  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px 18px;
   list-style: none;
 }
 
@@ -97,67 +130,182 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 18px;
-  border-radius: 18px;
-  background: var(--color-white);
+}
+
+.valueIcon {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  color: var(--color-navy);
+  background: rgba(198, 160, 82, 0.2);
 }
 
 .valueTitle {
-  font: 800 15px var(--font-body), sans-serif;
+  font: 800 16px var(--font-body), sans-serif;
   color: var(--color-navy);
 }
 
 .valueText {
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--color-text-muted);
 }
 
+/* Team profile card. */
 .team {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
-  gap: 12px;
   list-style: none;
 }
 
 .member {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px 12px 16px;
-  border-radius: var(--radius-lg);
+  align-items: center;
+  gap: 22px;
+  padding: clamp(24px, 4vw, 36px);
+  border-radius: var(--radius-2xl);
+  text-align: center;
   background: var(--color-white);
+  box-shadow: var(--shadow-card);
 }
 
 .avatar {
+  flex: none;
+  width: 132px;
+  height: 132px;
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 1;
-  margin-bottom: 6px;
-  border-radius: 14px;
-  font: 800 clamp(36px, 6vw, 56px) var(--font-body), sans-serif;
+  border-radius: 50%;
+  font: 800 44px var(--font-body), sans-serif;
   letter-spacing: 0.04em;
   color: var(--color-gold);
   background: var(--color-navy);
+  box-shadow:
+    0 0 0 4px var(--color-white),
+    0 0 0 7px var(--color-gold);
+}
+
+.memberBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 .memberName {
-  padding: 0 4px;
-  font: 800 15px var(--font-body), sans-serif;
+  font: 800 22px var(--font-body), sans-serif;
 }
 
 .memberRole {
-  padding: 0 4px;
-  font-size: 13px;
-  color: var(--color-text-muted);
+  font: 600 15px var(--font-body), sans-serif;
+  color: var(--color-text-muted-2);
 }
 
 .memberLicense {
-  padding: 0 4px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text-faint);
+  font: 700 12px var(--font-body), sans-serif;
+  letter-spacing: 0.04em;
+  color: var(--color-gold-dark);
+}
+
+.memberBio {
+  max-width: 520px;
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+}
+
+.memberActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.memberPrimary,
+.memberSecondary {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 22px;
+  border-radius: var(--radius-pill);
+  font: 800 14px var(--font-body), sans-serif;
+}
+
+.memberPrimary {
+  color: var(--color-white);
+  background: var(--color-navy);
+}
+
+.memberPrimary:hover {
+  color: var(--color-white);
+  background: var(--color-navy-dark);
+}
+
+.memberSecondary {
+  color: var(--color-navy);
+  border: 1px solid var(--color-border-strong);
+}
+
+.memberSecondary:hover {
+  border-color: var(--color-navy);
+}
+
+.memberPrimary:focus-visible,
+.memberSecondary:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.ctaWrap {
+  padding-top: 8px;
+  padding-bottom: 80px;
+}
+
+@media (min-width: 760px) {
+  .pillars {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .values {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .member {
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+    text-align: left;
+  }
+
+  .avatar {
+    width: 180px;
+    height: 180px;
+    font-size: 60px;
+  }
+
+  .memberBody {
+    align-items: flex-start;
+  }
+
+  .memberActions {
+    justify-content: flex-start;
+  }
+
+  .hero {
+    padding-top: 64px;
+    padding-bottom: 44px;
+  }
+
+  .inner {
+    padding-block: 56px;
+  }
 }
 
 .cta {
