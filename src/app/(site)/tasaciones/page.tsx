@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Clock, Phone } from "lucide-react";
 import AppraisalForm from "@/components/site/appraisal/AppraisalForm/AppraisalForm";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
 import { OFFICE_HOURS, PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
@@ -59,19 +60,35 @@ export default function AppraisalPage() {
 
             <aside aria-label="Contacto directo" className={styles.contact}>
               <p className={styles.contactTitle}>¿Preferís hablarlo?</p>
-              <a
-                href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.whatsapp}
-              >
-                <WhatsAppIcon size={18} aria-hidden="true" />
-                Escribinos por WhatsApp
-              </a>
-              <a href={PHONE_HREF} className={styles.phone}>
-                {PHONE_DISPLAY}
-              </a>
-              <p className={styles.hours}>{OFFICE_HOURS} · con cita previa</p>
+              <ul className={styles.contactList}>
+                <li className={styles.contactItem}>
+                  <span className={styles.contactIcon} aria-hidden="true">
+                    <WhatsAppIcon size={18} />
+                  </span>
+                  <a
+                    href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.contactLink}
+                  >
+                    Escribinos por WhatsApp
+                  </a>
+                </li>
+                <li className={styles.contactItem}>
+                  <span className={styles.contactIcon} aria-hidden="true">
+                    <Phone size={18} />
+                  </span>
+                  <a href={PHONE_HREF} className={styles.contactLink}>
+                    {PHONE_DISPLAY}
+                  </a>
+                </li>
+                <li className={styles.contactItem}>
+                  <span className={styles.contactIcon} aria-hidden="true">
+                    <Clock size={18} />
+                  </span>
+                  <span className={styles.contactText}>{OFFICE_HOURS} · con cita previa</span>
+                </li>
+              </ul>
             </aside>
           </div>
 

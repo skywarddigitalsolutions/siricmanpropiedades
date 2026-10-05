@@ -68,7 +68,7 @@ const TEAM = [
     name: "Gabriel Siricman",
     role: "Martillero Público y Corredor Inmobiliario",
     license: BROKER_LICENSE,
-    initials: "GS",
+    photo: "/team/gabriel.jpg",
     bio: "Más de 11 años administrando consorcios en la Ciudad de Buenos Aires. Hoy acompaña operaciones de compra, venta y alquiler con la misma cercanía.",
   },
 ];
@@ -147,8 +147,15 @@ export default function AboutPage() {
         <ul className={styles.team} aria-labelledby="about-team">
           {TEAM.map((member) => (
             <li key={member.name} className={styles.member}>
-              <span className={styles.avatar} aria-hidden="true">
-                {member.initials}
+              <span className={styles.avatar}>
+                <Image
+                  src={member.photo}
+                  alt={member.name}
+                  width={180}
+                  height={180}
+                  sizes="(min-width: 1024px) 180px, 132px"
+                  className={styles.avatarPhoto}
+                />
               </span>
               <div className={styles.memberBody}>
                 <span className={styles.memberName}>{member.name}</span>

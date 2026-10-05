@@ -40,7 +40,7 @@ describe("AboutPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows only Gabriel Siricman in the team, with initials and no placeholders", () => {
+  it("shows only Gabriel Siricman in the team, with his photo and no placeholders", () => {
     const { container } = render(<AboutPage />);
 
     expect(screen.getByRole("heading", { level: 2, name: "Equipo" })).toBeInTheDocument();
@@ -49,7 +49,9 @@ describe("AboutPage", () => {
     expect(within(team).getByText("Gabriel Siricman")).toBeInTheDocument();
     expect(within(team).getByText("Martillero Público y Corredor Inmobiliario")).toBeInTheDocument();
     expect(within(team).getByText("Matrícula N° 10024")).toBeInTheDocument();
-    expect(within(team).getByText("GS")).toBeInTheDocument();
+    const photo = within(team).getByRole("img", { name: "Gabriel Siricman" });
+    expect(decodeURIComponent(photo.getAttribute("src")!)).toContain("/team/gabriel.jpg");
+    expect(within(team).queryByText("GS")).not.toBeInTheDocument();
     expect(container.textContent).not.toContain("[Nombre]");
   });
 
