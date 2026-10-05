@@ -121,40 +121,53 @@
   .contact {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 20px 18px;
+    gap: 14px;
+    padding: 18px;
     border-radius: var(--radius-lg);
     background: var(--color-white);
   }
 
   .contactTitle {
     font: 700 16px var(--font-body), sans-serif;
+    color: var(--color-text);
   }
 
-  .whatsapp {
-    min-height: 44px;
-    display: inline-flex;
+  .contactList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .contactItem {
+    display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 0 18px;
-    border-radius: var(--radius-pill);
-    font: 700 14px var(--font-body), sans-serif;
-    color: var(--color-white);
-    background: var(--color-whatsapp-dark);
+    gap: 14px;
   }
 
-  .whatsapp:hover {
-    color: var(--color-white);
-    background: var(--color-whatsapp);
+  /* Same gold circle as the step numbers above. */
+  .contactIcon {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--color-gold-dark);
+    background: #f3ecdb;
   }
 
-  .phone {
-    font: 700 15px var(--font-body), sans-serif;
+  .contactLink {
+    font: 600 15px var(--font-body), sans-serif;
     color: var(--color-navy);
   }
 
-  .hours {
+  .contactLink:hover {
+    color: var(--color-navy);
+    text-decoration: underline;
+  }
+
+  .contactText {
     font-size: 14px;
     color: var(--color-text-muted);
   }
