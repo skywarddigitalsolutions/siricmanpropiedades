@@ -29,7 +29,7 @@
 | T1 | Mobile results bar + operation and multi-barrio in the filters sheet (URL/API multi-barrio) | delegated | ✅ | 409961f |
 | T2 | Type chips wrap (home + results); appraisal form alignment (mobile); footer credit | delegated | ✅ | fb470ac |
 | T3 | Consorcios page redesign (step line, friendlier why-us, richer sections) | delegated | ✅ | 539de09 |
-| T4 | Nosotros page redesign (team section) | delegated | ✅ | see git log |
+| T4 | Nosotros page redesign (team section) | delegated | ✅ | a0584eb |
 
 ## Acceptance criteria
 
