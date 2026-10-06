@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 const nav = vi.hoisted(() => ({
   pathname: "/",
@@ -11,6 +11,8 @@ vi.mock("next/navigation", () => ({
 }));
 
 import Header from "./Header";
+import { PHONE_HREF } from "@/lib/contact";
+import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 
 afterEach(() => {
   cleanup();
@@ -187,5 +189,145 @@ describe("Header accessibility", () => {
       "aria-current",
       "page",
     );
+  });
+});
+
+describe("Header mobile menu content", () => {
+  async function openMenu() {
+    nav.pathname = "/";
+    nav.search = new URLSearchParams();
+    const user = userEvent.setup();
+    render(<Header />);
+    await user.click(screen.getByRole("button", { name: "Menú" }));
+    return { user, dialog: screen.getByRole("dialog") };
+  }
+
+  it("shows the brand lockup linking home in the menu top bar", async () => {
+    const { dialog } = await openMenu();
+
+    const logo = within(dialog).getByRole("img", { name: "Siricman Propiedades" });
+    expect(logo.getAttribute("src")).toContain("logo-emblem");
+    expect(logo.closest("a")).toHaveAttribute("href", "/");
+    expect(within(dialog).getByRole("button", { name: "Cerrar" })).toBeInTheDocument();
+  });
+
+  it("keeps the six sections, favorites and the appraisal CTA in order", async () => {
+    const { dialog } = await openMenu();
+
+    const names = within(dialog)
+      .getAllByRole("link")
+      .map((link) => link.textContent?.trim());
+    expect(names).toEqual([
+      expect.stringContaining("SIRICMAN"),
+      "Comprar",
+      "Alquilar",
+      "Tasaciones",
+      "Consorcios",
+      "Nosotros",
+      "Contacto",
+      "Favoritos",
+      "Tasá tu propiedad",
+      "WhatsApp",
+      "Llamar",
+    ]);
+  });
+
+  it("offers a WhatsApp action that opens the shared chat link in a new tab", async () => {
+    const { dialog } = await openMenu();
+
+    const whatsapp = within(dialog).getByRole("link", { name: "WhatsApp" });
+    expect(whatsapp).toHaveAttribute(
+      "href",
+      buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE),
+    );
+    expect(whatsapp).toHaveAttribute("target", "_blank");
+    expect(whatsapp.getAttribute("rel")).toContain("noopener");
+    expect(whatsapp.getAttribute("rel")).toContain("noreferrer");
+  });
+
+  it("offers a call action that dials the office phone", async () => {
+    const { dialog } = await openMenu();
+
+    expect(within(dialog).getByRole("link", { name: "Llamar" })).toHaveAttribute(
+      "href",
+      PHONE_HREF,
+    );
+  });
+
+  it.each(["WhatsApp", "Llamar"])("closes the menu when %s is clicked", async (name) => {
+    const { user, dialog } = await openMenu();
+    const link = within(dialog).getByRole("link", { name });
+    // jsdom cannot navigate to wa.me or tel:; only the menu state matters here.
+    link.addEventListener("click", (event) => event.preventDefault());
+
+    await user.click(link);
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Menú" })).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("no longer shows the office address and hours", async () => {
+    const { dialog } = await openMenu();
+
+    expect(within(dialog).queryByText(/Las Casas/)).not.toBeInTheDocument();
+    expect(within(dialog).queryByText(/cita previa/)).not.toBeInTheDocument();
+  });
+});
+
+describe("Header glass variant over the home hero", () => {
+  function setScrollY(value: number) {
+    Object.defineProperty(window, "scrollY", { value, configurable: true, writable: true });
+  }
+
+  afterEach(() => setScrollY(0));
+
+  it("is glass on the home page while at the top", () => {
+    nav.pathname = "/";
+    nav.search = new URLSearchParams();
+    setScrollY(0);
+    render(<Header />);
+
+    expect(screen.getByRole("banner")).toHaveAttribute("data-variant", "glass");
+  });
+
+  it("returns to the solid style once the visitor scrolls down", () => {
+    nav.pathname = "/";
+    nav.search = new URLSearchParams();
+    setScrollY(0);
+    render(<Header />);
+
+    act(() => {
+      setScrollY(120);
+      fireEvent.scroll(window);
+    });
+    expect(screen.getByRole("banner")).not.toHaveAttribute("data-variant", "glass");
+
+    act(() => {
+      setScrollY(0);
+      fireEvent.scroll(window);
+    });
+    expect(screen.getByRole("banner")).toHaveAttribute("data-variant", "glass");
+  });
+
+  it("starts solid when the home page loads already scrolled", () => {
+    nav.pathname = "/";
+    nav.search = new URLSearchParams();
+    setScrollY(300);
+    render(<Header />);
+
+    expect(screen.getByRole("banner")).not.toHaveAttribute("data-variant", "glass");
+  });
+
+  it("is never glass on other pages", () => {
+    nav.pathname = "/propiedades";
+    nav.search = new URLSearchParams();
+    setScrollY(0);
+    render(<Header />);
+
+    expect(screen.getByRole("banner")).not.toHaveAttribute("data-variant", "glass");
+    act(() => {
+      fireEvent.scroll(window);
+    });
+    expect(screen.getByRole("banner")).not.toHaveAttribute("data-variant", "glass");
   });
 });

@@ -2,19 +2,41 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--color-surface-translucent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Home only, below 960px, while at the top: frosted glass over the hero
+   photo, which extends under the header. */
+@media (max-width: 959.98px) {
+  .header[data-variant="glass"] {
+    background: var(--color-surface-glass);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    border-bottom-color: transparent;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .header {
+      transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+    }
+  }
+}
+
 .inner {
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 10px 16px;
+  /* Fixed height (plus the 1px border) so the bar matches --site-header-height
+     exactly; the home hero slides under it by that amount. */
+  height: calc(var(--site-header-height) - 1px);
+  padding: 0 var(--space-4);
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
   justify-content: space-between;
 }
 
@@ -24,11 +46,12 @@
   gap: 10px;
   flex: none;
   color: inherit;
+  border-radius: var(--radius-sm);
 }
 
 /* Transparent emblem: sits directly on the header, no tile behind it. */
 .logoImg {
-  width: 48px;
+  width: var(--space-12);
   height: auto;
   flex: none;
   display: block;
@@ -37,18 +60,18 @@
 .wordmark {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .brandName {
-  font: 500 16px/1 var(--font-display), serif;
-  letter-spacing: 0.2em;
+  font: var(--weight-medium) var(--text-base) / 1 var(--font-display), serif;
+  letter-spacing: var(--tracking-eyebrow);
   color: var(--color-navy);
 }
 
 .brandSub {
-  font: 700 8.5px/1 var(--font-body), sans-serif;
-  letter-spacing: 0.42em;
+  font: var(--weight-semibold) var(--text-xs) / 1 var(--font-body), sans-serif;
+  letter-spacing: var(--tracking-eyebrow);
   color: var(--color-gold-dark);
 }
 
@@ -62,19 +85,19 @@
   background: transparent;
   border-radius: var(--radius-pill);
   padding: 9px 14px;
-  font: 600 14px var(--font-body), sans-serif;
+  font: var(--weight-semibold) var(--text-sm) var(--font-body), sans-serif;
   color: var(--color-text-muted-2);
   white-space: nowrap;
 }
 
 .navLink:hover {
-  background: #f0eee8;
+  background: var(--color-surface-hover);
   color: var(--color-text-muted-2);
 }
 
 .actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   align-items: center;
 }
 
@@ -84,7 +107,7 @@
   color: var(--color-white);
   border-radius: var(--radius-pill);
   padding: 11px 18px;
-  font: 700 14px var(--font-body), sans-serif;
+  font: var(--weight-bold) var(--text-sm) var(--font-body), sans-serif;
   white-space: nowrap;
 }
 
@@ -93,17 +116,22 @@
   color: var(--color-white);
 }
 
-.menuButton {
+.menuButton,
+.closeButton {
   width: 44px;
   height: 44px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-white);
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: var(--color-navy);
+}
+
+.menuButton:hover,
+.closeButton:hover {
+  background: var(--color-surface-hover);
 }
 
 @media (min-width: 960px) {
@@ -122,7 +150,9 @@
   }
 }
 
-/* Native modal <dialog>: full screen, laid out only while open. */
+/* Native modal <dialog>: full screen, laid out only while open. Fades and
+   slides in from its closed state; browsers without @starting-style or
+   discrete transitions simply show and hide it. */
 .mobileMenu {
   position: fixed;
   inset: 0;
@@ -135,16 +165,61 @@
   border: 0;
   background: var(--color-white);
   color: var(--color-text);
-  padding: 10px 16px 24px;
+  padding: 10px var(--space-4) var(--space-6);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 200ms ease-out,
+    transform 200ms ease-out,
+    overlay 200ms ease-out allow-discrete,
+    display 200ms ease-out allow-discrete;
 }
 
 .mobileMenu[open] {
   display: flex;
   flex-direction: column;
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  .mobileMenu[open] {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.mobileMenu::backdrop {
+  background-color: transparent;
+  transition:
+    background-color 200ms ease-out,
+    overlay 200ms ease-out allow-discrete,
+    display 200ms ease-out allow-discrete;
+}
+
+.mobileMenu[open]::backdrop {
+  background-color: var(--color-backdrop);
+}
+
+@starting-style {
+  .mobileMenu[open]::backdrop {
+    background-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobileMenu,
+  .mobileMenu::backdrop {
+    transition: none;
+  }
+
+  .mobileMenu {
+    transform: none;
+  }
 }
 
 .navLink[aria-current="page"] {
-  background: #f0eee8;
+  background: var(--color-surface-hover);
   color: var(--color-navy);
 }
 
@@ -161,19 +236,6 @@
   padding-bottom: 18px;
 }
 
-.closeButton {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--color-navy);
-}
-
 .mobileNav {
   display: flex;
   flex-direction: column;
@@ -183,33 +245,69 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 44px;
   background: none;
   border-bottom: 1px solid var(--color-border-soft);
-  padding: 18px 4px;
-  font: 700 22px var(--font-body), sans-serif;
+  padding: 18px var(--space-1);
+  font: var(--weight-semibold) var(--text-h3) / var(--leading-tight) var(--font-body), sans-serif;
   color: var(--color-ink);
   text-align: left;
 }
 
 .mobileNavLink svg {
+  flex: none;
   color: var(--color-text-faint);
 }
 
 .mobileCta {
-  margin-top: 24px;
+  margin-top: var(--space-6);
   background: var(--color-navy);
   color: var(--color-white);
   border-radius: var(--radius-pill);
-  padding: 16px;
-  font: 700 16px var(--font-body), sans-serif;
+  padding: var(--space-4);
+  font: var(--weight-bold) var(--text-base) var(--font-body), sans-serif;
   text-align: center;
 }
 
-.mobileContact {
+/* Contact actions pinned to the bottom of the menu, split 50/50. */
+.mobileContactActions {
   margin-top: auto;
-  font-size: 14px;
-  color: var(--color-text-muted);
-  line-height: 1.6;
+  padding-top: var(--space-6);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.contactAction {
+  min-height: var(--space-12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-4);
+  font: var(--weight-bold) var(--text-base) / var(--leading-snug) var(--font-body), sans-serif;
+}
+
+.whatsappAction {
+  background: var(--color-whatsapp);
+  color: var(--color-white);
+}
+
+.whatsappAction:hover {
+  background: var(--color-whatsapp-dark);
+  color: var(--color-white);
+}
+
+.callAction {
+  border: 1px solid var(--color-navy);
+  background: var(--color-white);
+  color: var(--color-navy);
+}
+
+.callAction:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-navy);
 }
 
 .favoritesLink {
@@ -224,7 +322,7 @@
 }
 
 .favoritesLink:hover {
-  background: #f0eee8;
+  background: var(--color-surface-hover);
   color: var(--color-navy);
 }
 
@@ -236,7 +334,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font: 700 11px var(--font-body), sans-serif;
+  font: var(--weight-bold) 11px var(--font-body), sans-serif;
   color: var(--color-navy-dark);
   background: var(--color-gold);
 }
@@ -251,4 +349,17 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
+}
+
+.brand:focus-visible,
+.navLink:focus-visible,
+.cta:focus-visible,
+.favoritesLink:focus-visible,
+.menuButton:focus-visible,
+.closeButton:focus-visible,
+.mobileNavLink:focus-visible,
+.mobileCta:focus-visible,
+.contactAction:focus-visible {
+  outline: 2px solid var(--color-navy);
+  outline-offset: 2px;
 }

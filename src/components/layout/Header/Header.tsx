@@ -4,8 +4,11 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ChevronRight, Heart, Menu, X } from "lucide-react";
+import { Heart, Menu, Phone, X } from "lucide-react";
+import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
+import { PHONE_HREF } from "@/lib/contact";
 import { useFavorites } from "@/lib/favorites/use-favorites";
+import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 import styles from "./Header.module.css";
 
 type NavItem = {
@@ -16,6 +19,8 @@ type NavItem = {
   /** For search pages: the `operacion` value that makes the item current. */
   operation?: string;
 };
+
+const WHATSAPP_HREF = buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE);
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Comprar", href: "/propiedades?operacion=venta", path: "/propiedades", operation: "venta" },
@@ -60,7 +65,6 @@ function NavLinks({ variant, pathname, operation, onNavigate }: NavLinksProps) {
           onClick={onNavigate}
         >
           {item.label}
-          {mobile && <ChevronRight size={20} aria-hidden="true" />}
         </Link>
       ))}
     </>
@@ -81,12 +85,58 @@ function SectionLinks(props: Omit<NavLinksProps, "operation">) {
   );
 }
 
+/** Emblem + wordmark lockup linking home; shared by the header bar and the menu. */
+function Brand({ priority = false, onNavigate }: { priority?: boolean; onNavigate?: () => void }) {
+  return (
+    <Link href="/" className={styles.brand} onClick={onNavigate}>
+      <Image
+        src="/brand/logo-emblem.png"
+        alt="Siricman Propiedades"
+        width={256}
+        height={242}
+        className={styles.logoImg}
+        priority={priority}
+      />
+      <span className={styles.wordmark}>
+        <span className={styles.brandName}>SIRICMAN</span>
+        <span className={styles.brandSub}>PROPIEDADES</span>
+      </span>
+    </Link>
+  );
+}
+
+/** Scroll offset (px) past which the home header turns back to solid. */
+const GLASS_SCROLL_LIMIT = 8;
+
+/**
+ * Whether the page is scrolled past the glass threshold. Starts false so the
+ * server render and first paint on home are already glass (no flash).
+ */
+function useScrolledPast(limit: number, enabled: boolean) {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!enabled) return;
+    // React bails out when the value is unchanged, so no extra throttling.
+    const update = () => setScrolled(window.scrollY > limit);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, [limit, enabled]);
+
+  return scrolled;
+}
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDialogElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const wasOpen = useRef(false);
   const pathname = usePathname();
+  const isHome = pathname === "/";
+  const scrolled = useScrolledPast(GLASS_SCROLL_LIMIT, isHome);
+  // Glass over the home hero while at the top; the CSS applies it below 960px only.
+  const glass = isHome && !scrolled;
   const { count, mounted } = useFavorites();
   // Nothing until mounted: the server cannot know the visitor's saved list.
   const badge = mounted && count > 0 ? count : null;
@@ -134,22 +184,9 @@ export default function Header() {
   }, [menuOpen]);
 
   return (
-    <header className={styles.header}>
+    <header className={styles.header} data-variant={glass ? "glass" : undefined}>
       <div className={styles.inner}>
-        <Link href="/" className={styles.brand}>
-          <Image
-            src="/brand/logo-emblem.png"
-            alt="Siricman Propiedades"
-            width={256}
-            height={242}
-            className={styles.logoImg}
-            priority
-          />
-          <span className={styles.wordmark}>
-            <span className={styles.brandName}>SIRICMAN</span>
-            <span className={styles.brandSub}>PROPIEDADES</span>
-          </span>
-        </Link>
+        <Brand priority />
 
         <nav className={styles.nav} aria-label="Navegación principal">
           <SectionLinks variant="desktop" pathname={pathname} />
@@ -191,7 +228,7 @@ export default function Header() {
         {menuOpen && (
           <>
             <div className={styles.mobileMenuTop}>
-              <span className={styles.brandName}>SIRICMAN</span>
+              <Brand onNavigate={closeMenu} />
               <button
                 type="button"
                 aria-label="Cerrar"
@@ -218,11 +255,26 @@ export default function Header() {
               Tasá tu propiedad
             </Link>
 
-            <span className={styles.mobileContact}>
-              Las Casas 4054, 1° B · Boedo
-              <br />
-              10:30 a 18:00 · con cita previa
-            </span>
+            <div className={styles.mobileContactActions}>
+              <a
+                href={WHATSAPP_HREF}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${styles.contactAction} ${styles.whatsappAction}`}
+                onClick={closeMenu}
+              >
+                <WhatsAppIcon size={20} />
+                WhatsApp
+              </a>
+              <a
+                href={PHONE_HREF}
+                className={`${styles.contactAction} ${styles.callAction}`}
+                onClick={closeMenu}
+              >
+                <Phone size={20} aria-hidden="true" />
+                Llamar
+              </a>
+            </div>
           </>
         )}
       </dialog>
