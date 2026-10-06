@@ -171,7 +171,13 @@ describe("LeadDetailPage", () => {
       makeLead({
         type: "appraisal",
         property: null,
-        details: { propertyType: "apartment", address: "Gorriti 4800", rooms: 3, area: 70 },
+        details: {
+          propertyType: "apartment",
+          address: "Gorriti 4800",
+          neighborhood: "Palermo",
+          rooms: 3,
+          area: 70,
+        },
       }),
     );
 
@@ -179,6 +185,12 @@ describe("LeadDetailPage", () => {
 
     expect(screen.getByText("Departamento")).toBeInTheDocument();
     expect(screen.getByText("Gorriti 4800")).toBeInTheDocument();
+    const terms = screen.getAllByRole("term").map((term) => term.textContent);
+    expect(terms.slice(terms.indexOf("Dirección"), terms.indexOf("Dirección") + 2)).toEqual([
+      "Dirección",
+      "Barrio",
+    ]);
+    expect(screen.getByText("Palermo")).toBeInTheDocument();
     expect(screen.getByText("70 m²")).toBeInTheDocument();
   });
 

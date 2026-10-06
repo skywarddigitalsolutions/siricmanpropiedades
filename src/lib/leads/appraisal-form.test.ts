@@ -10,7 +10,8 @@ function form(fields: Record<string, string>): FormData {
 const VALID = {
   operation: "sell",
   propertyType: "apartment",
-  address: " Las Casas 4054, Boedo ",
+  address: " Las Casas 4054 ",
+  neighborhood: " Boedo ",
   rooms: "3",
   area: "62",
   name: " Ana García ",
@@ -26,7 +27,13 @@ describe("parseAppraisalForm", () => {
         phone: "11 3896-7363",
         message: "Hola",
         topic: "sell",
-        details: { propertyType: "apartment", address: "Las Casas 4054, Boedo", rooms: 3, area: 62 },
+        details: {
+          propertyType: "apartment",
+          address: "Las Casas 4054",
+          neighborhood: "Boedo",
+          rooms: 3,
+          area: 62,
+        },
       },
     });
   });
@@ -58,14 +65,19 @@ describe("parseAppraisalForm", () => {
     });
   });
 
-  it("requires a phone, an address, a type and an operation", () => {
+  it("only needs a name and a phone: the property data is optional", () => {
     expect(
-      parseAppraisalForm(form({ name: "Ana", phone: "", address: " ", propertyType: "", operation: "" })),
-    ).toEqual({
+      parseAppraisalForm(
+        form({ operation: "sell", propertyType: "", address: " ", neighborhood: "", name: "Ana", phone: "11 3896-7363" }),
+      ),
+    ).toEqual({ input: { name: "Ana", phone: "11 3896-7363", topic: "sell" } });
+  });
+
+  it("requires a name, a phone and an operation, without mentioning an email", () => {
+    expect(parseAppraisalForm(form({ name: "", phone: "", operation: "" }))).toEqual({
       fieldErrors: {
-        phone: "Dejanos un teléfono o un email para responderte.",
-        address: "Escribí la dirección y el barrio.",
-        propertyType: "Elegí el tipo de propiedad.",
+        name: "Escribí tu nombre (2 a 100 caracteres).",
+        phone: "Dejanos un teléfono para responderte.",
         operation: "Elegí si querés vender o alquilar.",
       },
     });
@@ -79,6 +91,7 @@ describe("parseAppraisalForm", () => {
           name: "A",
           phone: "llamame",
           address: "x".repeat(201),
+          neighborhood: "x".repeat(101),
           propertyType: "castle",
           rooms: "51",
           area: "1000001",
@@ -90,6 +103,7 @@ describe("parseAppraisalForm", () => {
         name: "Escribí tu nombre (2 a 100 caracteres).",
         phone: "Revisá el teléfono.",
         address: "La dirección puede tener hasta 200 caracteres.",
+        neighborhood: "Elegí un barrio de la lista.",
         propertyType: "Elegí el tipo de propiedad.",
         rooms: "Los ambientes deben ser un número entero de 0 a 50.",
         area: "La superficie debe ser un número entero de 0 a 1000000 m².",
@@ -113,12 +127,14 @@ describe("mapAppraisalApiErrors", () => {
         "details.area must be an integer number",
         "details.propertyType must be one of the following values: apartment",
         "details.address must be shorter than or equal to 200 characters",
+        "details.neighborhood must be shorter than or equal to 100 characters",
       ]),
     ).toEqual({
       rooms: "Los ambientes deben ser un número entero de 0 a 50.",
       area: "La superficie debe ser un número entero de 0 a 1000000 m².",
       propertyType: "Elegí el tipo de propiedad.",
       address: "La dirección puede tener hasta 200 caracteres.",
+      neighborhood: "Elegí un barrio de la lista.",
     });
   });
 
@@ -139,7 +155,8 @@ describe("appraisalValues", () => {
     expect(appraisalValues(form(VALID))).toEqual({
       operation: "sell",
       propertyType: "apartment",
-      address: "Las Casas 4054, Boedo",
+      address: "Las Casas 4054",
+      neighborhood: "Boedo",
       rooms: "3",
       area: "62",
       name: "Ana García",

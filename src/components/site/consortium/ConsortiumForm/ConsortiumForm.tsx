@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useEffect, useRef, useState, type InputHTMLAttributes } from "react";
 import { CONSORTIUM_MESSAGE_MAX, type ConsortiumField, type ConsortiumState } from "@/lib/leads/consortium-form";
 import styles from "./ConsortiumForm.module.css";
@@ -155,6 +156,12 @@ export default function ConsortiumForm({ action }: ConsortiumFormProps) {
       <button type="submit" className={styles.submit} disabled={pending} aria-busy={pending}>
         {pending ? "Enviando…" : "Pedir propuesta"}
       </button>
+      <p className={styles.privacy}>
+        Usamos tus datos solo para responder tu consulta.{" "}
+        <Link href="/privacidad" className={styles.privacyLink}>
+          Privacidad
+        </Link>
+      </p>
     </form>
   );
 }

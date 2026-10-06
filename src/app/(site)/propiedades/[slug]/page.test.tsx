@@ -13,7 +13,7 @@ vi.mock("@/lib/api/public-catalog", () => ({ getPublicProperty }));
 vi.mock("./actions", () => ({ sendInquiryAction: vi.fn() }));
 
 import { ApiError } from "@/lib/api/client";
-import { whatsappInquiry } from "@/lib/public/property-view";
+import { inquiryMessage, whatsappInquiry } from "@/lib/public/property-view";
 import PropertyPage, { generateMetadata } from "./page";
 
 const params = (slug = "luminoso-3-ambientes-con-balcon") => ({
@@ -37,10 +37,61 @@ describe("PropertyPage", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText("US$ 185.000").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Gorriti 4800 · Palermo, CABA").length).toBeGreaterThan(0);
-    const facts = screen.getByRole("list", { name: "Características" });
-    expect(within(facts).getByText("Sup. cubierta")).toBeInTheDocument();
+    const facts = screen.getByRole("region", { name: "Características" });
+    expect(within(facts).getByText("Tipo")).toBeInTheDocument();
+    expect(within(facts).getByText("Departamento")).toBeInTheDocument();
+    expect(within(facts).getByText("Superficie cubierta")).toBeInTheDocument();
     expect(within(facts).getByText("72 m²")).toBeInTheDocument();
     expect(within(facts).getByText("12 años")).toBeInTheDocument();
+    expect(within(facts).queryByText("Expensas")).toBeNull();
+    expect(within(facts).queryByText("Cochera")).toBeNull();
+    // Conditions are part of the same section, below the facts.
+    expect(within(facts).getByText("Apto crédito")).toBeInTheDocument();
+  });
+
+  it("shows the main specs like the listing card, before the title and location", async () => {
+    render(await PropertyPage(params()));
+
+    const specs = screen.getByRole("list", { name: "Características principales" });
+    expect(within(specs).getByText("78 m² totales")).toBeInTheDocument();
+    expect(within(specs).getByText("3 ambientes")).toBeInTheDocument();
+    expect(within(specs).getByText("2 dormitorios")).toBeInTheDocument();
+    expect(within(specs).getByText("1 baño")).toBeInTheDocument();
+    expect(within(specs).queryByText("Con cochera")).toBeNull();
+    const location = screen.getAllByText("Gorriti 4800 · Palermo, CABA")[0];
+    expect(specs.compareDocumentPosition(location) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("shows the description right after the title, before the full characteristics", async () => {
+    render(await PropertyPage(params()));
+
+    const title = screen.getByRole("heading", { level: 1 });
+    const description = screen.getByRole("region", { name: "Descripción" });
+    const facts = screen.getByRole("region", { name: "Características" });
+    const follows = (a: Node, b: Node) =>
+      Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+
+    expect(follows(title, description)).toBe(true);
+    expect(follows(description, facts)).toBe(true);
+  });
+
+  it("shows amenities with their own section before services, only when there are any", async () => {
+    render(await PropertyPage(params()));
+    expect(screen.queryByRole("region", { name: "Comodidades" })).toBeNull();
+    cleanup();
+
+    getPublicProperty.mockResolvedValue(
+      makePublicPropertyDetail({ amenities: { pool: true, gym: true } }),
+    );
+    render(await PropertyPage(params()));
+
+    const amenities = screen.getByRole("region", { name: "Comodidades" });
+    expect(within(amenities).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "Pileta",
+      "Gimnasio",
+    ]);
+    const services = screen.getByRole("region", { name: "Servicios" });
+    expect(amenities.compareDocumentPosition(services) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("shows conditions, description paragraphs and services", async () => {
@@ -67,9 +118,10 @@ describe("PropertyPage", () => {
     render(await PropertyPage(params()));
 
     const aside = screen.getByRole("complementary", { name: "Consultá por esta propiedad" });
-    expect(within(aside).getByLabelText("Mensaje (opcional)")).toHaveValue(
-      whatsappInquiry(makePublicPropertyDetail()).message,
-    );
+    const message = within(aside).getByLabelText("Mensaje (opcional)");
+    expect(message).toHaveValue(inquiryMessage(makePublicPropertyDetail()));
+    // The code is for the agency only; the form already sends which property it is.
+    expect((message as HTMLTextAreaElement).value).not.toContain("SP-0101");
     expect(within(aside).getByRole("button", { name: "Enviar consulta" })).toBeInTheDocument();
   });
 
@@ -79,7 +131,8 @@ describe("PropertyPage", () => {
     render(await PropertyPage(params()));
 
     expect(screen.queryByText(/Gorriti/)).toBeNull();
-    expect(screen.getAllByText("Palermo, CABA · zona aproximada").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Palermo, CABA").length).toBeGreaterThan(0);
+    expect(screen.queryByText(/aproximada/i)).toBeNull();
   });
 
   it("warns when the property is no longer available", async () => {
@@ -99,6 +152,13 @@ describe("PropertyPage", () => {
       "href",
       "/propiedades?operacion=venta",
     );
+  });
+
+  it("keeps the property code out of the top row", async () => {
+    render(await PropertyPage(params()));
+
+    const topRow = screen.getByRole("link", { name: /Ver más propiedades/ }).parentElement;
+    expect(topRow).not.toHaveTextContent(/Cód\./);
   });
 
   it("embeds the listing as schema.org JSON-LD", async () => {

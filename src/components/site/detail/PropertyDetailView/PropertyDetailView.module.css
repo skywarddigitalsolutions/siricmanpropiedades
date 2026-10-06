@@ -3,45 +3,45 @@
   width: 100%;
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding-bottom: 32px;
+  padding-bottom: var(--space-8);
 }
 
 /* Room for the fixed bottom bar on phones, below the footer too. */
 :global(body):has(.bottomBar) {
-  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--space-18) + env(safe-area-inset-bottom));
 }
 
 .topRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 6px 16px;
+  padding: var(--space-1) var(--page-gutter);
 }
 
 .back {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font: 700 14px var(--font-body), sans-serif;
+  gap: var(--space-1);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
 }
 
-.code {
-  padding: 5px 10px;
-  border-radius: var(--radius-pill);
-  font: 600 12px ui-monospace, Menlo, monospace;
-  color: var(--color-text-muted);
-  background: var(--color-white);
+.back:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-pill);
-  font: 700 12px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
   color: var(--color-navy);
   background: var(--color-surface-translucent);
   -webkit-backdrop-filter: blur(8px);
@@ -61,23 +61,24 @@
 .layout {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  padding: 20px 16px 0;
+  gap: var(--space-8);
+  /* Same gutter as the gallery and the top row, so every edge lines up. */
+  padding: var(--space-6) var(--page-gutter) 0;
 }
 
 .content {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: var(--space-6);
 }
 
 .notice {
-  padding: 14px 16px;
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-navy);
   border-radius: var(--radius-md);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
   background: var(--color-white);
 }
 
@@ -96,7 +97,7 @@
 .heading {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .priceRow {
@@ -104,35 +105,93 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px 16px;
+  gap: var(--space-2) var(--space-4);
 }
 
 .price {
-  font: 800 clamp(26px, 3.4vw, 34px) var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-h2);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
   letter-spacing: -0.01em;
   color: var(--color-navy);
 }
 
 .expenses,
 .muted {
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
   color: var(--color-text-muted);
 }
 
 .title {
-  margin-top: 6px;
-  font: 700 clamp(20px, 2.4vw, 26px) / 1.3 var(--font-body), sans-serif;
-  color: var(--color-text);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-h3);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-snug);
+  color: var(--color-navy);
   text-wrap: pretty;
 }
 
 .location {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 14px;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
+}
+
+/* Same spec row as the listing card, so the visitor finds what they just saw. */
+.specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-2);
+  list-style: none;
+}
+
+.spec {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--color-text-muted-2);
+}
+
+.specIcon {
+  color: var(--color-text-faint);
+}
+
+/* Outlined 44px square beside the price (the row pushes it to the far end). */
+.shareButton {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-navy);
+  background: var(--color-white);
+  cursor: pointer;
+}
+
+.shareButton:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}
+
+/* Words after numbers: title and location, set apart by a hairline. */
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-soft);
 }
 
 .pin {
@@ -140,142 +199,187 @@
   color: var(--color-gold-dark);
 }
 
+/* "Label → value" rows split by hairlines, the way portals list the details. */
 .facts {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
-  list-style: none;
-}
-
-/* Same-size cards: icon on the left, label over value, rows stretch together. */
-.fact {
-  min-height: 72px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  border-radius: var(--radius-md);
-  background: var(--color-white);
-  box-shadow: inset 0 0 0 1px var(--color-border);
-}
-
-.factIcon {
-  flex: none;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  color: var(--color-gold-dark);
-  background: var(--color-icon-tile-gold);
-}
-
-.factText {
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+}
+
+.fact {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-soft);
 }
 
 .factLabel {
-  font: 600 12px var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
   color: var(--color-text-muted);
 }
 
 .factValue {
-  font: 800 15px var(--font-body), sans-serif;
-  color: var(--color-text);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  text-align: right;
+  color: var(--color-navy);
 }
 
-.conditions,
-.chips {
+.conditions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
   list-style: none;
 }
 
 .condition {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 13px;
-  border-radius: var(--radius-pill);
-  font: 700 13px var(--font-body), sans-serif;
-  color: var(--tone-success-fg);
-  background: var(--tone-success-bg);
+  gap: var(--space-2);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--color-text-muted-2);
 }
 
-.card {
+.conditionIcon {
+  flex: none;
+  color: var(--tone-success-fg);
+}
+
+/* New-language section: no box, a hairline on top, navy title. */
+.section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  border-radius: var(--radius-lg);
+  gap: var(--space-3);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border-soft);
+}
+
+.sectionTitle {
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  color: var(--color-navy);
+}
+
+/* Full-width outlined button: on phones it hands off to the Maps app. */
+.mapLink {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-navy);
   background: var(--color-white);
 }
 
-.cardTitle {
-  font: 800 17px var(--font-body), sans-serif;
-}
-
-.mapLink {
-  align-self: flex-start;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font: 700 14px var(--font-body), sans-serif;
-  color: var(--color-navy);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.mapLink:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold-dark);
 }
 
 .mapLink:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }
 
-.chip {
-  padding: 8px 13px;
-  border-radius: var(--radius-pill);
-  font: 600 13px var(--font-body), sans-serif;
-  background: var(--color-bg);
-}
-
-
+/* The one boxed block: reading sections flow, the inquiry is where you act. */
 .aside {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 22px;
-  border-radius: var(--radius-xl);
-  background: var(--color-white);
-  box-shadow: var(--shadow-card);
-  scroll-margin-top: calc(var(--site-header-height) + 16px);
-}
-
-/* Desktop only: on phones the fixed bottom bar carries the price. */
-.asideSummary {
-  display: none;
-  flex-direction: column;
-  gap: 2px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--color-border-soft);
-}
-
-.asidePrice {
-  font: 800 28px var(--font-body), sans-serif;
-  letter-spacing: -0.01em;
-  color: var(--color-navy);
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  scroll-margin-top: calc(var(--site-header-height) + var(--space-4));
 }
 
 .asideTitle {
-  font: 800 17px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  color: var(--color-navy);
 }
 
-/* Phones: fixed bar with price and the two inquiry actions. */
+/* Desktop only (shown in the 960px block): the alternatives the phone bar offers. */
+.asideContact {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* "o" between two hairlines. */
+.asideDivider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+}
+
+.asideDivider::before,
+.asideDivider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border-soft);
+}
+
+/* --color-whatsapp-strong: the darkened green that keeps white text readable. */
+.asideWhatsapp {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-extrabold);
+  color: var(--color-white);
+  background: var(--color-whatsapp-strong);
+}
+
+.asideWhatsapp:hover {
+  color: var(--color-white);
+}
+
+.asidePhone {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  text-align: center;
+  color: var(--color-text-muted-2);
+}
+
+.asidePhoneLink {
+  font-weight: var(--weight-bold);
+  color: var(--color-navy);
+  white-space: nowrap;
+}
+
+.asideWhatsapp:focus-visible,
+.asidePhoneLink:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}
+
+/* Phones: price and expenses always at hand, plus the two contact icons. */
 .bottomBar {
   position: fixed;
   right: 0;
@@ -284,11 +388,22 @@
   z-index: 40;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  gap: var(--space-2);
+  padding: var(--space-3) var(--page-gutter) calc(var(--space-3) + env(safe-area-inset-bottom));
   border-top: 1px solid var(--color-border);
   background: var(--color-white);
   box-shadow: var(--shadow-bar-top);
+}
+
+/*
+ * Browsers without :has() never reserve the body padding above, so a fixed bar
+ * would cover the end of the page; sticky keeps it at the bottom while the
+ * page scrolls and lets it take its own room at the end.
+ */
+@supports not selector(:has(*)) {
+  .bottomBar {
+    position: sticky;
+  }
 }
 
 .bottomPrice {
@@ -300,30 +415,37 @@
 
 .bottomAmount {
   overflow: hidden;
-  font: 800 17px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-snug);
   white-space: nowrap;
   text-overflow: ellipsis;
   color: var(--color-navy);
 }
 
-.bottomCode {
-  font-size: 12px;
+.bottomExpenses {
+  overflow: hidden;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: var(--color-text-muted);
 }
 
+/* Icon-only 48px rounded squares, as icon buttons across the redesign. */
 .bottomWhatsapp,
 .bottomCall {
   flex: none;
+  width: 48px;
   height: 48px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 16px;
-  border-radius: var(--radius-pill);
-  font: 800 14px var(--font-body), sans-serif;
+  justify-content: center;
+  border-radius: var(--radius-sm);
 }
 
-/* White on the brand green fails contrast; the dark green passes. */
+/* --color-whatsapp-strong: the darkened green that keeps white text readable. */
 .bottomWhatsapp {
   color: var(--color-white);
   background: var(--color-whatsapp-strong);
@@ -339,16 +461,15 @@
   color: var(--color-white);
 }
 
-.back:focus-visible,
 .bottomWhatsapp:focus-visible,
 .bottomCall:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }
 
 @media (min-width: 960px) {
   .main {
-    padding-bottom: 80px;
+    padding-bottom: var(--space-18);
   }
 
   :global(body):has(.bottomBar) {
@@ -364,24 +485,54 @@
     flex: 1;
   }
 
+  /*
+   * Desktop: the same card, tighter, sticky beside the content. If it still
+   * outgrows the window (message opened, errors), it scrolls inside so the
+   * send button and WhatsApp stay reachable.
+   */
   .aside {
     position: sticky;
-    top: calc(var(--site-header-offset) + 20px);
+    top: calc(var(--site-header-offset) + var(--space-4));
     flex: 0 0 340px;
+    max-height: calc(100vh - var(--site-header-offset) - 2 * var(--space-4));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-6);
   }
 
   /* Moves with the header as it slides in and out. */
   @media (prefers-reduced-motion: no-preference) {
     .aside {
-      transition: top var(--site-header-slide);
+      transition:
+        top var(--site-header-slide),
+        max-height var(--site-header-slide);
     }
   }
 
-  .asideSummary {
+  .asideTitle {
+    font-size: var(--text-lg);
+  }
+
+  .asideContact {
     display: flex;
+    gap: var(--space-2);
+  }
+
+  .asideWhatsapp {
+    min-height: 44px;
   }
 
   .bottomBar {
     display: none;
+  }
+}
+
+/* Too short a window for the whole card: let it scroll with the page so no button is out of reach. */
+@media (min-width: 960px) and (max-height: 699px) {
+  .aside {
+    position: static;
+    max-height: none;
   }
 }

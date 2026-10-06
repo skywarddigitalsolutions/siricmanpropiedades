@@ -2,34 +2,40 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .label {
-  font: 600 13px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
   color: var(--color-text-muted-2);
 }
 
 .input {
   width: 100%;
   min-height: 48px;
-  padding: 12px 13px;
+  padding: var(--space-3);
   border: 1px solid var(--color-border-strong);
-  border-radius: 12px;
-  font: 500 16px / 1.45 var(--font-body), sans-serif;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body), sans-serif;
+  /* 16px minimum keeps iOS from zooming into the field. */
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-snug);
   color: var(--color-text);
   background: var(--color-white);
   resize: vertical;
 }
 
 .input:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 1px;
 }
 
@@ -38,22 +44,21 @@
 }
 
 .error {
-  font: 500 13px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
   color: var(--tone-danger-fg);
 }
 
 .alert {
-  padding: 12px 14px;
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--tone-danger-border);
   border-radius: var(--radius-sm);
-  font: 600 14px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
   color: var(--color-navy-dark);
   background: var(--tone-danger-bg);
-}
-
-.hint {
-  font-size: 13px;
-  color: var(--color-text-muted);
 }
 
 /* Off-screen, not display:none, so naive bots still fill it in. */
@@ -65,33 +70,14 @@
   overflow: hidden;
 }
 
-.actions {
-  display: flex;
-  gap: 10px;
-}
-
-.whatsapp {
-  flex: none;
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-pill);
-  color: var(--color-white);
-  background: var(--color-whatsapp);
-}
-
-.whatsapp:hover {
-  color: var(--color-white);
-  background: var(--color-whatsapp-dark);
-}
-
 .submit {
-  flex: 1;
+  width: 100%;
   min-height: 52px;
+  margin-top: var(--space-2);
   border-radius: var(--radius-pill);
-  font: 800 15px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-extrabold);
   color: var(--color-white);
   background: var(--color-navy);
   cursor: pointer;
@@ -106,8 +92,74 @@
   cursor: progress;
 }
 
-.whatsapp:focus-visible,
-.submit:focus-visible {
-  outline: 2px solid var(--color-gold);
+.submit:focus-visible,
+.privacyLink:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
+}
+
+.privacy {
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+/* Phones: the message is always open, so the toggle never shows. */
+.messageToggle {
+  display: none;
+}
+
+.privacyLink {
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Desktop: the form sits in a sticky card, so it is tighter to fit the screen. */
+@media (min-width: 960px) {
+  .form {
+    gap: var(--space-2);
+  }
+
+  .input {
+    min-height: 44px;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  /* Two lines; it still grows by hand (resize) for longer messages. */
+  textarea.input {
+    height: calc(2lh + 2 * var(--space-2) + 2px);
+  }
+
+  .submit {
+    min-height: 48px;
+  }
+
+  .field[data-collapsed] {
+    display: none;
+  }
+
+  .messageToggle {
+    align-self: flex-start;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-body), sans-serif;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-navy);
+    background: none;
+    cursor: pointer;
+  }
+
+  .messageToggle:hover {
+    color: var(--color-gold-dark);
+  }
+
+  .messageToggle:focus-visible {
+    outline: 2px solid var(--color-gold-dark);
+    outline-offset: 2px;
+  }
 }

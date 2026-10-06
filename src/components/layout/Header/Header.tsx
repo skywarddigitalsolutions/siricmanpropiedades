@@ -4,10 +4,9 @@ import { Suspense, useCallback, useEffect, useRef, useState, type FocusEvent } f
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Heart, Menu, Phone, X } from "lucide-react";
+import { Menu, Phone, X } from "lucide-react";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
 import { PHONE_HREF } from "@/lib/contact";
-import { useFavorites } from "@/lib/favorites/use-favorites";
 import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 import styles from "./Header.module.css";
 import { useHideOnScroll } from "./useHideOnScroll";
@@ -140,9 +139,6 @@ export default function Header() {
   const scrolled = useScrolledPast(GLASS_SCROLL_LIMIT, isHome);
   // Glass over the home hero while at the top; the CSS applies it below 960px only.
   const glass = isHome && !scrolled;
-  const { count, mounted } = useFavorites();
-  // Nothing until mounted: the server cannot know the visitor's saved list.
-  const badge = mounted && count > 0 ? count : null;
 
   // Never slide away while the menu is open or keyboard focus is inside.
   const hidden = useHideOnScroll(headerRef, menuOpen || focusInside);
@@ -209,14 +205,6 @@ export default function Header() {
         </nav>
 
         <div className={styles.actions}>
-          <Link
-            href="/favoritos"
-            className={styles.favoritesLink}
-            aria-label={badge ? `Favoritos, ${badge} guardadas` : "Favoritos"}
-          >
-            <Heart size={20} aria-hidden="true" />
-            {badge !== null && <span className={styles.favoritesBadge}>{badge}</span>}
-          </Link>
           <Link href="/tasaciones" className={styles.cta}>
             Tasá tu propiedad
           </Link>
@@ -258,14 +246,6 @@ export default function Header() {
             <nav className={styles.mobileNav} aria-label="Navegación principal">
               <SectionLinks variant="mobile" pathname={pathname} onNavigate={closeMenu} />
             </nav>
-
-            <Link href="/favoritos" className={styles.mobileNavLink} onClick={closeMenu}>
-              <span className={styles.mobileFavorites}>
-                Favoritos
-                {badge !== null && <span className={styles.favoritesBadge}>{badge}</span>}
-              </span>
-              <Heart size={20} aria-hidden="true" />
-            </Link>
 
             <Link href="/tasaciones" className={styles.mobileCta} onClick={closeMenu}>
               Tasá tu propiedad

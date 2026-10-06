@@ -1,14 +1,25 @@
-import { DEAL_STATUS_LABELS, MARKETING_TAG_LABELS, formatPrice } from "@/lib/properties/labels";
-import { WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
-import type { MapPrecision } from "@/lib/maps";
-import type { PublicProperty } from "./types";
-
 /**
  * Pure display rules for public property cards and pages (copy follows the
  * site design). Icons are semantic names; components map them to lucide.
  */
+import {
+  DEAL_STATUS_LABELS,
+  MARKETING_TAG_LABELS,
+  PROPERTY_TYPE_LABELS,
+  formatPrice,
+} from "@/lib/properties/labels";
+import { absoluteUrl } from "@/lib/site-url";
+import { WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
+import type { MapPrecision } from "@/lib/maps";
+import { AMENITY_KEYS, type AmenityKey, type PublicProperty } from "./types";
+
 export type SpecIcon = "area" | "rooms" | "bedrooms" | "bathrooms" | "garage";
-export type FactIcon = SpecIcon | "coveredArea" | "age" | "expenses";
+
+/** Type rules shared by the spec row and the full characteristics list. */
+const showsRooms = (property: PublicProperty) =>
+  Boolean(property.rooms) && property.type !== "commercial";
+const showsGarage = (property: PublicProperty) =>
+  property.hasGarage && property.type !== "garage";
 
 const amount = (value: number) =>
   new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(value);
@@ -34,7 +45,7 @@ export function propertySpecs(
     const area = `${amount(property.totalArea)} m²`;
     specs.push({ icon: "area", text: area, label: `${area} totales` });
   }
-  if (property.rooms && property.type !== "commercial") {
+  if (showsRooms(property)) {
     specs.push({
       icon: "rooms",
       text: `${property.rooms} amb.`,
@@ -55,7 +66,7 @@ export function propertySpecs(
       label: plural(property.bathrooms, "baño", "baños"),
     });
   }
-  if (property.hasGarage && property.type !== "garage") {
+  if (showsGarage(property)) {
     specs.push({ icon: "garage", text: "1", label: "Con cochera" });
   }
   return specs;
@@ -80,45 +91,54 @@ export function dealStatusNotice(
 
 export function propertyLocation(property: PublicProperty): { label: string; exact: boolean } {
   const area = `${property.neighborhood.name}, CABA`;
-  return property.address
-    ? { label: `${property.address} · ${area}`, exact: true }
-    : { label: `${area} · zona aproximada`, exact: false };
+  // Trimmed like propertyMap, so a blank address never counts as exact.
+  const address = property.address?.trim();
+  return address
+    ? { label: `${address} · ${area}`, exact: true }
+    : { label: area, exact: false };
 }
 
 export function propertyMap(property: PublicProperty): {
   query: string;
   precision: MapPrecision;
-  label: string;
 } {
   const barrio = property.neighborhood.name;
   const address = property.address?.trim();
   return address
-    ? { query: `${address}, ${barrio}, CABA`, precision: "exact", label: `${address}, ${barrio}` }
-    : { query: `${barrio}, CABA`, precision: "approximate", label: `Zona aproximada · ${barrio}` };
+    ? { query: `${address}, ${barrio}, CABA`, precision: "exact" }
+    : { query: `${barrio}, CABA`, precision: "approximate" };
 }
 
-export function propertyFacts(
-  property: PublicProperty,
-): { icon: FactIcon; label: string; value: string }[] {
-  const orDash = (value: number, text = String(value)) => (value ? text : "—");
-  return [
-    { icon: "area", label: "Sup. total", value: orDash(property.totalArea, `${amount(property.totalArea)} m²`) },
-    { icon: "coveredArea", label: "Sup. cubierta", value: orDash(property.coveredArea, `${amount(property.coveredArea)} m²`) },
-    { icon: "rooms", label: "Ambientes", value: orDash(property.rooms) },
-    { icon: "bedrooms", label: "Dormitorios", value: orDash(property.bedrooms) },
-    { icon: "bathrooms", label: "Baños", value: orDash(property.bathrooms) },
-    { icon: "garage", label: "Cochera", value: property.hasGarage ? "Sí" : "No" },
-    {
-      icon: "age",
+/**
+ * Full characteristics list, "label → value": only facts with data, following
+ * the same type rules as the spec row. Expenses are left out (they sit under
+ * the price).
+ */
+export function propertyFacts(property: PublicProperty): { label: string; value: string }[] {
+  const facts: { label: string; value: string }[] = [
+    { label: "Tipo", value: PROPERTY_TYPE_LABELS[property.type] },
+  ];
+  if (property.totalArea) {
+    facts.push({ label: "Superficie total", value: `${amount(property.totalArea)} m²` });
+  }
+  if (property.coveredArea) {
+    facts.push({ label: "Superficie cubierta", value: `${amount(property.coveredArea)} m²` });
+  }
+  if (showsRooms(property)) {
+    facts.push({ label: "Ambientes", value: String(property.rooms) });
+  }
+  if (property.bedrooms) facts.push({ label: "Dormitorios", value: String(property.bedrooms) });
+  if (property.bathrooms) facts.push({ label: "Baños", value: String(property.bathrooms) });
+  if (showsGarage(property)) {
+    facts.push({ label: "Cochera", value: "Sí" });
+  }
+  if (property.type !== "land") {
+    facts.push({
       label: "Antigüedad",
       value: property.age === 0 ? "A estrenar" : plural(property.age, "año", "años"),
-    },
-    {
-      icon: "expenses",
-      label: "Expensas",
-      value: property.expenses ? `$ ${amount(property.expenses)}` : "No tiene",
-    },
-  ];
+    });
+  }
+  return facts;
 }
 
 export function conditionLabels(property: PublicProperty): string[] {
@@ -129,7 +149,9 @@ export function conditionLabels(property: PublicProperty): string[] {
   ].filter((label): label is string => Boolean(label));
 }
 
-const SERVICE_LABELS: [keyof PublicProperty["services"], string][] = [
+export type ServiceKey = keyof PublicProperty["services"];
+
+const SERVICE_LABELS: [ServiceKey, string][] = [
   ["water", "Agua corriente"],
   ["naturalGas", "Gas natural"],
   ["sewer", "Cloacas"],
@@ -137,12 +159,49 @@ const SERVICE_LABELS: [keyof PublicProperty["services"], string][] = [
   ["internet", "Internet"],
 ];
 
-export function serviceLabels(property: PublicProperty): string[] {
-  return SERVICE_LABELS.filter(([key]) => property.services[key]).map(([, label]) => label);
+/** Utilities the property has, in a fixed order. */
+export function serviceItems(property: PublicProperty): { key: ServiceKey; label: string }[] {
+  return SERVICE_LABELS.filter(([key]) => property.services[key]).map(([key, label]) => ({
+    key,
+    label,
+  }));
 }
 
-export function whatsappInquiry(property: Pick<PublicProperty, "code" | "title">) {
-  const message = `Hola, me interesa la propiedad ${property.code} (${displayTitle(property.title)}). ¿Podemos coordinar una visita?`;
+const AMENITY_LABELS: Record<AmenityKey, string> = {
+  pool: "Pileta",
+  gym: "Gimnasio",
+  grill: "Parrilla / quincho",
+  multipurposeRoom: "SUM",
+  security: "Seguridad 24 h",
+  elevator: "Ascensor",
+  balcony: "Balcón",
+  terrace: "Terraza",
+  garden: "Jardín",
+  patio: "Patio",
+  laundry: "Lavadero",
+  storage: "Baulera",
+};
+
+/** Amenities the property has, in a fixed order; empty while the API sends none. */
+export function amenityItems(property: PublicProperty): { key: AmenityKey; label: string }[] {
+  return AMENITY_KEYS.filter((key) => property.amenities?.[key]).map((key) => ({
+    key,
+    label: AMENITY_LABELS[key],
+  }));
+}
+
+/** Prefilled inquiry-form message; the form already tells the agency which property it is. */
+export function inquiryMessage(property: Pick<PublicProperty, "title">): string {
+  return `Hola, me interesa "${displayTitle(property.title)}". ¿Podemos coordinar una visita?`;
+}
+
+/**
+ * WhatsApp message: the page link instead of the property code, so the agency
+ * knows which listing it is (WhatsApp shows it as a card with the photo) and
+ * the visitor never sees an internal code.
+ */
+export function whatsappInquiry(property: Pick<PublicProperty, "slug" | "title">) {
+  const message = `${inquiryMessage(property)} ${absoluteUrl(`/propiedades/${property.slug}`)}`;
   return { message, href: buildWhatsAppLink(WHATSAPP_PHONE, message) };
 }
 

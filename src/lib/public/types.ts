@@ -44,6 +44,11 @@ export type PublicProperty = {
     electricity: boolean;
     internet: boolean;
   };
+  /**
+   * Building and unit amenities. Not sent by the API yet (they need admin
+   * checkboxes first); the site shows them as soon as they arrive.
+   */
+  amenities?: Partial<Record<AmenityKey, boolean>>;
   publishedAt: string | null;
 };
 
@@ -86,3 +91,20 @@ export type PublicPropertyFilters = {
   limit?: number;
   offset?: number;
 };
+
+export const AMENITY_KEYS = [
+  "pool",
+  "gym",
+  "grill",
+  "multipurposeRoom",
+  "security",
+  "elevator",
+  "balcony",
+  "terrace",
+  "garden",
+  "patio",
+  "laundry",
+  "storage",
+] as const;
+
+export type AmenityKey = (typeof AMENITY_KEYS)[number];

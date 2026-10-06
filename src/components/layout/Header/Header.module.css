@@ -323,51 +323,9 @@
   color: var(--color-navy);
 }
 
-.favoritesLink {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-pill);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-navy);
-}
-
-.favoritesLink:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-navy);
-}
-
-.favoritesBadge {
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: var(--radius-pill);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font: var(--weight-bold) 11px var(--font-body), sans-serif;
-  color: var(--color-navy-dark);
-  background: var(--color-gold);
-}
-
-.favoritesLink .favoritesBadge {
-  position: absolute;
-  top: 3px;
-  right: 1px;
-}
-
-.mobileFavorites {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .brand:focus-visible,
 .navLink:focus-visible,
 .cta:focus-visible,
-.favoritesLink:focus-visible,
 .menuButton:focus-visible,
 .closeButton:focus-visible,
 .mobileNavLink:focus-visible,

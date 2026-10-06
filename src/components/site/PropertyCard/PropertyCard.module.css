@@ -1,6 +1,6 @@
 /*
  * Property card, shared by the /propiedades grid and the home's featured
- * track: photo with operation/tag badges and the favorite button, an optional
+ * track: photo with operation/tag badges, an optional
  * status strip, then price, title, location and spec icons. The whole card is
  * one link (stretched ::after); it rests on --shadow-card, with no hover lift.
  */
@@ -52,12 +52,6 @@
   left: var(--space-3);
   display: flex;
   gap: var(--space-2);
-}
-
-.favorite {
-  position: absolute;
-  top: var(--space-2);
-  right: var(--space-2);
 }
 
 .badge {

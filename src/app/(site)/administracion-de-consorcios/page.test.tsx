@@ -48,9 +48,6 @@ describe("ConsortiumPage", () => {
     );
     expect(steps.length).toBeGreaterThanOrEqual(3);
     expect(steps.length).toBeLessThanOrEqual(4);
-    const why = screen.getByRole("region", { name: "Por qué elegirnos" });
-    expect(within(why).getAllByText(/Gabriel Siricman/).length).toBeGreaterThanOrEqual(1);
-    expect(within(why).getAllByRole("listitem")).toHaveLength(4);
   });
 
   it("shows the hero stat card with the years and the three highlights", () => {
@@ -63,7 +60,7 @@ describe("ConsortiumPage", () => {
     expect(items.map((item) => item.textContent)).toEqual([
       "Trato directo con Gabriel Siricman",
       "Cuentas claras para cada propietario",
-      "Respuesta rápida a cada consulta",
+      "Atención por WhatsApp y teléfono",
     ]);
   });
 
@@ -73,23 +70,26 @@ describe("ConsortiumPage", () => {
     expect(screen.queryByRole("region", { name: "Datos de confianza" })).not.toBeInTheDocument();
   });
 
-  it("introduces why choose us in plain text without a quote panel", () => {
+  it("says each idea once: the lead tells what they do, the hero card why them", () => {
     render(<ConsortiumPage />);
 
-    const why = screen.getByRole("region", { name: "Por qué elegirnos" });
     expect(
-      within(why).getByText("Trato directo con Gabriel Siricman, sin intermediarios ni call centers."),
+      screen.getByText(
+        "Liquidamos las expensas, cuidamos el mantenimiento y te acompañamos en cada asamblea.",
+      ),
     ).toBeInTheDocument();
-    expect(within(why).queryByRole("heading", { level: 3 })).not.toBeInTheDocument();
-    expect(why.querySelector("aside")).toBeNull();
+    expect(screen.queryByRole("region", { name: "Por qué elegirnos" })).toBeNull();
+    expect(screen.getAllByText(/11 años|\+11/)).toHaveLength(1);
   });
 
-  it("answers the frequent questions with native disclosures", () => {
-    const { container } = render(<ConsortiumPage />);
+  it("answers the frequent questions with native disclosures, as on /tasaciones", () => {
+    render(<ConsortiumPage />);
 
-    expect(container.querySelectorAll("details").length).toBeGreaterThanOrEqual(4);
-    expect(screen.getByText(/cambio de administración/i, { selector: "summary" })).toBeInTheDocument();
-    expect(screen.getByText(/honorarios/i, { selector: "summary" })).toBeInTheDocument();
+    const section = screen.getByRole("region", { name: "Lo que suelen preguntarnos" });
+    expect(within(section).getByText("Preguntas frecuentes")).toBeInTheDocument();
+    expect(section.querySelectorAll("details").length).toBeGreaterThanOrEqual(4);
+    expect(within(section).getByText(/cambio de administración/i, { selector: "summary" })).toBeInTheDocument();
+    expect(within(section).getByText(/honorarios/i, { selector: "summary" })).toBeInTheDocument();
   });
 
   it("ends with the proposal form", () => {

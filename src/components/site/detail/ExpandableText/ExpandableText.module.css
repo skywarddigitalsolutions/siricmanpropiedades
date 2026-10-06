@@ -2,37 +2,38 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .text {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  font-size: 15px;
+  gap: var(--space-3);
+  font-size: var(--text-base);
 }
 
-/* About six lines of body copy, faded out at the bottom. */
+/* About six lines of body copy, faded out at the bottom (the mask color only sets opacity). */
 .text[data-clamped] {
   max-height: 11.5em;
   overflow: hidden;
-  font-size: 15px;
   -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent);
   mask-image: linear-gradient(to bottom, #000 70%, transparent);
 }
 
 .paragraph {
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
   color: var(--color-text-muted-2);
   text-wrap: pretty;
 }
 
 .toggle {
   min-height: 44px;
-  padding: 0 4px;
-  font: 700 14px var(--font-body), sans-serif;
+  padding: 0 var(--space-1);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
   color: var(--color-navy);
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -41,6 +42,6 @@
 }
 
 .toggle:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }

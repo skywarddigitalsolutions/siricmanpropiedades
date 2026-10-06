@@ -22,6 +22,13 @@ describe("ConsortiumForm", () => {
     expect(honeypot.closest('[aria-hidden="true"]')).not.toBeNull();
   });
 
+  it("tells the visitor how their data is used, linking the privacy policy", () => {
+    render(<ConsortiumForm action={vi.fn()} />);
+
+    expect(screen.getByText(/Usamos tus datos solo para responder tu consulta/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Privacidad" })).toHaveAttribute("href", "/privacidad");
+  });
+
   it("submits the building data and confirms once sent", async () => {
     const action = vi.fn<Action>(async () => ({ status: "sent" }));
     const user = userEvent.setup();

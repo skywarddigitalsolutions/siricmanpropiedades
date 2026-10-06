@@ -52,11 +52,11 @@ describe("PropertyCard", () => {
   });
 });
 
-describe("PropertyCard favorite heart", () => {
-  it("has a heart toggle that is not nested inside the title link", () => {
+describe("PropertyCard controls", () => {
+  it("has no button over the photo: the whole card is just the title link", () => {
     render(<PropertyCard property={makePublicProperty()} />);
     const card = screen.getByRole("article");
-    const heart = within(card).getByRole("button", { name: "Guardar en favoritos" });
-    expect(heart.closest("a")).toBeNull();
+    expect(within(card).queryByRole("button")).toBeNull();
+    expect(within(card).getAllByRole("link")).toHaveLength(1);
   });
 });

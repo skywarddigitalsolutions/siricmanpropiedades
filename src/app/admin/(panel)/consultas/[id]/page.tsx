@@ -60,6 +60,7 @@ function detailRows(lead: Lead): { label: string; value: string }[] {
     });
   }
   if (details.address) rows.push({ label: "Dirección", value: details.address });
+  if (details.neighborhood) rows.push({ label: "Barrio", value: details.neighborhood });
   if (details.rooms !== undefined) rows.push({ label: "Ambientes", value: String(details.rooms) });
   if (details.area !== undefined) rows.push({ label: "Superficie aprox.", value: `${details.area} m²` });
   return rows;

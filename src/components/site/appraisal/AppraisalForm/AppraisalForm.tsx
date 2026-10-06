@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useRef, useState, type InputHTMLAttributes } from "react";
 import type {
   AppraisalField,
@@ -9,13 +10,19 @@ import type {
 import { PROPERTY_TYPES } from "@/lib/properties/enums";
 import { PROPERTY_TYPE_LABELS } from "@/lib/properties/labels";
 import Select from "../../Select/Select";
-import { FormLiveRegion, Optional } from "../../forms/FormParts";
+import { FormLiveRegion } from "../../forms/FormParts";
 import FormSuccess from "../../forms/FormSuccess";
 import { countFieldErrors, useFocusOnError } from "../../forms/useFocusOnError";
 import styles from "./AppraisalForm.module.css";
 
+
+/** Clears an optional dropdown back to empty. */
+const UNSPECIFIED = "Sin especificar";
+
 type AppraisalFormProps = {
   action: (prev: AppraisalState, formData: FormData) => Promise<AppraisalState>;
+  /** Barrio names for the dropdown; empty (API down) hides the field. */
+  neighborhoods: string[];
 };
 
 const OPERATION_OPTIONS: { value: AppraisalOperation; label: string }[] = [
@@ -36,20 +43,17 @@ function Field({
   name,
   label,
   error,
-  optional,
   ...inputProps
 }: {
   name: AppraisalField;
   label: string;
   error?: string;
-  optional?: boolean;
 } & InputHTMLAttributes<HTMLInputElement>) {
   const id = `appraisal-${name}`;
   return (
     <div className={styles.field}>
       <label htmlFor={id} className={styles.label}>
         {label}
-        {optional && <Optional />}
       </label>
       <input
         id={id}
@@ -64,8 +68,12 @@ function Field({
   );
 }
 
-/** Appraisal request form of the Tasaciones page (design: "Pedí tu tasación"). */
-export default function AppraisalForm({ action }: AppraisalFormProps) {
+/**
+ * Appraisal request form of the Tasaciones page (design: "Pedí tu tasación").
+ * Only the name and the phone are required; the property fields are optional
+ * but, by the owner's call, never labelled as such.
+ */
+export default function AppraisalForm({ action, neighborhoods }: AppraisalFormProps) {
   const [state, formAction, pending] = useActionState(action, {
     status: "idle",
   });
@@ -119,35 +127,64 @@ export default function AppraisalForm({ action }: AppraisalFormProps) {
           <FieldError id="appraisal-operation" error={errors.operation} />
         </div>
 
-        <div className={styles.field}>
-          <label htmlFor="appraisal-propertyType" className={styles.label}>
-            Tipo de propiedad
-          </label>
-          <Select
-            id="appraisal-propertyType"
-            name="propertyType"
-            required
-            defaultValue={values.propertyType ?? ""}
-            aria-invalid={errors.propertyType ? true : undefined}
-            aria-describedby={errors.propertyType ? "appraisal-propertyType-error" : undefined}
-          >
-            <option value="" disabled>
-              Elegí una opción
-            </option>
-            {PROPERTY_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {PROPERTY_TYPE_LABELS[type]}
+        {/* Side by side on desktop, stacked on phones. */}
+        <div className={styles.desktopPair} data-desktop-pair>
+          <div className={styles.field}>
+            <label htmlFor="appraisal-propertyType" className={styles.label}>
+              Tipo de propiedad
+            </label>
+            <Select
+              id="appraisal-propertyType"
+              name="propertyType"
+              defaultValue={values.propertyType ?? ""}
+              aria-invalid={errors.propertyType ? true : undefined}
+              aria-describedby={errors.propertyType ? "appraisal-propertyType-error" : undefined}
+            >
+              <option value="" disabled>
+                Elegí una opción
               </option>
-            ))}
-          </Select>
-          <FieldError id="appraisal-propertyType" error={errors.propertyType} />
+              {/* Lets the visitor clear a choice; the trigger falls back to the placeholder. */}
+              <option value="">{UNSPECIFIED}</option>
+              {PROPERTY_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {PROPERTY_TYPE_LABELS[type]}
+                </option>
+              ))}
+            </Select>
+            <FieldError id="appraisal-propertyType" error={errors.propertyType} />
+          </div>
+
+          {neighborhoods.length > 0 && (
+            <div className={styles.field}>
+              <label htmlFor="appraisal-neighborhood" className={styles.label}>
+                Barrio
+              </label>
+              <Select
+                id="appraisal-neighborhood"
+                name="neighborhood"
+                defaultValue={values.neighborhood ?? ""}
+                aria-invalid={errors.neighborhood ? true : undefined}
+                aria-describedby={errors.neighborhood ? "appraisal-neighborhood-error" : undefined}
+              >
+                <option value="" disabled>
+                  Elegí un barrio
+                </option>
+                <option value="">{UNSPECIFIED}</option>
+                {neighborhoods.map((neighborhood) => (
+                  <option key={neighborhood} value={neighborhood}>
+                    {neighborhood}
+                  </option>
+                ))}
+              </Select>
+              <FieldError id="appraisal-neighborhood" error={errors.neighborhood} />
+            </div>
+          )}
         </div>
 
         <Field
           name="address"
-          label="Dirección y barrio"
+          label="Dirección"
           autoComplete="street-address"
-          required
           maxLength={200}
           defaultValue={values.address}
           error={errors.address}
@@ -157,7 +194,6 @@ export default function AppraisalForm({ action }: AppraisalFormProps) {
           <Field
             name="rooms"
             label="Ambientes"
-            optional
             type="number"
             inputMode="numeric"
             min={0}
@@ -168,8 +204,7 @@ export default function AppraisalForm({ action }: AppraisalFormProps) {
           />
           <Field
             name="area"
-            label="Superficie (m²)"
-            optional
+            label="Superficie total (m²)"
             type="number"
             inputMode="numeric"
             min={0}
@@ -180,30 +215,33 @@ export default function AppraisalForm({ action }: AppraisalFormProps) {
           />
         </div>
 
-        <Field
-          name="name"
-          label="Nombre y apellido"
-          autoComplete="name"
-          required
-          minLength={2}
-          maxLength={100}
-          defaultValue={values.name}
-          error={errors.name}
-        />
-        <Field
-          name="phone"
-          label="Teléfono"
-          type="tel"
-          autoComplete="tel"
-          required
-          maxLength={30}
-          defaultValue={values.phone}
-          error={errors.phone}
-        />
+        <div className={styles.desktopPair} data-desktop-pair>
+          <Field
+            name="name"
+            label="Nombre y apellido"
+            autoComplete="name"
+            required
+            minLength={2}
+            maxLength={100}
+            defaultValue={values.name}
+            error={errors.name}
+          />
+          <Field
+            name="phone"
+            label="Teléfono"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            required
+            maxLength={30}
+            defaultValue={values.phone}
+            error={errors.phone}
+          />
+        </div>
 
         <div className={styles.field}>
           <label htmlFor="appraisal-message" className={styles.label}>
-            Comentarios <Optional />
+            Comentarios
           </label>
           <textarea
             id="appraisal-message"
@@ -227,6 +265,12 @@ export default function AppraisalForm({ action }: AppraisalFormProps) {
         <button type="submit" className={styles.submit} disabled={pending} aria-busy={pending}>
           {pending ? "Enviando…" : "Solicitar tasación"}
         </button>
+        <p className={styles.privacy}>
+          Usamos tus datos solo para responder tu consulta.{" "}
+          <Link href="/privacidad" className={styles.privacyLink}>
+            Privacidad
+          </Link>
+        </p>
       </form>
       <FormLiveRegion fieldErrors={countFieldErrors(errors)} />
     </>

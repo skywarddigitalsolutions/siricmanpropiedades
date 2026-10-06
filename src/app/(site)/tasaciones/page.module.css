@@ -1,181 +1,291 @@
+/*
+ * /tasaciones, mobile first: intro, the form card, then the direct contact.
+ * Desktop: intro and contact on the left, the form on the right.
+ */
 .main {
   flex: 1;
 }
 
 .page {
+  /* A form page reads better narrower than the catalog's content width. */
   max-width: 1080px;
   margin: 0 auto;
-  padding: 28px 16px 80px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  padding: var(--space-6) var(--page-gutter) var(--section-gap);
+  display: grid;
+  grid-template-areas:
+    "intro"
+    "form"
+    "contact"
+    "faq";
+  gap: var(--space-6);
 }
 
 .intro {
+  grid-area: intro;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .eyebrow {
-  font: 700 12px var(--font-body), sans-serif;
-  letter-spacing: 0.16em;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
   color: var(--color-gold-dark);
 }
 
+/* Decorative, no contrast floor. */
+.eyebrow::before {
+  content: "";
+  width: var(--space-6);
+  height: 1px;
+  background: var(--color-gold);
+}
+
 .title {
-  font: 800 clamp(28px, 4vw, 44px) / 1.1 var(--font-body), sans-serif;
-  letter-spacing: -0.02em;
-}
-
-.columns {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-.steps {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  list-style: none;
-}
-
-.step {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 18px;
-  border-radius: var(--radius-lg);
-  background: var(--color-white);
-}
-
-.stepNumber {
-  flex: none;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font: 800 16px var(--font-body), sans-serif;
+  margin-top: var(--space-4);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-h1);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-heading);
   color: var(--color-navy);
-  background: var(--color-icon-tile-gold);
+  text-wrap: balance;
 }
 
-.stepText {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
+.lead {
+  margin-top: var(--space-3);
+  max-width: 52ch;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted-2);
+  text-wrap: pretty;
 }
 
-.stepTitle {
-  font: 700 16px var(--font-body), sans-serif;
-}
-
-.stepBody {
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--color-text-muted);
-}
-
+/* Same card as the property inquiry form. */
 .card {
-  padding: clamp(18px, 3vw, 28px);
-  border-radius: var(--radius-xl);
-  background: var(--color-white);
+  grid-area: form;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
 
-/* Phones and tablets: the wrapper dissolves and the contact block stays out. */
-.aside {
+/* The list starts right after the hairline: each 48px row brings its own air. */
+/* Phones: the wrappers dissolve, so intro, form and the phone contact flow in the page grid. */
+.split,
+.side {
   display: contents;
 }
 
 .contact {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-soft);
+}
+
+.contactBelow {
+  grid-area: contact;
+}
+
+.contactSide {
   display: none;
 }
 
-@media (min-width: 860px) {
-  .columns {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
+.contactList {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.contactLink,
+.contactItem {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.contactLink {
+  font-family: var(--font-body), sans-serif;
+  font-weight: var(--weight-bold);
+  color: var(--color-navy);
+}
+
+.contactLink:hover {
+  color: var(--color-gold-dark);
+}
+
+.contactLink:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}
+
+.contactItem {
+  color: var(--color-text-muted);
+}
+
+/* Rounded-square tile with a gold hairline, as in the rest of the redesign. */
+.contactIcon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-sm);
+  color: var(--color-navy);
+  background: var(--color-surface);
+}
+
+/* Questions collapsed by default: native <details>, keyboard and screen reader ready. */
+.faq {
+  grid-area: faq;
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-6);
+}
+
+.faqTitle {
+  margin-top: var(--space-3);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-h2);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-navy);
+  text-wrap: balance;
+}
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+/* Each question is its own card, like the form: clearly apart and tappable. */
+.faqItem {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.faqItem[open] {
+  border-color: var(--color-gold);
+}
+
+.faqQuestion {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-6);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  color: var(--color-navy);
+  list-style: none;
+  cursor: pointer;
+}
+
+.faqQuestion::-webkit-details-marker {
+  display: none;
+}
+
+.faqQuestion:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+/* "+" closed, "−" open, in the gold-bordered rounded square of the redesign. */
+.faqIcon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-sm);
+  color: var(--color-navy);
+}
+
+.faqQuestion:hover .faqIcon {
+  color: var(--color-gold-dark);
+}
+
+.faqMinus,
+.faqItem[open] .faqPlus {
+  display: none;
+}
+
+.faqItem[open] .faqMinus {
+  display: block;
+}
+
+.faqAnswer {
+  padding: 0 var(--space-6) var(--space-6);
+  max-width: 64ch;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted-2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .faqItem {
+    transition: border-color 0.2s ease;
   }
 }
 
-/* Desktop: the left column follows the form while it scrolls. */
-@media (min-width: 1024px) {
-  .columns {
+/* Desktop: a sticky side column (intro + contact) beside the form; the questions span both below. */
+@media (min-width: 960px) {
+  .page {
+    grid-template-areas:
+      "split"
+      "faq";
+    row-gap: var(--space-8);
+  }
+
+  /* Its own grid, so the sticky side column is bound to it and never rides over the questions. */
+  .split {
+    grid-area: split;
+    display: grid;
     grid-template-columns: 5fr 7fr;
-    gap: 20px;
+    grid-template-areas: "side form";
+    column-gap: var(--space-12);
+    align-items: start;
   }
 
-  .aside {
+  .side {
+    grid-area: side;
     position: sticky;
-    top: calc(var(--site-header-offset) + 24px);
-    align-self: start;
+    top: calc(var(--site-header-offset) + var(--space-6));
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-6);
   }
 
+  .contactSide {
+    display: block;
+  }
+
+  .contactBelow {
+    display: none;
+  }
+}
+
+@media (min-width: 960px) and (prefers-reduced-motion: no-preference) {
   /* Moves with the header as it slides in and out. */
-  @media (prefers-reduced-motion: no-preference) {
-    .aside {
-      transition: top var(--site-header-slide);
-    }
-  }
-
-  .contact {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    padding: 18px;
-    border-radius: var(--radius-lg);
-    background: var(--color-white);
-  }
-
-  .contactTitle {
-    font: 700 16px var(--font-body), sans-serif;
-    color: var(--color-text);
-  }
-
-  .contactList {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .contactItem {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  /* Same gold circle as the step numbers above. */
-  .contactIcon {
-    flex: none;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    color: var(--color-gold-dark);
-    background: var(--color-icon-tile-gold);
-  }
-
-  .contactLink {
-    font: 600 15px var(--font-body), sans-serif;
-    color: var(--color-navy);
-  }
-
-  .contactLink:hover {
-    color: var(--color-navy);
-    text-decoration: underline;
-  }
-
-  .contactText {
-    font-size: 14px;
-    color: var(--color-text-muted);
+  .side {
+    transition: top var(--site-header-slide);
   }
 }

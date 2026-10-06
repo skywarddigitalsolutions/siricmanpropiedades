@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { absoluteUrl } from "@/lib/site-url";
 import { makePublicProperty } from "@/test/fixtures/public-property";
 import {
   conditionLabels,
@@ -11,8 +12,10 @@ import {
   propertyMapsHref,
   propertyPriceLabel,
   propertySpecs,
-  serviceLabels,
+  amenityItems,
+  serviceItems,
   tagLabel,
+  inquiryMessage,
   whatsappInquiry,
 } from "./property-view";
 
@@ -87,48 +90,91 @@ describe("propertyLocation", () => {
       exact: true,
     });
     expect(propertyLocation(makePublicProperty({ address: null }))).toEqual({
-      label: "Palermo, CABA · zona aproximada",
+      label: "Palermo, CABA",
       exact: false,
     });
+  });
+
+  it("treats a blank address like a hidden one, as the map does", () => {
+    const property = makePublicProperty({ address: "   " });
+    expect(propertyLocation(property)).toEqual({ label: "Palermo, CABA", exact: false });
+    expect(propertyMap(property).precision).toBe("approximate");
   });
 });
 
 describe("propertyFacts", () => {
-  it("lists every fact with readable values", () => {
+  it("lists only the facts with data, starting with the type", () => {
+    expect(propertyFacts(makePublicProperty())).toEqual([
+      { label: "Tipo", value: "Departamento" },
+      { label: "Superficie total", value: "78 m²" },
+      { label: "Superficie cubierta", value: "72 m²" },
+      { label: "Ambientes", value: "3" },
+      { label: "Dormitorios", value: "2" },
+      { label: "Baños", value: "1" },
+      { label: "Antigüedad", value: "12 años" },
+    ]);
+  });
+
+  it("drops empty values, shows the garage only when there is one, and never repeats expenses", () => {
+    const facts = propertyFacts(
+      makePublicProperty({ coveredArea: 0, bedrooms: 0, hasGarage: true, age: 0, expenses: 145000 }),
+    );
+    expect(facts.map((fact) => fact.label)).not.toContain("Superficie cubierta");
+    expect(facts.map((fact) => fact.label)).not.toContain("Dormitorios");
+    expect(facts.map((fact) => fact.label)).not.toContain("Expensas");
+    expect(facts).toContainEqual({ label: "Cochera", value: "Sí" });
+    expect(facts).toContainEqual({ label: "Antigüedad", value: "A estrenar" });
+  });
+
+  it("follows the property type, like the spec row", () => {
+    const shop = propertyFacts(makePublicProperty({ type: "commercial" }));
+    expect(shop.map((fact) => fact.label)).not.toContain("Ambientes");
+    const garage = propertyFacts(makePublicProperty({ type: "garage", hasGarage: true }));
+    expect(garage.map((fact) => fact.label)).not.toContain("Cochera");
+    const land = propertyFacts(makePublicProperty({ type: "land", age: 0 }));
+    expect(land.map((fact) => fact.label)).not.toContain("Antigüedad");
+  });
+});
+
+describe("conditionLabels, serviceItems and amenityItems", () => {
+  it("lists only what applies", () => {
+    expect(conditionLabels(makePublicProperty())).toEqual(["Apto crédito", "Acepta mascotas"]);
+    expect(serviceItems(makePublicProperty())).toEqual([
+      { key: "water", label: "Agua corriente" },
+      { key: "naturalGas", label: "Gas natural" },
+      { key: "sewer", label: "Cloacas" },
+      { key: "electricity", label: "Electricidad" },
+    ]);
+  });
+
+  it("lists amenities in a fixed order, and none when the API sends none", () => {
+    expect(amenityItems(makePublicProperty())).toEqual([]);
     expect(
-      propertyFacts(makePublicProperty({ age: 0, expenses: null, coveredArea: 0 })),
+      amenityItems(makePublicProperty({ amenities: { storage: true, pool: true, gym: false } })),
     ).toEqual([
-      { icon: "area", label: "Sup. total", value: "78 m²" },
-      { icon: "coveredArea", label: "Sup. cubierta", value: "—" },
-      { icon: "rooms", label: "Ambientes", value: "3" },
-      { icon: "bedrooms", label: "Dormitorios", value: "2" },
-      { icon: "bathrooms", label: "Baños", value: "1" },
-      { icon: "garage", label: "Cochera", value: "No" },
-      { icon: "age", label: "Antigüedad", value: "A estrenar" },
-      { icon: "expenses", label: "Expensas", value: "No tiene" },
+      { key: "pool", label: "Pileta" },
+      { key: "storage", label: "Baulera" },
     ]);
   });
 });
 
-describe("conditionLabels and serviceLabels", () => {
-  it("lists only what applies", () => {
-    expect(conditionLabels(makePublicProperty())).toEqual(["Apto crédito", "Acepta mascotas"]);
-    expect(serviceLabels(makePublicProperty())).toEqual([
-      "Agua corriente",
-      "Gas natural",
-      "Cloacas",
-      "Electricidad",
-    ]);
+describe("inquiryMessage", () => {
+  it("names the property by its title, never by its code", () => {
+    expect(inquiryMessage(makePublicProperty())).toBe(
+      'Hola, me interesa "Luminoso 3 ambientes con balcón al frente". ¿Podemos coordinar una visita?',
+    );
   });
 });
 
 describe("whatsappInquiry", () => {
-  it("prefills a message naming the property", () => {
-    const { message, href } = whatsappInquiry(makePublicProperty());
+  it("prefills a message with the title and the page link, never the code", () => {
+    const property = makePublicProperty();
+    const { message, href } = whatsappInquiry(property);
 
     expect(message).toBe(
-      "Hola, me interesa la propiedad SP-0101 (Luminoso 3 ambientes con balcón al frente). ¿Podemos coordinar una visita?",
+      `${inquiryMessage(property)} ${absoluteUrl(`/propiedades/${property.slug}`)}`,
     );
+    expect(message).not.toContain(property.code);
     expect(href).toBe(`https://wa.me/5491138967363?text=${encodeURIComponent(message)}`);
   });
 });
@@ -138,7 +184,6 @@ describe("propertyMap", () => {
     expect(propertyMap(makePublicProperty())).toEqual({
       query: "Gorriti 4800, Palermo, CABA",
       precision: "exact",
-      label: "Gorriti 4800, Palermo",
     });
   });
 
@@ -148,7 +193,6 @@ describe("propertyMap", () => {
     expect(map).toEqual({
       query: "Palermo, CABA",
       precision: "approximate",
-      label: "Zona aproximada · Palermo",
     });
     expect(JSON.stringify(map)).not.toContain("Gorriti");
   });

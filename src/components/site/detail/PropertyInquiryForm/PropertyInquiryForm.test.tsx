@@ -12,30 +12,35 @@ function renderForm(action: Action) {
   render(
     <PropertyInquiryForm
       action={action}
-      defaultMessage="Hola, me interesa la propiedad SP-0101."
-      whatsappHref="https://wa.me/5491138967363?text=Hola"
+      defaultMessage="Hola, me interesa la propiedad."
     />,
   );
   return userEvent.setup();
 }
 
 describe("PropertyInquiryForm", () => {
-  it("offers labelled fields with the message prefilled and the WhatsApp alternative", () => {
+  it("offers labelled fields with the message prefilled and a single send button", () => {
     renderForm(vi.fn<Action>(async () => ({ status: "sent" })));
 
     expect(screen.getByLabelText("Nombre y apellido")).toBeRequired();
     expect(screen.getByLabelText("Teléfono")).toHaveAttribute("type", "tel");
     expect(screen.getByLabelText("Email")).toHaveAttribute("type", "email");
-    expect(screen.getByLabelText("Mensaje (opcional)")).toHaveValue("Hola, me interesa la propiedad SP-0101.");
-    expect(screen.getByRole("link", { name: "Consultar por WhatsApp" })).toHaveAttribute(
-      "href",
-      "https://wa.me/5491138967363?text=Hola",
-    );
+    expect(screen.getByLabelText("Mensaje (opcional)")).toHaveValue("Hola, me interesa la propiedad.");
+    expect(screen.getByRole("button", { name: "Enviar consulta" })).toBeInTheDocument();
+    // WhatsApp lives in the fixed contact bar, not next to the send button.
+    expect(screen.queryByRole("link", { name: /WhatsApp/ })).toBeNull();
+  });
+
+  it("tells the visitor how their data is used, linking the privacy policy", () => {
+    renderForm(vi.fn<Action>(async () => ({ status: "sent" })));
+
+    expect(screen.getByText(/Usamos tus datos solo para responder tu consulta/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Privacidad" })).toHaveAttribute("href", "/privacidad");
   });
 
   it("hides the honeypot from people and assistive technology", () => {
     const { container } = render(
-      <PropertyInquiryForm action={vi.fn()} defaultMessage="" whatsappHref="#" />,
+      <PropertyInquiryForm action={vi.fn()} defaultMessage="" />,
     );
 
     const honeypot = container.querySelector('input[name="website"]')!;
@@ -85,6 +90,85 @@ describe("PropertyInquiryForm", () => {
     await user.click(screen.getByRole("button", { name: "Enviar consulta" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Probá de nuevo en un minuto.");
+  });
+});
+
+describe("PropertyInquiryForm message toggle (collapsed on desktop)", () => {
+  it("offers 'Agregar un mensaje', collapsed, and still sends the prefilled message", () => {
+    renderForm(vi.fn<Action>(async () => ({ status: "sent" })));
+
+    const toggle = screen.getByRole("button", { name: "Agregar un mensaje" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    const message = screen.getByLabelText("Mensaje (opcional)");
+    expect(message.closest("[data-collapsed]")).not.toBeNull();
+    // Hidden, not disabled: the prefilled text goes out with the inquiry.
+    const data = new FormData(message.closest("form")!);
+    expect(data.get("message")).toBe("Hola, me interesa la propiedad.");
+  });
+
+  it("opens the message field and moves focus into it", async () => {
+    const user = renderForm(vi.fn<Action>(async () => ({ status: "sent" })));
+
+    await user.click(screen.getByRole("button", { name: "Agregar un mensaje" }));
+
+    const message = screen.getByLabelText("Mensaje (opcional)");
+    expect(message.closest("[data-collapsed]")).toBeNull();
+    expect(message).toHaveFocus();
+    expect(screen.queryByRole("button", { name: "Agregar un mensaje" })).toBeNull();
+  });
+
+  it("keeps an opened message open, with what was typed, after an error on another field", async () => {
+    const user = renderForm(
+      vi.fn<Action>(async () => ({
+        status: "error",
+        fieldErrors: { phone: "Dejanos un teléfono o un email para responderte." },
+        values: { name: "Ana", message: "Quiero visitarla el sábado" },
+      })),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Agregar un mensaje" }));
+    await user.type(screen.getByLabelText("Nombre y apellido"), "Ana");
+    await user.click(screen.getByRole("button", { name: "Enviar consulta" }));
+
+    await screen.findByText("Dejanos un teléfono o un email para responderte.");
+    const message = screen.getByLabelText("Mensaje (opcional)");
+    expect(message.closest("[data-collapsed]")).toBeNull();
+    expect(message).toHaveValue("Quiero visitarla el sábado");
+    expect(screen.queryByRole("button", { name: "Agregar un mensaje" })).toBeNull();
+  });
+
+  it("keeps a never-opened message collapsed, with the prefill, after an error on another field", async () => {
+    const user = renderForm(
+      vi.fn<Action>(async () => ({
+        status: "error",
+        fieldErrors: { phone: "Dejanos un teléfono o un email para responderte." },
+        values: { name: "Ana", message: "Hola, me interesa la propiedad." },
+      })),
+    );
+
+    await user.type(screen.getByLabelText("Nombre y apellido"), "Ana");
+    await user.click(screen.getByRole("button", { name: "Enviar consulta" }));
+
+    await screen.findByText("Dejanos un teléfono o un email para responderte.");
+    const message = screen.getByLabelText("Mensaje (opcional)");
+    expect(message.closest("[data-collapsed]")).not.toBeNull();
+    expect(message).toHaveValue("Hola, me interesa la propiedad.");
+  });
+
+  it("starts open when the message has an error", async () => {
+    const user = renderForm(
+      vi.fn<Action>(async () => ({
+        status: "error",
+        fieldErrors: { message: "El mensaje es muy largo." },
+        values: { name: "Ana", phone: "1122334455", message: "x" },
+      })),
+    );
+
+    await user.type(screen.getByLabelText("Nombre y apellido"), "Ana");
+    await user.click(screen.getByRole("button", { name: "Enviar consulta" }));
+
+    expect(await screen.findByText("El mensaje es muy largo.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Mensaje (opcional)").closest("[data-collapsed]")).toBeNull();
   });
 });
 

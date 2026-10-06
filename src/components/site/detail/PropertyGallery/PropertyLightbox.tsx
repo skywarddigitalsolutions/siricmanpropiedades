@@ -40,8 +40,11 @@ export default function PropertyLightbox({
 }: PropertyLightboxProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const thumbsRef = useRef<HTMLUListElement>(null);
   // Screen readers hear the position only after the visitor moves, not on open.
   const [announced, setAnnounced] = useState(false);
+  // URL of a photo that failed to load, so the stage explains instead of staying blank.
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const total = images.length;
 
   useEffect(() => {
@@ -57,6 +60,18 @@ export default function PropertyLightbox({
       else dialog.removeAttribute("open");
     }
   }, [open]);
+
+  // Keep the current thumbnail in view: with many photos it could sit off the strip.
+  useEffect(() => {
+    if (!open) return;
+    const current = thumbsRef.current?.querySelector<HTMLElement>('[aria-current="true"]');
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    current?.scrollIntoView?.({
+      block: "nearest",
+      inline: "center",
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  }, [open, index]);
 
   useEffect(() => {
     if (!open) return;
@@ -150,8 +165,12 @@ export default function PropertyLightbox({
               sizes="100vw"
               className={styles.photo}
               draggable={false}
+              onError={() => setFailedUrl(current.url)}
               unoptimized
             />
+            {failedUrl === current.url && (
+              <p className={styles.failed}>No pudimos cargar esta foto.</p>
+            )}
           </div>
 
           {total > 1 && (
@@ -182,7 +201,7 @@ export default function PropertyLightbox({
           </p>
 
           {total > 1 && (
-            <ul className={styles.thumbs} aria-label="Miniaturas">
+            <ul ref={thumbsRef} className={styles.thumbs} aria-label="Miniaturas">
               {images.map((image, position) => (
                 <li key={image.url}>
                   <button
@@ -195,8 +214,8 @@ export default function PropertyLightbox({
                     <Image
                       src={image.thumbnailUrl}
                       alt=""
-                      width={96}
-                      height={72}
+                      width={84}
+                      height={63}
                       className={styles.thumbImage}
                       unoptimized
                     />

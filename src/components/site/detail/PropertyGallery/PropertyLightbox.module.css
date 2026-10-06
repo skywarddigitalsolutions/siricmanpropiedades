@@ -1,4 +1,4 @@
-/* Native modal dialog, forced full-screen over a dark backdrop. */
+/* Native modal dialog, full-screen and near-black so the photo stands out. */
 .dialog {
   position: fixed;
   inset: 0;
@@ -10,7 +10,7 @@
   padding: 0;
   border: 0;
   color: var(--color-white);
-  background: var(--color-media-bg);
+  background: var(--color-media-deep);
 }
 
 .dialog[open] {
@@ -20,7 +20,7 @@
 }
 
 .dialog::backdrop {
-  background: var(--color-media-overlay);
+  background: var(--color-media-deep);
 }
 
 .header {
@@ -28,14 +28,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px 10px 20px;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-6);
 }
 
 .counter {
-  font: 700 14px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
   letter-spacing: 0.04em;
 }
 
+/* Round, translucent controls that stay out of the photo's way; gold on hover. */
 .close,
 .nav {
   width: 48px;
@@ -51,6 +54,7 @@
 
 .close:hover,
 .nav:hover:not(:disabled) {
+  color: var(--color-gold);
   background: var(--color-on-dark-25);
 }
 
@@ -66,6 +70,18 @@
   object-fit: contain;
 }
 
+.failed {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  font-size: var(--text-sm);
+  text-align: center;
+  color: var(--color-text-on-dark-soft);
+}
+
 .nav {
   position: absolute;
   top: 50%;
@@ -79,22 +95,24 @@
 }
 
 .prev {
-  left: 12px;
+  left: var(--space-3);
 }
 
 .next {
-  right: 12px;
+  right: var(--space-3);
 }
 
 /* Thumbnail strip: wide screens only (phones swipe). */
 .thumbs {
   grid-row: 3;
   display: none;
-  gap: 8px;
-  padding: 12px 16px 16px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) var(--space-4);
   overflow-x: auto;
   list-style: none;
-  justify-content: center;
+  scrollbar-width: thin;
+  /* Centered while they fit; `safe` falls back to start so the first ones never clip. */
+  justify-content: safe center;
 }
 
 .thumb {
@@ -103,7 +121,7 @@
   height: 63px;
   overflow: hidden;
   border: 2px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   opacity: 0.6;
   background: none;
   cursor: pointer;
@@ -123,7 +141,7 @@
 .close:focus-visible,
 .nav:focus-visible,
 .thumb:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }
 
@@ -133,15 +151,22 @@
   }
 
   .prev {
-    left: 24px;
+    left: var(--space-6);
   }
 
   .next {
-    right: 24px;
+    right: var(--space-6);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .close,
+  .nav {
+    transition:
+      color 0.15s ease,
+      background 0.15s ease;
+  }
+
   .photo {
     animation: lightbox-fade-in 0.18s ease-out;
   }

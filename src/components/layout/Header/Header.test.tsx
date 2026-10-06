@@ -93,40 +93,24 @@ describe("Header", () => {
   });
 });
 
-describe("Header favorites link", () => {
-  it("links to /favoritos in desktop and mobile menus with a count once mounted", async () => {
-    const item = (slug: string, savedAt: number) => ({
-      slug,
-      title: slug,
-      price: 1,
-      currency: "USD",
-      operation: "sale",
-      cover: null,
-      neighborhood: "X",
-      savedAt,
-    });
-    localStorage.setItem("siricman:favorites:v1", JSON.stringify([item("a", 1), item("b", 2)]));
+describe("Header actions", () => {
+  it("shows only the brand, the sections and the appraisal CTA as links in the bar", () => {
     render(<Header />);
 
-    const link = screen.getByRole("link", { name: /Favoritos, 2 guardadas/ });
-    expect(link).toHaveAttribute("href", "/favoritos");
-    expect(within(link).getByText("2")).toBeInTheDocument();
-
-    await userEvent.setup().click(screen.getByRole("button", { name: "Menú" }));
-    const dialog = screen.getByRole("dialog");
-    expect(within(dialog).getByRole("link", { name: /Favoritos/ })).toHaveAttribute(
-      "href",
-      "/favoritos",
-    );
-    localStorage.clear();
-  });
-
-  it("shows no badge when there are no favorites", () => {
-    localStorage.clear();
-    render(<Header />);
-    const link = screen.getByRole("link", { name: "Favoritos" });
-    expect(link).toHaveAttribute("href", "/favoritos");
-    expect(within(link).queryByText(/\d/)).toBeNull();
+    const names = within(screen.getByRole("banner"))
+      .getAllByRole("link")
+      .map((link) => link.textContent?.trim());
+    expect(names).toEqual([
+      expect.stringContaining("SIRICMAN"),
+      "Comprar",
+      "Alquilar",
+      "Tasaciones",
+      "Consorcios",
+      "Nosotros",
+      "Contacto",
+      "Tasá tu propiedad",
+    ]);
+    expect(screen.getByRole("button", { name: "Menú" })).toBeInTheDocument();
   });
 });
 
@@ -211,7 +195,7 @@ describe("Header mobile menu content", () => {
     expect(within(dialog).getByRole("button", { name: "Cerrar" })).toBeInTheDocument();
   });
 
-  it("keeps the six sections, favorites and the appraisal CTA in order", async () => {
+  it("keeps the six sections and the appraisal CTA in order", async () => {
     const { dialog } = await openMenu();
 
     const names = within(dialog)
@@ -225,7 +209,6 @@ describe("Header mobile menu content", () => {
       "Consorcios",
       "Nosotros",
       "Contacto",
-      "Favoritos",
       "Tasá tu propiedad",
       "WhatsApp",
       "Llamar",

@@ -46,6 +46,7 @@
   --color-backdrop: rgba(15, 19, 45, 0.45);
   --color-media-bg: #0b0e24;
   --color-media-overlay: rgba(5, 7, 20, 0.9);
+  --color-media-deep: #050714; /* lightbox background, darker than --color-media-bg */
 
   /* Placeholders (no photo) and loading skeletons */
   --color-placeholder-a: #e8ebf2;
@@ -85,10 +86,6 @@
   --color-navy-scrim-75: rgba(19, 28, 77, 0.75);
   --color-navy-scrim-80: rgba(19, 28, 77, 0.8);
   --color-navy-scrim-85: rgba(19, 28, 77, 0.85);
-
-  /* Favorites */
-  --color-favorite: #d6433b;
-  --color-favorite-soft: #fbeceb;
 
   /* WhatsApp */
   /* Darker than the brand #25d366 so white labels pass AA: 5.22:1 (hover 7.10:1). */

@@ -13,7 +13,13 @@ export type LeadSubmission = {
   email?: string;
   message?: string;
   topic?: LeadTopic;
-  details?: { propertyType?: string; address?: string; rooms?: number; area?: number };
+  details?: {
+    propertyType?: string;
+    address?: string;
+    neighborhood?: string;
+    rooms?: number;
+    area?: number;
+  };
   website?: string;
 };
 

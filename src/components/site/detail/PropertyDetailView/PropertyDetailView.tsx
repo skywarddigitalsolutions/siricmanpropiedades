@@ -1,32 +1,87 @@
 import Link from "next/link";
-import { Check, ChevronLeft, ExternalLink, MapPin, Phone } from "lucide-react";
-import { PHONE_HREF } from "@/lib/contact";
+import {
+  Archive,
+  ArrowUpDown,
+  Check,
+  ChevronLeft,
+  Cylinder,
+  Droplet,
+  Drumstick,
+  Dumbbell,
+  ExternalLink,
+  Fence,
+  Flame,
+  Flower2,
+  MapPin,
+  Phone,
+  ShieldCheck,
+  Sun,
+  Trees,
+  Users,
+  WashingMachine,
+  WavesLadder,
+  Wifi,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
+import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
+import { FOUNDER } from "@/lib/public/team";
 import { OPERATION_LABELS } from "@/lib/properties/labels";
 import {
   conditionLabels,
   dealStatusNotice,
   displayTitle,
   expensesLabel,
+  inquiryMessage,
   propertyFacts,
   propertyLocation,
   propertyMap,
   propertyMapsHref,
   propertyPriceLabel,
-  serviceLabels,
+  propertySpecs,
+  amenityItems,
+  serviceItems,
+  type ServiceKey,
   tagLabel,
   whatsappInquiry,
 } from "@/lib/public/property-view";
 import { EMPTY_SEARCH, buildSearchHref } from "@/lib/public/search-params";
 import type { InquiryState } from "@/lib/leads/inquiry-form";
-import type { PublicPropertyDetail } from "@/lib/public/types";
-import FavoriteToggle from "../../FavoriteToggle/FavoriteToggle";
+import type { AmenityKey, PublicPropertyDetail } from "@/lib/public/types";
 import MapEmbed from "../../MapEmbed/MapEmbed";
 import PropertyIcon from "../../PropertyIcon/PropertyIcon";
 import WhatsAppIcon from "../../WhatsAppIcon/WhatsAppIcon";
 import ExpandableText from "../ExpandableText/ExpandableText";
+import FeatureList from "../FeatureList/FeatureList";
 import PropertyGallery from "../PropertyGallery/PropertyGallery";
 import PropertyInquiryForm from "../PropertyInquiryForm/PropertyInquiryForm";
+import ShareButton from "../ShareButton/ShareButton";
 import styles from "./PropertyDetailView.module.css";
+
+const SERVICE_ICONS: Record<ServiceKey, LucideIcon> = {
+  water: Droplet,
+  naturalGas: Flame,
+  sewer: Cylinder,
+  electricity: Zap,
+  internet: Wifi,
+};
+
+const AMENITY_ICONS: Record<AmenityKey, LucideIcon> = {
+  pool: WavesLadder,
+  gym: Dumbbell,
+  grill: Drumstick,
+  multipurposeRoom: Users,
+  security: ShieldCheck,
+  elevator: ArrowUpDown,
+  balcony: Fence,
+  terrace: Sun,
+  garden: Trees,
+  patio: Flower2,
+  laundry: WashingMachine,
+  storage: Archive,
+};
+
+const FOUNDER_FIRST_NAME = FOUNDER.name.split(" ")[0];
 
 const STATUS_COPY = {
   reserved: "Hay una reserva en curso; escribinos para saber si sigue disponible.",
@@ -58,8 +113,10 @@ export default function PropertyDetailView({
   const status = dealStatusNotice(property);
   const tag = tagLabel(property);
   const conditions = conditionLabels(property);
-  const services = serviceLabels(property);
+  const services = serviceItems(property);
+  const amenities = amenityItems(property);
   const inquiry = whatsappInquiry(property);
+  const specs = propertySpecs(property);
   const paragraphs = (property.description ?? "")
     .split(/\n\s*\n/)
     .map((paragraph) => paragraph.trim())
@@ -67,10 +124,8 @@ export default function PropertyDetailView({
 
   return (
     <main className={styles.main}>
-      <div className={styles.topRow}>
-        {preview ? (
-          <span />
-        ) : (
+      {!preview && (
+        <div className={styles.topRow}>
           <Link
             href={buildSearchHref(EMPTY_SEARCH, { operation: property.operation })}
             className={styles.back}
@@ -78,9 +133,8 @@ export default function PropertyDetailView({
             <ChevronLeft aria-hidden size={18} />
             Ver más propiedades
           </Link>
-        )}
-        <span className={styles.code}>Cód. {property.code}</span>
-      </div>
+        </div>
+      )}
 
       <PropertyGallery
         images={property.images}
@@ -104,86 +158,96 @@ export default function PropertyDetailView({
           <header className={styles.heading}>
             <div className={styles.priceRow}>
               <span className={styles.price}>{price}</span>
-              {!preview && (
-                <FavoriteToggle
-                  variant="labeled"
-                  property={{
-                    slug: property.slug,
-                    title: property.title,
-                    price: property.price,
-                    currency: property.currency,
-                    operation: property.operation,
-                    cover: property.images[0]?.thumbnailUrl ?? null,
-                    neighborhood: property.neighborhood.name,
-                  }}
-                />
-              )}
+              {!preview && <ShareButton title={title} className={styles.shareButton} />}
             </div>
             {expenses && <span className={styles.expenses}>{expenses}</span>}
-            <h1 className={styles.title}>{title}</h1>
-            <span className={styles.location}>
-              <MapPin aria-hidden size={15} className={styles.pin} />
-              {location.label}
-            </span>
+            {specs.length > 0 && (
+              <ul aria-label="Características principales" className={styles.specs}>
+                {specs.map((spec) => (
+                  <li key={spec.icon} className={styles.spec}>
+                    <PropertyIcon name={spec.icon} size={18} className={styles.specIcon} />
+                    <span aria-hidden>{spec.text}</span>
+                    <span className="sr-only">{spec.label}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className={styles.identity}>
+              <h1 className={styles.title}>{title}</h1>
+              <span className={styles.location}>
+                <MapPin aria-hidden size={15} className={styles.pin} />
+                {location.label}
+              </span>
+            </div>
           </header>
 
-          <ul aria-label="Características" className={styles.facts}>
-            {propertyFacts(property).map((fact) => (
-              <li key={fact.label} className={styles.fact}>
-                <span className={styles.factIcon}>
-                  <PropertyIcon name={fact.icon} size={18} />
-                </span>
-                <span className={styles.factText}>
-                  <span className={styles.factLabel}>{fact.label}</span>
-                  <span className={styles.factValue}>{fact.value}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-
-          {conditions.length > 0 && (
-            <ul aria-label="Condiciones" className={styles.conditions}>
-              {conditions.map((condition) => (
-                <li key={condition} className={styles.condition}>
-                  <Check aria-hidden size={14} />
-                  {condition}
-                </li>
-              ))}
-            </ul>
-          )}
-
           {paragraphs.length > 0 && (
-            <section aria-labelledby="detail-description" className={styles.card}>
-              <h2 id="detail-description" className={styles.cardTitle}>
+            <section aria-labelledby="detail-description" className={styles.section}>
+              <h2 id="detail-description" className={styles.sectionTitle}>
                 Descripción
               </h2>
               <ExpandableText paragraphs={paragraphs} />
             </section>
           )}
 
-          {services.length > 0 && (
-            <section aria-labelledby="detail-services" className={styles.card}>
-              <h2 id="detail-services" className={styles.cardTitle}>
-                Servicios
-              </h2>
-              <ul className={styles.chips}>
-                {services.map((service) => (
-                  <li key={service} className={styles.chip}>
-                    {service}
+          <section aria-labelledby="detail-facts" className={styles.section}>
+            <h2 id="detail-facts" className={styles.sectionTitle}>
+              Características
+            </h2>
+            <dl className={styles.facts}>
+              {propertyFacts(property).map((fact) => (
+                <div key={fact.label} className={styles.fact}>
+                  <dt className={styles.factLabel}>{fact.label}</dt>
+                  <dd className={styles.factValue}>{fact.value}</dd>
+                </div>
+              ))}
+            </dl>
+            {conditions.length > 0 && (
+              <ul aria-label="Condiciones" className={styles.conditions}>
+                {conditions.map((condition) => (
+                  <li key={condition} className={styles.condition}>
+                    <Check aria-hidden size={18} className={styles.conditionIcon} />
+                    {condition}
                   </li>
                 ))}
               </ul>
+            )}
+          </section>
+
+          {amenities.length > 0 && (
+            <section aria-labelledby="detail-amenities" className={styles.section}>
+              <h2 id="detail-amenities" className={styles.sectionTitle}>
+                Comodidades
+              </h2>
+              <FeatureList
+                items={amenities.map((item) => ({ ...item, Icon: AMENITY_ICONS[item.key] }))}
+              />
             </section>
           )}
 
-          <section aria-labelledby="detail-location" className={styles.card}>
-            <h2 id="detail-location" className={styles.cardTitle}>
+          {services.length > 0 && (
+            <section aria-labelledby="detail-services" className={styles.section}>
+              <h2 id="detail-services" className={styles.sectionTitle}>
+                Servicios
+              </h2>
+              <FeatureList
+                items={services.map((item) => ({ ...item, Icon: SERVICE_ICONS[item.key] }))}
+              />
+            </section>
+          )}
+
+          <section aria-labelledby="detail-location" className={styles.section}>
+            <h2 id="detail-location" className={styles.sectionTitle}>
               Ubicación
             </h2>
+            {!location.exact && (
+              <p className={styles.muted}>
+                Te compartimos la dirección exacta cuando coordinemos la visita.
+              </p>
+            )}
             <MapEmbed
               query={map.query}
               precision={map.precision}
-              label={map.label}
               title="Mapa de la ubicación"
             />
             {!preview && (
@@ -193,59 +257,69 @@ export default function PropertyDetailView({
                 rel="noopener noreferrer"
                 className={styles.mapLink}
               >
-                <ExternalLink aria-hidden size={15} />
-                Abrir en Google Maps
+                <ExternalLink aria-hidden size={18} />
+                Ver en Google Maps
               </a>
-            )}
-            {!location.exact && (
-              <p className={styles.muted}>
-                Te compartimos la dirección exacta cuando coordinemos la visita.
-              </p>
             )}
           </section>
         </article>
 
         <aside id="consulta" aria-labelledby="detail-inquiry" className={styles.aside}>
-          <div className={styles.asideSummary}>
-            <span className={styles.asidePrice}>{price}</span>
-            {expenses && <span className={styles.expenses}>{expenses}</span>}
-          </div>
           <h2 id="detail-inquiry" className={styles.asideTitle}>
             Consultá por esta propiedad
           </h2>
           {preview || !inquiryAction ? (
             <p className={styles.muted}>
               En la vista previa no se envían consultas. Acá van a ver el
-              formulario y el botón de WhatsApp.
+              formulario de consulta y las formas de contacto.
             </p>
           ) : (
-            <PropertyInquiryForm
-              action={inquiryAction}
-              defaultMessage={inquiry.message}
-              whatsappHref={inquiry.href}
-            />
+            <>
+              <PropertyInquiryForm
+                action={inquiryAction}
+                defaultMessage={inquiryMessage(property)}
+              />
+              {/* Desktop only: on phones the fixed bar carries WhatsApp and the call. */}
+              <div className={styles.asideContact}>
+                <p className={styles.asideDivider}>o</p>
+                <a
+                  href={inquiry.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.asideWhatsapp}
+                >
+                  <WhatsAppIcon size={20} />
+                  Escribir por WhatsApp
+                </a>
+                <p className={styles.asidePhone}>
+                  ¿Preferís hablar? Llamá a {FOUNDER_FIRST_NAME} al{" "}
+                  <a href={PHONE_HREF} className={styles.asidePhoneLink}>
+                    {PHONE_DISPLAY}
+                  </a>
+                </p>
+              </div>
+            </>
           )}
         </aside>
       </div>
 
       {!preview && (
-      <div className={styles.bottomBar}>
+      <div role="group" aria-label="Contactar por esta propiedad" className={styles.bottomBar}>
         <div className={styles.bottomPrice}>
           <span className={styles.bottomAmount}>{price}</span>
-          <span className={styles.bottomCode}>Cód. {property.code}</span>
+          {expenses && <span className={styles.bottomExpenses}>{expenses}</span>}
         </div>
         <a
           href={inquiry.href}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="WhatsApp"
           className={styles.bottomWhatsapp}
         >
-          <WhatsAppIcon size={20} />
-          WhatsApp
+          <WhatsAppIcon size={24} />
         </a>
-        <a href={PHONE_HREF} className={styles.bottomCall}>
-          <Phone aria-hidden size={18} />
-          Llamar
+        <a href={PHONE_HREF} aria-label="Llamar" className={styles.bottomCall}>
+          <Phone aria-hidden size={22} />
         </a>
       </div>
       )}

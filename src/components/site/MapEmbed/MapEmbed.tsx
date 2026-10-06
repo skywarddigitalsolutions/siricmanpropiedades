@@ -7,7 +7,7 @@ type MapEmbedProps = {
   /** Accessible name of the iframe. */
   title: string;
   precision?: MapPrecision;
-  /** Optional chip over the map, e.g. the address or "Zona aproximada". */
+  /** Optional chip over the map, e.g. the address or the barrio. */
   label?: string;
 };
 

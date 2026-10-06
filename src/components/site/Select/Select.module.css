@@ -5,16 +5,18 @@
 .select {
   width: 100%;
   /* Room for the chevron so the arrow never touches the border. */
-  padding-right: 40px;
+  padding-right: calc(var(--space-8) + var(--space-2));
+  font-family: var(--font-body), sans-serif;
   /* 16px prevents the iOS zoom-on-focus. */
-  font: 600 16px var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
   color: var(--color-text);
   background: var(--color-white);
   border: 1px solid var(--color-border-strong);
 }
 
 .select:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }
 
@@ -29,15 +31,21 @@
 
 .pill .select {
   min-height: 44px;
-  padding-left: 16px;
+  padding-left: var(--space-4);
   border-radius: var(--radius-pill);
 }
 
 .field .select {
   min-height: 48px;
-  padding: 12px 40px 12px 13px;
-  border-radius: 12px;
-  font-weight: 500;
+  padding: var(--space-3) calc(var(--space-8) + var(--space-2)) var(--space-3) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-snug);
+}
+
+/* Same 1px offset as the text inputs it sits next to. */
+.field .select:focus-visible {
+  outline-offset: 1px;
 }
 
 .field .select[aria-invalid="true"] {
@@ -54,7 +62,7 @@
 
 .bare .select {
   height: 100%;
-  padding: 0 32px 0 0;
+  padding: 0 var(--space-8) 0 0;
   border: 0;
   background: transparent;
   outline: none;

@@ -1,17 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useRef, useState, type InputHTMLAttributes } from "react";
+import { flushSync } from "react-dom";
+import { Plus } from "lucide-react";
 import type { InquiryField, InquiryState } from "@/lib/leads/inquiry-form";
 import { FormHint, FormLiveRegion, Optional } from "../../forms/FormParts";
 import FormSuccess from "../../forms/FormSuccess";
 import { countFieldErrors, useFocusOnError } from "../../forms/useFocusOnError";
-import WhatsAppIcon from "../../WhatsAppIcon/WhatsAppIcon";
 import styles from "./PropertyInquiryForm.module.css";
 
 type PropertyInquiryFormProps = {
   action: (prev: InquiryState, formData: FormData) => Promise<InquiryState>;
   defaultMessage: string;
-  whatsappHref: string;
 };
 
 function Field({
@@ -53,13 +54,13 @@ function Field({
 
 /**
  * Inquiry form of the property page (design: "Consultá por esta propiedad").
- * Phone or email is enough; WhatsApp stays as the instant alternative.
+ * Phone or email is enough. A single send button: WhatsApp and the phone live
+ * next to the form (the fixed bar on phones, the card's contact block on
+ * desktop). On desktop the optional message starts collapsed
+ * behind "Agregar un mensaje" so the sticky card fits the screen; the field is
+ * only hidden, so its prefilled text is still sent.
  */
-export default function PropertyInquiryForm({
-  action,
-  defaultMessage,
-  whatsappHref,
-}: PropertyInquiryFormProps) {
+export default function PropertyInquiryForm({ action, defaultMessage }: PropertyInquiryFormProps) {
   const [state, formAction, pending] = useActionState(action, {
     status: "idle",
   });
@@ -73,6 +74,8 @@ export default function PropertyInquiryForm({
   }
 
   const formRef = useRef<HTMLFormElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+  const [messageOpened, setMessageOpened] = useState(false);
   useFocusOnError(state, formRef);
 
   if (state.status === "sent") {
@@ -86,6 +89,7 @@ export default function PropertyInquiryForm({
 
   const errors = state.fieldErrors ?? {};
   const values = state.values ?? {};
+  const messageOpen = messageOpened || Boolean(errors.message);
 
   return (
     <>
@@ -94,7 +98,6 @@ export default function PropertyInquiryForm({
         ref={formRef}
         action={formAction}
         className={styles.form}
-        noValidate={false}
       >
         {errors.general && (
           <p role="alert" tabIndex={-1} className={styles.alert}>
@@ -133,11 +136,31 @@ export default function PropertyInquiryForm({
           defaultValue={values.email}
           error={errors.email}
         />
-        <div className={styles.field}>
+        {!messageOpen && (
+          <button
+            type="button"
+            aria-expanded={false}
+            aria-controls="inquiry-message-field"
+            className={styles.messageToggle}
+            onClick={() => {
+              flushSync(() => setMessageOpened(true));
+              messageRef.current?.focus();
+            }}
+          >
+            <Plus aria-hidden size={16} />
+            Agregar un mensaje
+          </button>
+        )}
+        <div
+          id="inquiry-message-field"
+          className={styles.field}
+          data-collapsed={messageOpen ? undefined : ""}
+        >
           <label htmlFor="inquiry-message" className={styles.label}>
             Mensaje <Optional />
           </label>
           <textarea
+            ref={messageRef}
             id="inquiry-message"
             name="message"
             rows={3}
@@ -160,20 +183,15 @@ export default function PropertyInquiryForm({
           <input id="inquiry-website" name="website" tabIndex={-1} autoComplete="off" />
         </div>
 
-        <div className={styles.actions}>
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Consultar por WhatsApp"
-            className={styles.whatsapp}
-          >
-            <WhatsAppIcon size={26} />
-          </a>
-          <button type="submit" className={styles.submit} disabled={pending} aria-busy={pending}>
-            {pending ? "Enviando…" : "Enviar consulta"}
-          </button>
-        </div>
+        <button type="submit" className={styles.submit} disabled={pending} aria-busy={pending}>
+          {pending ? "Enviando…" : "Enviar consulta"}
+        </button>
+        <p className={styles.privacy}>
+          Usamos tus datos solo para responder tu consulta.{" "}
+          <Link href="/privacidad" className={styles.privacyLink}>
+            Privacidad
+          </Link>
+        </p>
       </form>
       <FormLiveRegion fieldErrors={countFieldErrors(errors)} />
     </>

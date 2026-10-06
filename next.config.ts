@@ -23,6 +23,12 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // The favorites page was removed; old bookmarks land on the listings.
+      { source: "/favoritos", destination: "/propiedades", permanent: true },
+    ];
+  },
   experimental: {
     // Server Actions default to a 1 MB body.
     serverActions: { bodySizeLimit: UPLOAD_BODY_LIMIT },

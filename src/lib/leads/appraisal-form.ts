@@ -4,21 +4,33 @@ import { PROPERTY_TYPES, type PropertyType } from "@/lib/properties/enums";
 
 /**
  * Tasaciones page form: the inquiry fields (name, phone, message) plus the
- * property data the API accepts in `details`. Name, phone and message
- * validation delegates to the inquiry parser so the back's contract lives in
- * one place; the `details` limits mirror `AppraisalDetailsDto`.
+ * property data the API accepts in `details`. Only the name and the phone are
+ * required; every property field is optional and left out when blank. Name,
+ * phone and message validation delegates to the inquiry parser so the back's
+ * contract lives in one place; the `details` limits mirror `AppraisalDetailsDto`.
  */
 export type AppraisalOperation = "sell" | "rent";
 
 export type AppraisalInput = InquiryInput & {
   topic: Extract<LeadTopic, AppraisalOperation>;
-  details: { propertyType: PropertyType; address: string; rooms?: number; area?: number };
+  /** Left out when the visitor gave no property data. */
+  details?: AppraisalDetails;
+};
+
+export type AppraisalDetails = {
+  propertyType?: PropertyType;
+  address?: string;
+  /** Barrio name, as the catalog lists it. */
+  neighborhood?: string;
+  rooms?: number;
+  area?: number;
 };
 
 export type AppraisalField =
   | "operation"
   | "propertyType"
   | "address"
+  | "neighborhood"
   | "rooms"
   | "area"
   | "name"
@@ -35,14 +47,17 @@ export type AppraisalState = {
 };
 
 const ADDRESS_MAX = 200;
+const NEIGHBORHOOD_MAX = 100;
 const ROOMS_MAX = 50;
 const AREA_MAX = 1_000_000;
 
 const MESSAGES = {
   operation: "Elegí si querés vender o alquilar.",
   propertyType: "Elegí el tipo de propiedad.",
-  addressRequired: "Escribí la dirección y el barrio.",
-  addressLong: `La dirección puede tener hasta ${ADDRESS_MAX} caracteres.`,
+  address: `La dirección puede tener hasta ${ADDRESS_MAX} caracteres.`,
+  neighborhood: "Elegí un barrio de la lista.",
+  // The form has no email field, unlike the shared inquiry rule.
+  phoneRequired: "Dejanos un teléfono para responderte.",
   rooms: `Los ambientes deben ser un número entero de 0 a ${ROOMS_MAX}.`,
   area: `La superficie debe ser un número entero de 0 a ${AREA_MAX} m².`,
 };
@@ -74,6 +89,7 @@ export function parseAppraisalForm(
   const operation = text(data, "operation");
   const propertyType = text(data, "propertyType");
   const address = text(data, "address");
+  const neighborhood = text(data, "neighborhood");
   const rooms = optionalInteger(text(data, "rooms"), ROOMS_MAX);
   const area = optionalInteger(text(data, "area"), AREA_MAX);
 
@@ -82,40 +98,40 @@ export function parseAppraisalForm(
   const parsed = parseInquiryForm(inquiry);
 
   const fieldErrors: AppraisalFieldErrors = "fieldErrors" in parsed ? { ...parsed.fieldErrors } : {};
+  if (!text(data, "phone")) fieldErrors.phone = MESSAGES.phoneRequired;
   if (!isOperation(operation)) fieldErrors.operation = MESSAGES.operation;
-  if (!isPropertyType(propertyType)) fieldErrors.propertyType = MESSAGES.propertyType;
-  if (!address) fieldErrors.address = MESSAGES.addressRequired;
-  else if (address.length > ADDRESS_MAX) fieldErrors.address = MESSAGES.addressLong;
+  if (propertyType && !isPropertyType(propertyType)) fieldErrors.propertyType = MESSAGES.propertyType;
+  if (address.length > ADDRESS_MAX) fieldErrors.address = MESSAGES.address;
+  if (neighborhood.length > NEIGHBORHOOD_MAX) fieldErrors.neighborhood = MESSAGES.neighborhood;
   if (rooms === null) fieldErrors.rooms = MESSAGES.rooms;
   if (area === null) fieldErrors.area = MESSAGES.area;
 
-  if (
-    "fieldErrors" in parsed ||
-    !isOperation(operation) ||
-    !isPropertyType(propertyType) ||
-    Object.keys(fieldErrors).length > 0
-  ) {
+  if ("fieldErrors" in parsed || !isOperation(operation) || Object.keys(fieldErrors).length > 0) {
     return { fieldErrors };
   }
+
+  const details: AppraisalDetails = {
+    ...(isPropertyType(propertyType) ? { propertyType } : {}),
+    ...(address ? { address } : {}),
+    ...(neighborhood ? { neighborhood } : {}),
+    ...(rooms != null ? { rooms } : {}),
+    ...(area != null ? { area } : {}),
+  };
 
   return {
     input: {
       ...parsed.input,
       topic: operation,
-      details: {
-        propertyType,
-        address,
-        ...(rooms !== undefined && rooms !== null ? { rooms } : {}),
-        ...(area !== undefined && area !== null ? { area } : {}),
-      },
+      ...(Object.keys(details).length > 0 ? { details } : {}),
     },
   };
 }
 
-const DETAIL_FIELDS = ["propertyType", "address", "rooms", "area"] as const;
+const DETAIL_FIELDS = ["propertyType", "address", "neighborhood", "rooms", "area"] as const;
 const DETAIL_MESSAGES: Record<(typeof DETAIL_FIELDS)[number], string> = {
   propertyType: MESSAGES.propertyType,
-  address: MESSAGES.addressLong,
+  address: MESSAGES.address,
+  neighborhood: MESSAGES.neighborhood,
   rooms: MESSAGES.rooms,
   area: MESSAGES.area,
 };
@@ -143,6 +159,7 @@ export function appraisalValues(data: FormData): Partial<Record<AppraisalField, 
     operation: text(data, "operation"),
     propertyType: text(data, "propertyType"),
     address: text(data, "address"),
+    neighborhood: text(data, "neighborhood"),
     rooms: text(data, "rooms"),
     area: text(data, "area"),
     name: text(data, "name"),

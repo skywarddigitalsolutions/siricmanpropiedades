@@ -3,13 +3,10 @@ import {
   ArrowRight,
   Calculator,
   Check,
-  ChevronDown,
-  Clock,
-  Eye,
   HandCoins,
-  Handshake,
-  MapPin,
   MessageCircle,
+  Minus,
+  Plus,
   ReceiptText,
   Scale,
   ShieldCheck,
@@ -44,7 +41,7 @@ const WHATSAPP_MESSAGE =
 const HIGHLIGHTS = [
   "Trato directo con Gabriel Siricman",
   "Cuentas claras para cada propietario",
-  "Respuesta rápida a cada consulta",
+  "Atención por WhatsApp y teléfono",
 ];
 
 const INCLUDES: { icon: LucideIcon; title: string; text: string }[] = [
@@ -109,29 +106,6 @@ const STEPS = [
   },
 ];
 
-const REASONS: { icon: LucideIcon; title: string; text: string }[] = [
-  {
-    icon: Handshake,
-    title: "Trato directo",
-    text: "Hablás con Gabriel Siricman, sin intermediarios ni call centers.",
-  },
-  {
-    icon: Eye,
-    title: "Transparencia en las cuentas",
-    text: "Cada gasto respaldado y explicado, para que los propietarios sepan en qué se usa su dinero.",
-  },
-  {
-    icon: Clock,
-    title: "Respuesta rápida",
-    text: "Consultas y reclamos atendidos a tiempo, por WhatsApp o por el canal que prefieras.",
-  },
-  {
-    icon: MapPin,
-    title: "Experiencia en CABA",
-    text: "Más de 11 años administrando edificios en la Ciudad de Buenos Aires.",
-  },
-];
-
 const FAQ = [
   {
     question: "¿Cómo es el cambio de administración?",
@@ -165,8 +139,7 @@ export default function ConsortiumPage() {
             <span className={styles.eyebrow}>CONSORCIOS</span>
             <h1 className={styles.title}>Administración de consorcios en CABA</h1>
             <p className={styles.lead}>
-              Más de 11 años administrando edificios en la Ciudad de Buenos Aires. Cuentas claras,
-              mantenimiento al día y trato directo con quien te administra.
+              Liquidamos las expensas, cuidamos el mantenimiento y te acompañamos en cada asamblea.
             </p>
             <div className={styles.actions}>
               <a href="#propuesta" className={styles.primary}>
@@ -193,8 +166,8 @@ export default function ConsortiumPage() {
             <ul className={styles.highlights}>
               {HIGHLIGHTS.map((item) => (
                 <li key={item} className={styles.highlight}>
-                  <span className={styles.check}>
-                    <Check aria-hidden size={14} strokeWidth={3} />
+                  <span className={styles.check} aria-hidden="true">
+                    <Check size={16} strokeWidth={2.5} />
                   </span>
                   {item}
                 </li>
@@ -212,7 +185,9 @@ export default function ConsortiumPage() {
           <ul className={styles.includes}>
             {INCLUDES.map(({ icon: Icon, title, text }) => (
               <li key={title} className={styles.include}>
-                <Icon aria-hidden size={22} className={styles.includeIcon} />
+                <span className={styles.includeIcon} aria-hidden="true">
+                  <Icon size={18} />
+                </span>
                 <span className={styles.includeBody}>
                   <span className={styles.includeTitle}>{title}</span>
                   <span className={styles.includeText}>{text}</span>
@@ -243,42 +218,22 @@ export default function ConsortiumPage() {
       </div>
 
       <div className={styles.band}>
-        <section aria-labelledby="consortium-why" className={`${styles.inner} ${styles.block}`}>
-          <h2 id="consortium-why" className={styles.heading}>
-            Por qué elegirnos
+        <section aria-labelledby="consortium-faq" className={`${styles.inner} ${styles.faq}`}>
+          <span className={styles.eyebrow}>Preguntas frecuentes</span>
+          <h2 id="consortium-faq" className={styles.faqTitle}>
+            Lo que suelen preguntarnos
           </h2>
-          <p className={styles.whyIntro}>
-            Trato directo con Gabriel Siricman, sin intermediarios ni call centers.
-          </p>
-          <ul className={styles.reasons}>
-            {REASONS.map(({ icon: Icon, title, text }) => (
-              <li key={title} className={styles.reason}>
-                <span className={styles.reasonIcon}>
-                  <Icon aria-hidden size={20} />
-                </span>
-                <span className={styles.reasonBody}>
-                  <span className={styles.reasonTitle}>{title}</span>
-                  <span className={styles.reasonText}>{text}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
-
-      <div className={`${styles.band} ${styles.bandAlt}`}>
-        <section aria-labelledby="consortium-faq" className={`${styles.inner} ${styles.block}`}>
-          <h2 id="consortium-faq" className={styles.heading}>
-            Preguntas frecuentes
-          </h2>
-          <div className={styles.faq}>
-            {FAQ.map((item) => (
-              <details key={item.question} className={styles.faqItem}>
+          <div className={styles.faqList}>
+            {FAQ.map(({ question, answer }) => (
+              <details key={question} className={styles.faqItem}>
                 <summary className={styles.faqQuestion}>
-                  {item.question}
-                  <ChevronDown aria-hidden size={20} className={styles.faqChevron} />
+                  {question}
+                  <span className={styles.faqIcon} aria-hidden="true">
+                    <Plus size={18} className={styles.faqPlus} />
+                    <Minus size={18} className={styles.faqMinus} />
+                  </span>
                 </summary>
-                <p className={styles.faqAnswer}>{item.answer}</p>
+                <p className={styles.faqAnswer}>{answer}</p>
               </details>
             ))}
           </div>
