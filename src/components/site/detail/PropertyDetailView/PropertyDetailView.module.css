@@ -43,10 +43,10 @@
   border-radius: var(--radius-pill);
   font: 700 12px var(--font-body), sans-serif;
   color: var(--color-navy);
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--color-surface-translucent);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  box-shadow: 0 1px 3px rgba(20, 25, 60, 0.18);
+  box-shadow: var(--shadow-chip);
 }
 
 /* Marketing tag: same white pill as the operation chip, set apart by a gold dot. */
@@ -168,7 +168,7 @@
   justify-content: center;
   border-radius: 12px;
   color: var(--color-gold-dark);
-  background: #f3ecdb;
+  background: var(--color-icon-tile-gold);
 }
 
 .factText {
@@ -203,8 +203,8 @@
   padding: 8px 13px;
   border-radius: var(--radius-pill);
   font: 700 13px var(--font-body), sans-serif;
-  color: #1f6b3e;
-  background: #e9f3ec;
+  color: var(--tone-success-fg);
+  background: var(--tone-success-bg);
 }
 
 .card {
@@ -288,7 +288,7 @@
   padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--color-border);
   background: var(--color-white);
-  box-shadow: 0 -6px 20px rgba(20, 25, 60, 0.06);
+  box-shadow: var(--shadow-bar-top);
 }
 
 .bottomPrice {
@@ -326,7 +326,7 @@
 /* White on the brand green fails contrast; the dark green passes. */
 .bottomWhatsapp {
   color: var(--color-white);
-  background: #0f7d3f;
+  background: var(--color-whatsapp-strong);
 }
 
 .bottomCall {

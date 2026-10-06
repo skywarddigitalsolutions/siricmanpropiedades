@@ -102,5 +102,5 @@
   border-radius: var(--radius-pill);
   font: 700 12px var(--font-body), sans-serif;
   color: var(--color-navy-dark);
-  background: #f3ecdb;
+  background: var(--color-chip-bg);
 }

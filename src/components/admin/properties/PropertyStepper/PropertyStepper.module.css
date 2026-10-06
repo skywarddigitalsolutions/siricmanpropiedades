@@ -90,7 +90,7 @@ a.link:focus-visible {
 
 .item[data-done] .dot {
   color: var(--color-white);
-  background: #2f7a4d;
+  background: var(--tone-success-fg);
 }
 
 .item[aria-disabled="true"] .link {

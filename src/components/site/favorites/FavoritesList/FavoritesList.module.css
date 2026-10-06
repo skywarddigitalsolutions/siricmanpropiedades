@@ -9,7 +9,7 @@
 .skeleton {
   min-height: 340px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(100deg, #ebe7dc 30%, #f4f1e9 50%, #ebe7dc 70%);
+  background: linear-gradient(100deg, var(--color-skeleton-base) 30%, var(--color-skeleton-highlight) 50%, var(--color-skeleton-base) 70%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
   list-style: none;
@@ -51,8 +51,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  color: #d6433b;
-  background: #fbeceb;
+  color: var(--color-favorite);
+  background: var(--color-favorite-soft);
 }
 
 .emptyTitle {

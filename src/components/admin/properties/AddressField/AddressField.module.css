@@ -48,7 +48,7 @@
 }
 
 .input[aria-invalid="true"] {
-  border-color: #c65a5a;
+  border-color: var(--tone-danger-strong);
 }
 
 .listbox {
@@ -102,15 +102,15 @@
   align-items: center;
   gap: 6px;
   font-weight: 600;
-  color: #2f7a4d;
+  color: var(--tone-success-fg);
 }
 
 .warn {
-  color: #8a5a1a;
+  color: var(--tone-warning-fg);
 }
 
 .error {
-  color: #a13d3d;
+  color: var(--tone-danger-fg);
 }
 
 .barrio {

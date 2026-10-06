@@ -59,8 +59,8 @@
   justify-content: center;
   border-radius: 50%;
   font: 800 16px var(--font-body), sans-serif;
-  color: var(--color-gold-dark);
-  background: #f3ecdb;
+  color: var(--color-navy);
+  background: var(--color-icon-tile-gold);
 }
 
 .stepText {
@@ -154,7 +154,7 @@
     justify-content: center;
     border-radius: 50%;
     color: var(--color-gold-dark);
-    background: #f3ecdb;
+    background: var(--color-icon-tile-gold);
   }
 
   .contactLink {

@@ -3,6 +3,6 @@
   padding: 12px 14px;
   font: 600 14px var(--font-body), sans-serif;
   color: var(--color-navy-dark);
-  background: #fbeaea;
-  border: 1px solid #e6b8b8;
+  background: var(--tone-danger-bg);
+  border: 1px solid var(--tone-danger-border);
 }

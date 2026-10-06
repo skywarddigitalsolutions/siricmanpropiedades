@@ -10,7 +10,7 @@
   padding: 0;
   border: 0;
   color: var(--color-white);
-  background: #0b0e24;
+  background: var(--color-media-bg);
 }
 
 .dialog[open] {
@@ -20,7 +20,7 @@
 }
 
 .dialog::backdrop {
-  background: rgba(5, 7, 20, 0.9);
+  background: var(--color-media-overlay);
 }
 
 .header {
@@ -45,13 +45,13 @@
   justify-content: center;
   border-radius: var(--radius-pill);
   color: var(--color-white);
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--color-on-dark-14);
   cursor: pointer;
 }
 
 .close:hover,
 .nav:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.26);
+  background: var(--color-on-dark-25);
 }
 
 .stage {

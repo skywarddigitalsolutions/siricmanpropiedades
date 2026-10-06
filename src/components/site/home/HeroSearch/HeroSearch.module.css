@@ -27,7 +27,7 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(180deg, rgba(19, 28, 77, 0.55) 0%, rgba(19, 28, 77, 0.85) 100%);
+  background: linear-gradient(180deg, var(--color-navy-scrim-55) 0%, var(--color-navy-scrim-85) 100%);
 }
 
 .inner {
@@ -52,7 +52,7 @@
   max-width: 560px;
   font-size: clamp(16px, 2vw, 19px);
   line-height: 1.5;
-  color: #eef0fb;
+  color: var(--color-text-on-dark);
 }
 
 .form {
@@ -68,9 +68,9 @@
   display: flex;
   gap: 4px;
   padding: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid var(--color-on-dark-25);
   border-radius: var(--radius-pill);
-  background: rgba(19, 28, 77, 0.55);
+  background: var(--color-navy-scrim-55);
   backdrop-filter: blur(8px);
 }
 
@@ -181,7 +181,7 @@
 }
 
 .submit:hover {
-  background: #d4b268;
+  background: var(--color-gold-hover);
 }
 
 .submit:focus-visible,
@@ -204,7 +204,7 @@
   align-items: center;
   list-style: none;
   font: 600 14px var(--font-body), sans-serif;
-  color: #eef0fb;
+  color: var(--color-text-on-dark);
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;

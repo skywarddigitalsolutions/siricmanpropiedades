@@ -80,8 +80,8 @@
 .destructive {
   margin-top: 12px;
   color: var(--color-white);
-  background: #a13d3d;
-  border: 1px solid #a13d3d;
+  background: var(--tone-danger-fg);
+  border: 1px solid var(--tone-danger-fg);
 }
 
 .primary:focus-visible,
@@ -98,7 +98,7 @@
 }
 
 .danger {
-  border-color: #e6b8b8;
+  border-color: var(--tone-danger-border);
 }
 
 .details {
@@ -112,7 +112,7 @@
   align-items: center;
   cursor: pointer;
   font: 700 15px var(--font-body), sans-serif;
-  color: #a13d3d;
+  color: var(--tone-danger-fg);
 }
 
 .details[open] .summary {

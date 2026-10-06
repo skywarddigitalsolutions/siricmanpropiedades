@@ -54,8 +54,8 @@
   align-items: center;
   justify-content: center;
   font: 700 12px var(--font-body), sans-serif;
-  color: #8a5a1a;
-  background: rgba(198, 160, 82, 0.16);
+  color: var(--tone-warning-fg);
+  background: var(--color-gold-tint-16);
 }
 
 .countBadge {
@@ -66,7 +66,7 @@
   border-radius: var(--radius-pill);
   font: 700 11px var(--font-body), sans-serif;
   color: var(--color-white);
-  background: rgba(19, 28, 77, 0.78);
+  background: var(--color-navy-scrim-75);
 }
 
 .rowCover .countBadge {

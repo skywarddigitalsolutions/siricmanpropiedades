@@ -4,15 +4,15 @@
   gap: 8px;
   border-radius: var(--radius-sm);
   padding: 4px 4px 4px 14px;
-  background: #e8f4ec;
-  border: 1px solid #b9dcc5;
+  background: var(--tone-success-bg);
+  border: 1px solid var(--tone-success-border);
 }
 
 .text {
   flex: 1;
   padding: 8px 0;
   font: 600 14px var(--font-body), sans-serif;
-  color: #1f5132;
+  color: var(--tone-success-fg);
 }
 
 .close {
@@ -23,12 +23,12 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  color: #1f5132;
+  color: var(--tone-success-fg);
   cursor: pointer;
 }
 
 .close:hover {
-  background: rgba(31, 81, 50, 0.12);
+  background: var(--tone-success-hover);
 }
 
 .close:focus-visible {

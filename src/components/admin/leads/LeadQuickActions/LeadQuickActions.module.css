@@ -60,5 +60,5 @@
 .error {
   flex: 1 1 100%;
   font: 500 13px var(--font-body), sans-serif;
-  color: #a13d3d;
+  color: var(--tone-danger-fg);
 }

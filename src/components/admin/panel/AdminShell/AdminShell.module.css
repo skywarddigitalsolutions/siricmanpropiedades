@@ -157,8 +157,8 @@
   .sidebarFooter {
     --btn-ghost-fg: var(--color-text-on-dark-muted);
     --btn-ghost-hover-fg: var(--color-white);
-    --btn-ghost-hover-bg: rgba(255, 255, 255, 0.08);
-    --btn-ghost-active-bg: rgba(255, 255, 255, 0.14);
+    --btn-ghost-hover-bg: var(--color-on-dark-08);
+    --btn-ghost-active-bg: var(--color-on-dark-14);
   }
 
   .sidebarNav {
@@ -170,12 +170,12 @@
   }
 
   .sidebarNav :global(a:hover) {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--color-on-dark-08);
     color: var(--color-white);
   }
 
   .sidebarNav :global(a[aria-current="page"]) {
-    background: rgba(198, 160, 82, 0.16);
+    background: var(--color-gold-tint-16);
     color: var(--color-white);
     box-shadow: inset 3px 0 0 var(--color-gold);
   }
@@ -189,7 +189,7 @@
 
   .sidebar .userRow {
     padding: 14px 0 0 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-top: 1px solid var(--color-on-dark-14);
   }
 
   .main {

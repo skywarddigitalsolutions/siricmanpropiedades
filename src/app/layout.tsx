@@ -1,4 +1,5 @@
 import { rootMetadata } from "@/lib/seo/root-metadata";
+import type { Viewport } from "next";
 import { Bodoni_Moda, Manrope } from "next/font/google";
 import "./globals.css";
 
@@ -19,6 +20,11 @@ const manrope = Manrope({
 export function generateMetadata() {
   return rootMetadata();
 }
+
+// Browser UI tint. Mirrors --color-navy in globals.css (meta tags cannot read CSS variables).
+export const viewport: Viewport = {
+  themeColor: "#1d2a6b",
+};
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

@@ -247,7 +247,7 @@
   bottom: -18px;
   left: 17px;
   width: 2px;
-  background: linear-gradient(to bottom, var(--color-gold), rgba(198, 160, 82, 0.35));
+  background: linear-gradient(to bottom, var(--color-gold), var(--color-gold-tint-35));
 }
 
 .stepTitle {
@@ -291,7 +291,7 @@
   justify-content: center;
   border-radius: 50%;
   color: var(--color-navy);
-  background: rgba(198, 160, 82, 0.2);
+  background: var(--color-gold-tint-20);
 }
 
 .reasonBody {
@@ -427,7 +427,7 @@
     left: 12.5%;
     right: 12.5%;
     height: 2px;
-    background: linear-gradient(to right, var(--color-gold), rgba(198, 160, 82, 0.35));
+    background: linear-gradient(to right, var(--color-gold), var(--color-gold-tint-35));
   }
 
   .step {

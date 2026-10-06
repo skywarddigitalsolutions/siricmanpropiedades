@@ -54,7 +54,7 @@
 
 .chip[aria-current="page"] {
   border-color: var(--color-gold);
-  background: #f3ecdb;
+  background: var(--color-chip-bg);
 }
 
 .tab:focus-visible,
@@ -79,5 +79,5 @@
 
 .tab[aria-current="page"] .pill {
   color: var(--color-navy-dark);
-  background: #f3ecdb;
+  background: var(--color-chip-bg);
 }

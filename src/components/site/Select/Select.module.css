@@ -41,7 +41,7 @@
 }
 
 .field .select[aria-invalid="true"] {
-  border-color: #c65a5a;
+  border-color: var(--tone-danger-strong);
 }
 
 /* Inside a container that already draws the border and focus ring. */

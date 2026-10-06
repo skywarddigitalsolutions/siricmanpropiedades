@@ -141,7 +141,7 @@
   margin-bottom: 4px;
   border-radius: 50%;
   color: var(--color-navy);
-  background: rgba(198, 160, 82, 0.2);
+  background: var(--color-gold-tint-20);
 }
 
 .valueTitle {
@@ -347,7 +347,7 @@
 .ctaBody {
   font-size: 16px;
   line-height: 1.55;
-  color: #d7dbef;
+  color: var(--color-text-on-dark-soft);
 }
 
 .ctaActions {
@@ -374,12 +374,12 @@
 
 .ctaButton:hover {
   color: var(--color-white);
-  background: #d4b268;
+  background: var(--color-gold-hover);
 }
 
 .ctaLink {
   color: var(--color-white);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--color-on-dark-40);
 }
 
 .ctaLink:hover {

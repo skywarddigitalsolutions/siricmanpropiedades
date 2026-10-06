@@ -126,7 +126,7 @@
 }
 
 .counterHint {
-  color: #8a5a1a;
+  color: var(--tone-warning-fg);
 }
 
 /* Optional groups of step 3 stay collapsed until needed. */

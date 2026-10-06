@@ -24,7 +24,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: repeating-linear-gradient(135deg, #ebe7dc 0 12px, #e3ded1 12px 24px);
+  background: repeating-linear-gradient(135deg, var(--color-placeholder-a) 0 12px, var(--color-placeholder-b) 12px 24px);
 }
 
 .photo {
@@ -38,12 +38,12 @@
 }
 
 .card[data-state="gone"] {
-  background: #f7f5ef;
+  background: var(--color-surface-muted);
 }
 
 .noPhoto {
   font: 600 13px var(--font-body), sans-serif;
-  color: #7a7461;
+  color: var(--color-placeholder-fg);
 }
 
 .badge {
@@ -54,10 +54,10 @@
   border-radius: var(--radius-pill);
   font: 700 12px var(--font-body), sans-serif;
   color: var(--color-navy);
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--color-surface-translucent);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  box-shadow: 0 1px 3px rgba(20, 25, 60, 0.18);
+  box-shadow: var(--shadow-chip);
 }
 
 .status {
@@ -110,7 +110,7 @@
   border-radius: var(--radius-pill);
   font: 700 11px var(--font-body), sans-serif;
   color: var(--color-navy);
-  background: #f3ead2;
+  background: var(--color-gold-soft);
 }
 
 .goneMessage {
@@ -195,5 +195,5 @@
 }
 
 .remove:hover {
-  background: #f0eee8;
+  background: var(--color-surface-hover);
 }

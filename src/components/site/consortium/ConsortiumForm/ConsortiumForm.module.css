@@ -46,21 +46,21 @@
 }
 
 .input[aria-invalid="true"] {
-  border-color: #c65a5a;
+  border-color: var(--tone-danger-strong);
 }
 
 .error {
   font: 500 13px var(--font-body), sans-serif;
-  color: #a13d3d;
+  color: var(--tone-danger-fg);
 }
 
 .alert {
   padding: 12px 14px;
-  border: 1px solid #e6b8b8;
+  border: 1px solid var(--tone-danger-border);
   border-radius: var(--radius-sm);
   font: 600 14px var(--font-body), sans-serif;
   color: var(--color-navy-dark);
-  background: #fbeaea;
+  background: var(--tone-danger-bg);
 }
 
 /* Off-screen, not display:none, so naive bots still fill it in. */

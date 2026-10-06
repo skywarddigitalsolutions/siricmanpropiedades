@@ -1,40 +1,120 @@
 :root {
-  /* Brand colors */
-  --color-navy: #1d2a6b;
-  --color-navy-dark: #131c4d;
-  --color-gold: #c6a052;
-  --color-gold-dark: #8a6a24;
+  /* Palette: navy (brand, primary surfaces and text accents) */
+  --navy-950: #0d1440;
+  --navy-900: #131c4d;
+  --navy-700: #1d2a6b;
+  --navy-100: #e8ebf5;
+  --navy-50: #f3f5fa;
+
+  /* Palette: gold (details only; never as text on light backgrounds) */
+  --gold-400: #d4b268;
+  --gold-500: #c6a052;
+  --gold-700: #8a6a24;
+  --gold-800: #6b5216;
+  --gold-100: #f6efdf;
+
+  /* Brand colors (semantic aliases kept for components) */
+  --color-navy: var(--navy-700);
+  --color-navy-dark: var(--navy-900);
+  --color-navy-darker: var(--navy-950);
+  /* Gold-500 is 2.46:1 on white: decorative fills, borders and text on navy only. */
+  --color-gold: var(--gold-500);
+  /* Flat hover for gold buttons (navy-900 text keeps 7.97:1). */
+  --color-gold-hover: var(--gold-400);
+  /* Gold for text and icons on light backgrounds (5.04:1 on white). */
+  --color-gold-dark: var(--gold-700);
+  /* Gold text over translucent surfaces (4.84:1 even on the glass's worst case). */
+  --color-gold-deep: var(--gold-800);
+  --color-gold-soft: var(--gold-100);
   --color-ink: #151a33;
-  --color-bg: #f5f4f0;
+  --color-bg: var(--navy-50);
   --color-white: #ffffff;
 
-  /* Text */
+  /* Surfaces */
+  --color-surface: var(--color-white);
+  --color-surface-muted: var(--navy-50);
+  --color-surface-hover: var(--navy-100);
+  --color-surface-translucent: rgba(255, 255, 255, 0.92);
+  /* Frosted card over photos. Worst case (black pixel behind, effective
+     #d1d1d1): navy 8.62, text-muted-2 6.97, gold-deep 4.84. */
+  --color-surface-glass: rgba(255, 255, 255, 0.82);
+  --color-glass-border: rgba(255, 255, 255, 0.6);
+  --color-chip-bg: var(--navy-100);
+  --color-icon-tile-navy: var(--navy-100);
+  --color-icon-tile-gold: var(--gold-100);
+  --color-switch-track: #d0d6e2;
+  --color-backdrop: rgba(15, 19, 45, 0.45);
+  --color-media-bg: #0b0e24;
+  --color-media-overlay: rgba(5, 7, 20, 0.9);
+
+  /* Placeholders (no photo) and loading skeletons */
+  --color-placeholder-a: #e8ebf2;
+  --color-placeholder-b: #e1e5ee;
+  --color-placeholder-fg: #565b70;
+  --color-skeleton-base: #e3e7f0;
+  --color-skeleton-highlight: var(--navy-50);
+
+  /* Text (muted tones keep >= 4.5:1 on both #fff and --color-bg) */
   --color-text: var(--color-ink);
   --color-text-muted: #5f6378;
-  --color-text-muted-2: #3a3e55;
-  --color-text-faint: #666a7b;
+  --color-text-muted-2: #383d57;
+  --color-text-faint: #62677d;
+  --color-text-on-dark: #eef0fb;
+  --color-text-on-dark-soft: #d7dbef;
   --color-text-on-dark-muted: #9ea4c8;
 
   /* Borders */
-  --color-border: #ebe8e0;
-  --color-border-strong: #e3dfd5;
-  --color-border-soft: #efece5;
+  --color-border: #e3e7f0;
+  --color-border-strong: #d5dbe8;
+  --color-border-soft: #edf0f6;
+
+  /* Overlays on dark (navy/photo) surfaces */
+  --color-on-dark-08: rgba(255, 255, 255, 0.08);
+  --color-on-dark-10: rgba(255, 255, 255, 0.1);
+  --color-on-dark-14: rgba(255, 255, 255, 0.14);
+  --color-on-dark-20: rgba(255, 255, 255, 0.2);
+  --color-on-dark-25: rgba(255, 255, 255, 0.25);
+  --color-on-dark-40: rgba(255, 255, 255, 0.4);
+
+  /* Translucent tints */
+  --color-gold-tint-16: rgba(198, 160, 82, 0.16);
+  --color-gold-tint-20: rgba(198, 160, 82, 0.2);
+  --color-gold-tint-28: rgba(198, 160, 82, 0.28);
+  --color-gold-tint-35: rgba(198, 160, 82, 0.35);
+  --color-navy-scrim-55: rgba(19, 28, 77, 0.55);
+  --color-navy-scrim-75: rgba(19, 28, 77, 0.75);
+  --color-navy-scrim-80: rgba(19, 28, 77, 0.8);
+  --color-navy-scrim-85: rgba(19, 28, 77, 0.85);
+
+  /* Favorites */
+  --color-favorite: #d6433b;
+  --color-favorite-soft: #fbeceb;
 
   /* WhatsApp */
-  --color-whatsapp: #25d366;
-  --color-whatsapp-dark: #1fbd5a;
+  /* Darker than the brand #25d366 so white labels pass AA: 5.22:1 (hover 7.10:1). */
+  --color-whatsapp: #0f7d3f;
+  --color-whatsapp-dark: #0b6631;
+  /* Text-safe green: it on white/soft is >= 4.5:1. */
+  --color-whatsapp-strong: var(--color-whatsapp);
+  --color-whatsapp-soft: #e3f8ea;
 
-  /* Semantic tones (admin status badges): soft background + strong text, AA contrast. */
+  /* Semantic tones (status badges, alerts, form states): soft background + strong text, AA contrast. */
   --tone-success-bg: #e2f3e8;
   --tone-success-fg: #14602f;
+  --tone-success-border: #b9dcc5;
+  --tone-success-hover: rgba(20, 96, 47, 0.12);
   --tone-warning-bg: #fcefd0;
   --tone-warning-fg: #774805;
-  --tone-neutral-bg: #ecebe6;
+  --tone-neutral-bg: #e9ecf3;
   --tone-neutral-fg: #44485c;
   --tone-info-bg: #e0ebfa;
   --tone-info-fg: #17468f;
   --tone-danger-bg: #fbe3e1;
   --tone-danger-fg: #9b2a22;
+  --tone-danger-border: #e6b8b8;
+  /* Invalid input border (4.19:1 on white, above the 3:1 non-text minimum). */
+  --tone-danger-strong: #c65a5a;
+  --tone-danger-on-dark: #ffb4b4;
 
   /* Radii */
   --radius-sm: 10px;
@@ -42,16 +122,94 @@
   --radius-lg: 20px;
   --radius-xl: 24px;
   --radius-2xl: 28px;
+  --radius-3xl: 32px;
+  --radius-4xl: 36px;
   --radius-pill: 999px;
 
   /* Shadows */
   --shadow-card: 0 1px 2px rgba(20, 25, 60, 0.05), 0 10px 30px rgba(20, 25, 60, 0.07);
   --shadow-lifted: 0 24px 60px rgba(8, 12, 40, 0.35);
+  --shadow-xs: 0 1px 2px rgba(20, 25, 60, 0.05);
+  --shadow-hover: 0 10px 30px rgba(20, 25, 60, 0.08);
+  --shadow-chip: 0 1px 3px rgba(20, 25, 60, 0.18);
+  --shadow-bar-top: 0 -6px 20px rgba(20, 25, 60, 0.06);
+  --shadow-sheet: 0 -10px 40px rgba(0, 0, 0, 0.18);
+  --shadow-knob: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-float: 0 10px 28px rgba(0, 0, 0, 0.25);
+  --shadow-media-button: 0 2px 8px rgba(0, 0, 0, 0.18);
+  --shadow-media-pill: 0 4px 14px rgba(0, 0, 0, 0.12);
+  /* Used inside filter: drop-shadow(), which takes a single shadow. */
+  --shadow-drop: 0 10px 18px rgba(8, 12, 40, 0.3);
+  --shadow-glass: 0 18px 40px rgba(20, 25, 60, 0.18);
+
+  /* Typography
+     Bodoni Moda (--font-display) only for large headings (>= 24px): its
+     hairlines vanish at small sizes. Everything else uses Manrope (--font-body).
+     Fluid sizes scale linearly between 360px and 1280px viewports. */
+  --text-display: clamp(2.25rem, 1.663rem + 2.609vw, 3.75rem); /* 36 -> 60 */
+  --text-h1: clamp(1.875rem, 1.533rem + 1.522vw, 2.75rem); /* 30 -> 44 */
+  /* Desktop-only home hero title: 44 -> 52 between 960px and 1280px. */
+  --text-hero: clamp(2.75rem, 1.25rem + 2.5vw, 3.25rem);
+  --text-h2: clamp(1.625rem, 1.38rem + 1.087vw, 2.25rem); /* 26 -> 36 */
+  --text-h3: clamp(1.25rem, 1.152rem + 0.435vw, 1.5rem); /* 20 -> 24 */
+  --text-xl: 1.1875rem; /* 19 */
+  --text-lg: 1.0625rem; /* 17 */
+  --text-base: 1rem; /* 16 */
+  --text-sm: 0.875rem; /* 14 */
+  --text-xs: 0.75rem; /* 12, the minimum */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  --leading-tight: 1.15; /* display and headings */
+  --leading-snug: 1.35; /* short UI text, cards */
+  --leading-normal: 1.6; /* body copy */
+
+  /* Uppercase gold-dark labels such as "DESTACADAS". */
+  --tracking-eyebrow: 0.14em;
+  --tracking-display: -0.01em;
+  /* Tighter tracking for heavy Manrope headings. */
+  --tracking-heading: -0.02em;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-18: 72px;
+  --space-24: 96px;
+
+  /* Vertical rhythm between page sections, and the page side gutter. */
+  --section-gap: var(--space-12);
+  --page-gutter: var(--space-4);
+
+  /* Breakpoints (custom properties cannot be used inside @media, so these are
+     the agreed literal values to use in media queries):
+     sm 640px · md 960px · lg 1280px */
 
   /* Layout */
   --content-max-width: 1240px;
   /* Height of the sticky public header; sticky bars below it offset by this. */
   --site-header-height: 65px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --page-gutter: var(--space-6);
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --section-gap: var(--space-24);
+  }
 }
 
 html {

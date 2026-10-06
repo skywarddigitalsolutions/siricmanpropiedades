@@ -5,10 +5,10 @@
   gap: 8px;
   cursor: pointer;
   color: var(--color-navy);
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--color-surface-translucent);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  box-shadow: 0 1px 3px rgba(20, 25, 60, 0.18);
+  box-shadow: var(--shadow-chip);
   border: 0;
   transition:
     transform 0.15s ease,
@@ -30,8 +30,8 @@
 
 /* Filled heart when saved. */
 .toggle[data-saved] svg {
-  fill: #d6433b;
-  stroke: #d6433b;
+  fill: var(--color-favorite);
+  stroke: var(--color-favorite);
 }
 
 /* Round 40px tap target, placed by the card over the photo (above the stretched link). */

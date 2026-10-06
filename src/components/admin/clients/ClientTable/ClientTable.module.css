@@ -113,7 +113,7 @@
 }
 
 .chip {
-  background: #f3ecdb;
+  background: var(--color-chip-bg);
   border-color: transparent;
 }
 

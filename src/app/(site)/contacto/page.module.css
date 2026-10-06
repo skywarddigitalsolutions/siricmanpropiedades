@@ -62,18 +62,18 @@ a.tile:focus-visible {
 }
 
 .toneWhatsapp {
-  color: #1a9e4b;
-  background: #e3f8ea;
+  color: var(--color-whatsapp-strong);
+  background: var(--color-whatsapp-soft);
 }
 
 .toneNavy {
   color: var(--color-navy);
-  background: #eef0f8;
+  background: var(--color-icon-tile-navy);
 }
 
 .toneGold {
   color: var(--color-gold-dark);
-  background: #f3ecdb;
+  background: var(--color-icon-tile-gold);
 }
 
 .toneNeutral {

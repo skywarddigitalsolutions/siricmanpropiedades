@@ -56,7 +56,7 @@
 }
 
 .button[data-variant="primary"]:active:not(:disabled) {
-  background: #0d1440;
+  background: var(--color-navy-darker);
 }
 
 .button[data-variant="secondary"],
