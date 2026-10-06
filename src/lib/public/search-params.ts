@@ -205,6 +205,15 @@ export function buildSearchHref(state: SearchState, patch: Partial<SearchState> 
   return query ? `${RESULTS_PATH}?${query}` : RESULTS_PATH;
 }
 
+/**
+ * "Clear filters" URL, shared by every clear action: drops every filter
+ * (barrios, type, price, rooms, switches, code) and keeps only the operation
+ * and the sort, which have their own controls.
+ */
+export function clearFiltersHref(state: SearchState): string {
+  return buildSearchHref({ ...EMPTY_SEARCH, operation: state.operation, sort: state.sort });
+}
+
 /** The one URL for exactly this state, page included. */
 export function canonicalHref(state: SearchState): string {
   return buildSearchHref(state, { page: state.page });

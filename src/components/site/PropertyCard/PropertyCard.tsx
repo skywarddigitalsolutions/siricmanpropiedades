@@ -78,10 +78,7 @@ export default function PropertyCard({
       )}
 
       <div className={styles.body}>
-        <div className={styles.priceRow}>
-          <span className={styles.price}>{propertyPriceLabel(property)}</span>
-          <span className={styles.code}>{property.code}</span>
-        </div>
+        <span className={styles.price}>{propertyPriceLabel(property)}</span>
         {expenses && <span className={styles.expenses}>{expenses}</span>}
         <Heading className={styles.title}>
           <Link href={`/propiedades/${property.slug}`} className={styles.link}>

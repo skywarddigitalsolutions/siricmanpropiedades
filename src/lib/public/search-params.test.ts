@@ -4,6 +4,7 @@ import {
   activeFilters,
   buildSearchHref,
   canonicalHref,
+  clearFiltersHref,
   countActiveFilters,
   effectiveCurrency,
   isCanonicalQuery,
@@ -319,5 +320,35 @@ describe("activeFilters", () => {
       "otro-barrio",
       "Desde US$ 50.000",
     ]);
+  });
+});
+
+describe("clearFiltersHref", () => {
+  it("drops every filter but keeps the operation and the sort", () => {
+    const state = parseSearchParams({
+      operacion: "alquiler",
+      barrio: "palermo,belgrano",
+      tipo: "casa",
+      ambientes: "3",
+      dormitorios: "2",
+      banos: "2",
+      cochera: "1",
+      credito: "1",
+      mascotas: "1",
+      moneda: "ARS",
+      desde: "100000",
+      hasta: "900000",
+      codigo: "SP-0101",
+      orden: "menor-precio",
+      pagina: "4",
+    });
+
+    expect(clearFiltersHref(state)).toBe("/propiedades?operacion=alquiler&orden=menor-precio");
+  });
+
+  it("is the bare results URL when only defaults remain", () => {
+    expect(clearFiltersHref(parseSearchParams({ tipo: "casa", barrio: "palermo" }))).toBe(
+      "/propiedades",
+    );
   });
 });

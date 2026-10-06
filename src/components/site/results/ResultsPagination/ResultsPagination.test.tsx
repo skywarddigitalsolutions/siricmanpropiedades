@@ -26,9 +26,26 @@ describe("ResultsPagination", () => {
     );
     const current = screen.getByText("6", { selector: "[aria-current='page']" });
     expect(current).toBeInTheDocument();
-    expect(screen.getAllByText("…")).toHaveLength(2);
+    // Shared "…" after 1, wide-only after 7, narrow-only after 6 (CSS picks per width).
+    expect(screen.getAllByText("…")).toHaveLength(3);
     expect(screen.getByRole("link", { name: "Anterior" })).toHaveAttribute("rel", "prev");
     expect(screen.getByRole("link", { name: "Siguiente" })).toHaveAttribute("rel", "next");
+  });
+
+  it("marks the pages that only fit on wider screens, so narrow phones show first, current and last", () => {
+    render(<ResultsPagination state={{ ...EMPTY_SEARCH, page: 6 }} totalPages={12} />);
+
+    const items = screen.getAllByRole("listitem");
+    const visibleOn = (width: "wide" | "narrow") =>
+      items
+        .filter((item) => {
+          const only = item.getAttribute("data-only");
+          return only === null || only === width;
+        })
+        .map((item) => item.textContent);
+
+    expect(visibleOn("wide")).toEqual(["1", "…", "5", "6", "7", "…", "12"]);
+    expect(visibleOn("narrow")).toEqual(["1", "…", "6", "…", "12"]);
   });
 
   it("hides the previous link on the first page", () => {

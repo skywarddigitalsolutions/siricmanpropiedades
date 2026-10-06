@@ -15,25 +15,43 @@ afterEach(() => cleanup());
 
 beforeEach(() => {
   vi.clearAllMocks();
-  getPublicNeighborhoods.mockResolvedValue([
-    { id: "n1", name: "Palermo", slug: "palermo" },
-    { id: "n2", name: "Belgrano", slug: "belgrano" },
-  ]);
   listPublicProperties.mockResolvedValue({ items: [makePublicProperty()], total: 1 });
 });
 
 describe("Home page", () => {
-  it("renders the hero search that submits to the results page", async () => {
+  it("renders the owner-focused hero that leads to an appraisal", async () => {
     render(await Home());
 
+    const hero = screen.getByRole("region", { name: "Tu propiedad, en manos profesionales." });
     expect(
-      screen.getByRole("heading", { level: 1, name: "Encontrá tu próxima propiedad en CABA" }),
+      within(hero).getByRole("heading", { level: 1, name: "Tu propiedad, en manos profesionales." }),
     ).toBeInTheDocument();
-    const form = screen.getByRole("search", { name: "Buscar propiedades" });
-    expect(form).toHaveAttribute("action", "/propiedades");
-    expect(within(form).getByRole("combobox", { name: "Ubicación" })).toBeInTheDocument();
-    expect(form.querySelector('input[type="hidden"][name="barrio"]')).toHaveValue("");
-    expect(within(form).getByRole("radio", { name: "Comprar" })).toHaveAttribute("value", "venta");
+    expect(within(hero).getByRole("link", { name: "Pedí tu tasación" })).toHaveAttribute(
+      "href",
+      "/tasaciones",
+    );
+    expect(within(hero).getByRole("link", { name: /Ver propiedades/ })).toHaveAttribute(
+      "href",
+      "/propiedades",
+    );
+    expect(screen.queryByRole("search", { name: "Buscar propiedades" })).toBeNull();
+    expect(getPublicNeighborhoods).not.toHaveBeenCalled();
+  });
+
+  it("explains the owner process right after the hero", async () => {
+    render(await Home());
+
+    const hero = screen.getByRole("region", { name: "Tu propiedad, en manos profesionales." });
+    const process = screen.getByRole("region", { name: "Vendé o alquilá sin complicarte" });
+    expect(
+      within(process).getByRole("heading", { level: 2, name: "Vendé o alquilá sin complicarte" }),
+    ).toBeInTheDocument();
+    expect(within(process).getByRole("link", { name: "Pedí tu tasación" })).toHaveAttribute(
+      "href",
+      "/tasaciones",
+    );
+    // Reading order: the hero comes before the process section.
+    expect(hero.compareDocumentPosition(process) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("shows featured sale and rent sections", async () => {
@@ -112,30 +130,52 @@ describe("Home page", () => {
 
   it("still renders when the catalog is unavailable", async () => {
     listPublicProperties.mockRejectedValue(new ApiError(0, "down"));
-    getPublicNeighborhoods.mockRejectedValue(new ApiError(0, "down"));
 
     render(await Home());
 
-    expect(screen.getByRole("search", { name: "Buscar propiedades" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { level: 2, name: /Destacadas/ })).toBeNull();
-    expect(screen.getByRole("link", { name: /Solicitar tasación/ })).toHaveAttribute(
+    const hero = screen.getByRole("region", { name: "Tu propiedad, en manos profesionales." });
+    expect(within(hero).getByRole("link", { name: "Pedí tu tasación" })).toHaveAttribute(
       "href",
       "/tasaciones",
     );
+    expect(
+      screen.getByRole("region", { name: "Nos ocupamos de tu propiedad, todos los meses" }),
+    ).toBeInTheDocument();
   });
 
-  it("shows the appraisal call to action with benefits and a WhatsApp alternative", async () => {
+  it("closes with the management section instead of the old appraisal call to action", async () => {
     render(await Home());
 
-    const cta = screen.getByRole("region", { name: "¿Querés vender o alquilar?" });
-    expect(within(cta).getAllByRole("listitem").length).toBeGreaterThanOrEqual(3);
-    expect(within(cta).getByRole("link", { name: /Solicitar tasación/ })).toHaveAttribute(
-      "href",
-      "/tasaciones",
-    );
-    expect(within(cta).getByRole("link", { name: /WhatsApp/ })).toHaveAttribute(
+    const management = screen.getByRole("region", {
+      name: "Nos ocupamos de tu propiedad, todos los meses",
+    });
+    const services = screen.getByRole("region", { name: "Todo lo que necesitás, en un solo lugar" });
+    expect(
+      services.compareDocumentPosition(management) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(within(management).getByRole("link", { name: /WhatsApp/ })).toHaveAttribute(
       "href",
       expect.stringContaining("https://wa.me/5491138967363"),
+    );
+    expect(screen.queryByRole("region", { name: "¿Querés vender o alquilar?" })).toBeNull();
+    expect(screen.queryByRole("link", { name: /Solicitar tasación/ })).toBeNull();
+  });
+
+  it("closes with the people behind the agency, after services and management", async () => {
+    render(await Home());
+
+    const services = screen.getByRole("region", { name: "Todo lo que necesitás, en un solo lugar" });
+    const management = screen.getByRole("region", {
+      name: "Nos ocupamos de tu propiedad, todos los meses",
+    });
+    const about = screen.getByRole("region", { name: "Una inmobiliaria con nombre y apellido" });
+    expect(services.compareDocumentPosition(management) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(management.compareDocumentPosition(about) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(about).getByRole("link", { name: "Conocé más sobre nosotros" })).toHaveAttribute(
+      "href",
+      "/nosotros",
     );
   });
 
@@ -144,6 +184,24 @@ describe("Home page", () => {
 
     const script = container.querySelector('script[type="application/ld+json"]');
     expect(JSON.parse(script!.textContent!)).toMatchObject({ "@type": "RealEstateAgent" });
+  });
+
+  it("shows the buyer section after the owner process section", async () => {
+    render(await Home());
+
+    const process = screen.getByRole("region", { name: "Vendé o alquilá sin complicarte" });
+    const buyer = screen.getByRole("region", { name: "Encontrá tu próximo hogar" });
+    expect(process.compareDocumentPosition(buyer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(buyer).getByRole("link", { name: /^Comprar,\s*Propiedades en venta$/ })).toHaveAttribute(
+      "href",
+      "/propiedades?operacion=venta",
+    );
+  });
+
+  it("no longer renders the property type chips navigation", async () => {
+    render(await Home());
+
+    expect(screen.queryByRole("navigation", { name: "Tipos de propiedad" })).toBeNull();
   });
 
   it("links the property types to filtered results", async () => {

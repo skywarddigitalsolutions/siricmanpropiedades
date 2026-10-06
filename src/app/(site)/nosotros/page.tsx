@@ -14,7 +14,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
-import { BROKER_LICENSE, INSTAGRAM_URL } from "@/lib/contact";
+import { INSTAGRAM_URL } from "@/lib/contact";
+import { TEAM } from "@/lib/public/team";
 import { WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 import styles from "./page.module.css";
 
@@ -59,17 +60,6 @@ const VALUES: { icon: LucideIcon; title: string; text: string }[] = [
     icon: ClipboardCheck,
     title: "Responsabilidad",
     text: "Seriedad, organización y vocación de servicio.",
-  },
-];
-
-// Only real people ship here; the design's `[Nombre]` placeholders are intentionally left out.
-const TEAM = [
-  {
-    name: "Gabriel Siricman",
-    role: "Martillero Público y Corredor Inmobiliario",
-    license: BROKER_LICENSE,
-    photo: "/team/gabriel.jpg",
-    bio: "Más de 11 años administrando consorcios en la Ciudad de Buenos Aires. Hoy acompaña operaciones de compra, venta y alquiler con la misma cercanía.",
   },
 ];
 

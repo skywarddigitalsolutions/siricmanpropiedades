@@ -366,8 +366,15 @@
 
   .aside {
     position: sticky;
-    top: calc(var(--site-header-height) + 20px);
+    top: calc(var(--site-header-offset) + 20px);
     flex: 0 0 340px;
+  }
+
+  /* Moves with the header as it slides in and out. */
+  @media (prefers-reduced-motion: no-preference) {
+    .aside {
+      transition: top var(--site-header-slide);
+    }
   }
 
   .asideSummary {

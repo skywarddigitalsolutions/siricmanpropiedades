@@ -1,15 +1,19 @@
+/*
+ * Results pagination: previous/next steps around numbered pages. Every target
+ * is at least 44px at every width; narrow phones switch to a compact list.
+ */
 .pagination {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin-top: 8px;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .pages {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   list-style: none;
 }
 
@@ -24,7 +28,10 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-pill);
-  font: 700 14px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
 }
 
 .step,
@@ -60,20 +67,34 @@
 
 .step:focus-visible,
 .number:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }
 
-/* Narrow phones: smaller targets keep the whole row on one line. */
+/*
+ * Targets stay 44 px at every width. Narrow phones show the compact list
+ * (first, current, last: at most 3 numbers + 2 "…" or 4 numbers) so the row
+ * fits 320 px: 2 × 44 (steps) + 3 × 44 + 2 × 20 (…) + 6 × 4 (--space-1 gaps) = 284 px
+ * inside the 288 px content box (16 px gutters).
+ */
+.pages > [data-only="narrow"] {
+  display: none;
+}
+
 @media (max-width: 480px) {
-  .step,
-  .stepPlaceholder,
-  .number,
-  .current {
-    min-width: 38px;
-    height: 38px;
+  .pages > [data-only="wide"] {
+    display: none;
   }
+
+  .pages > [data-only="narrow"] {
+    display: block;
+  }
+
   .pagination {
-    gap: 2px;
+    gap: var(--space-1);
+  }
+
+  .ellipsis {
+    min-width: 20px;
   }
 }

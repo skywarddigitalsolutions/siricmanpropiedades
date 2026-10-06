@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 const nav = vi.hoisted(() => ({
@@ -329,5 +329,121 @@ describe("Header glass variant over the home hero", () => {
       fireEvent.scroll(window);
     });
     expect(screen.getByRole("banner")).not.toHaveAttribute("data-variant", "glass");
+  });
+});
+
+describe("Header hide on scroll", () => {
+  let frames: FrameRequestCallback[] = [];
+
+  function setScrollY(value: number) {
+    Object.defineProperty(window, "scrollY", { value, configurable: true, writable: true });
+  }
+
+  function scrollTo(y: number) {
+    act(() => {
+      setScrollY(y);
+      fireEvent.scroll(window);
+    });
+    act(() => {
+      const pending = frames;
+      frames = [];
+      pending.forEach((cb) => cb(performance.now()));
+    });
+  }
+
+  function renderAt(pathname = "/propiedades") {
+    nav.pathname = pathname;
+    nav.search = new URLSearchParams();
+    setScrollY(0);
+    render(<Header />);
+    return screen.getByRole("banner");
+  }
+
+  beforeEach(() => {
+    frames = [];
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+      frames.push(cb);
+      return frames.length;
+    });
+    vi.spyOn(window, "cancelAnimationFrame").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    setScrollY(0);
+  });
+
+  it("hides when scrolling down past its height and shows again when scrolling up", () => {
+    const banner = renderAt();
+    expect(banner).not.toHaveAttribute("data-hidden");
+
+    scrollTo(300);
+    expect(banner).toHaveAttribute("data-hidden");
+    expect(document.documentElement).toHaveAttribute("data-header-hidden");
+
+    scrollTo(260);
+    expect(banner).not.toHaveAttribute("data-hidden");
+    expect(document.documentElement).not.toHaveAttribute("data-header-hidden");
+  });
+
+  it("ignores tiny upward movements below the threshold", () => {
+    const banner = renderAt();
+    scrollTo(300);
+    scrollTo(296);
+    expect(banner).toHaveAttribute("data-hidden");
+  });
+
+  it("stays visible near the top", () => {
+    const banner = renderAt();
+    scrollTo(40);
+    expect(banner).not.toHaveAttribute("data-hidden");
+  });
+
+  it("stays in the accessibility tree while hidden", () => {
+    const banner = renderAt();
+    scrollTo(300);
+    expect(banner).not.toHaveAttribute("aria-hidden");
+    expect(screen.getByRole("button", { name: "Menú" })).toBeInTheDocument();
+  });
+
+  it("shows when focus moves into it", () => {
+    const banner = renderAt();
+    scrollTo(300);
+    expect(banner).toHaveAttribute("data-hidden");
+
+    act(() => {
+      screen.getByRole("link", { name: "Comprar" }).focus();
+    });
+    expect(banner).not.toHaveAttribute("data-hidden");
+
+    scrollTo(600);
+    expect(banner).not.toHaveAttribute("data-hidden");
+  });
+
+  it("never hides while the mobile menu is open", async () => {
+    const banner = renderAt();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Menú" }));
+    act(() => {
+      (document.activeElement as HTMLElement | null)?.blur();
+    });
+
+    scrollTo(300);
+    scrollTo(600);
+    expect(banner).not.toHaveAttribute("data-hidden");
+  });
+
+  it("clears the document attribute when unmounted", () => {
+    renderAt();
+    scrollTo(300);
+    expect(document.documentElement).toHaveAttribute("data-header-hidden");
+    cleanup();
+    expect(document.documentElement).not.toHaveAttribute("data-header-hidden");
+  });
+
+  it("removes its scroll listener when unmounted", () => {
+    const remove = vi.spyOn(window, "removeEventListener");
+    renderAt();
+    cleanup();
+    expect(remove).toHaveBeenCalledWith("scroll", expect.any(Function));
   });
 });

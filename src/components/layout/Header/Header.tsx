@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState, type FocusEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -10,6 +10,7 @@ import { PHONE_HREF } from "@/lib/contact";
 import { useFavorites } from "@/lib/favorites/use-favorites";
 import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 import styles from "./Header.module.css";
+import { useHideOnScroll } from "./useHideOnScroll";
 
 type NavItem = {
   label: string;
@@ -132,6 +133,8 @@ export default function Header() {
   const menuRef = useRef<HTMLDialogElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const wasOpen = useRef(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const [focusInside, setFocusInside] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
   const scrolled = useScrolledPast(GLASS_SCROLL_LIMIT, isHome);
@@ -140,6 +143,12 @@ export default function Header() {
   const { count, mounted } = useFavorites();
   // Nothing until mounted: the server cannot know the visitor's saved list.
   const badge = mounted && count > 0 ? count : null;
+
+  // Never slide away while the menu is open or keyboard focus is inside.
+  const hidden = useHideOnScroll(headerRef, menuOpen || focusInside);
+  const onBlur = (event: FocusEvent<HTMLElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocusInside(false);
+  };
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -184,7 +193,14 @@ export default function Header() {
   }, [menuOpen]);
 
   return (
-    <header className={styles.header} data-variant={glass ? "glass" : undefined}>
+    <header
+      ref={headerRef}
+      className={styles.header}
+      data-variant={glass ? "glass" : undefined}
+      data-hidden={hidden ? "" : undefined}
+      onFocus={() => setFocusInside(true)}
+      onBlur={onBlur}
+    >
       <div className={styles.inner}>
         <Brand priority />
 

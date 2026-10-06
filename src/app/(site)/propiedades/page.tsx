@@ -3,9 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getPublicNeighborhoods, listPublicProperties } from "@/lib/api/public-catalog";
 import {
-  EMPTY_SEARCH,
-  buildSearchHref,
   canonicalHref,
+  clearFiltersHref,
   isCanonicalQuery,
   parseSearchParams,
   resultsSeo,
@@ -71,7 +70,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     redirect(`/propiedades/${listing.items[0].slug}`);
   }
 
-  const clearHref = buildSearchHref({ ...EMPTY_SEARCH, operation: state.operation });
+  const clearHref = clearFiltersHref(state);
   const askHref = buildWhatsAppLink(
     WHATSAPP_PHONE,
     "Hola Gabriel, estoy buscando una propiedad y no encontré lo que necesito en la web.",
@@ -87,7 +86,12 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           </h1>
           <ResultsSort state={state} />
         </div>
-        <ActiveFilters state={state} neighborhoods={neighborhoods} />
+        <ActiveFilters
+          state={state}
+          neighborhoods={neighborhoods}
+          // The empty state below has its own "Limpiar filtros" button.
+          showClear={!(listing.ok && listing.items.length === 0 && !state.code)}
+        />
         <ResultsBody
           listing={listing}
           state={state}
@@ -99,7 +103,12 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   );
 }
 
-type Listing = { ok: true; items: PublicPropertyListItem[]; total: number } | { ok: false };
+const errorAskHref = buildWhatsAppLink(
+  WHATSAPP_PHONE,
+  "Hola Gabriel, estoy buscando una propiedad y la web no me cargó los resultados.",
+);
+
+type Listing ={ ok: true; items: PublicPropertyListItem[]; total: number } | { ok: false };
 
 function ResultsBody({
   listing,
@@ -116,7 +125,14 @@ function ResultsBody({
     return (
       <ResultsMessage
         title="No pudimos cargar las propiedades"
-        actions={<Link href={canonicalHref(state)}>Reintentar</Link>}
+        actions={
+          <>
+            <Link href={canonicalHref(state)}>Reintentar</Link>
+            <a href={errorAskHref} target="_blank" rel="noopener noreferrer">
+              Escribinos por WhatsApp
+            </a>
+          </>
+        }
       >
         Probá de nuevo en unos segundos o escribinos por WhatsApp.
       </ResultsMessage>

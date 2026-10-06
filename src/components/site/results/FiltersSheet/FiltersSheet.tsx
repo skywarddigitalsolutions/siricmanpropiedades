@@ -1,18 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import { PROPERTY_TYPES, type Currency } from "@/lib/properties/enums";
 import { matchNeighborhoods } from "@/lib/public/neighborhood-match";
 import type { PublicNeighborhood } from "@/lib/public/types";
 import { PROPERTY_TYPE_LABELS, currencySymbol } from "@/lib/properties/labels";
 import {
-  EMPTY_SEARCH,
   MAX_NEIGHBORHOODS,
   RESULTS_PATH,
   TYPE_SLUGS,
-  buildSearchHref,
+  clearFiltersHref,
   countActiveFilters,
   type SearchState,
 } from "@/lib/public/search-params";
@@ -172,6 +171,8 @@ const minimumOptions = (max: number) => [
 /**
  * "Filtros" button and its sheet: a modal `<dialog>` (bottom sheet on phones,
  * side panel from 960 px) holding a GET form with every secondary filter.
+ * Below 1024 px the bar scrolls away, so a floating copy of the button shows
+ * up while the bar's own button is out of view; both open this same sheet.
  */
 export default function FiltersSheet({
   state,
@@ -186,7 +187,30 @@ export default function FiltersSheet({
     priceCurrency ?? (state.operation === "rent" ? "ARS" : "USD"),
   );
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  /** The button that opened the sheet, focused again when it closes. */
+  const openerRef = useRef<HTMLButtonElement | null>(null);
+  const [triggerInView, setTriggerInView] = useState(true);
   const active = countActiveFilters(state);
+  const label = active ? `Filtros · ${active}` : "Filtros";
+  const floatingHidden = triggerInView || open;
+
+  useEffect(() => {
+    const trigger = triggerRef.current;
+    // Without IntersectionObserver the floating button simply never shows.
+    if (!trigger || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[entries.length - 1];
+      if (entry) setTriggerInView(entry.isIntersecting);
+    });
+    observer.observe(trigger);
+    return () => observer.disconnect();
+  }, []);
+
+  const openSheet = (event: MouseEvent<HTMLButtonElement>) => {
+    openerRef.current = event.currentTarget;
+    setOpen(true);
+  };
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -200,21 +224,32 @@ export default function FiltersSheet({
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
+      // Runs after the re-render that closed the sheet, so the floating button
+      // is reachable again (native restore would hit it while still inert).
+      const opener = openerRef.current;
+      if (opener?.isConnected) opener.focus();
     };
   }, [open]);
 
-  const clearHref = buildSearchHref({
-    ...EMPTY_SEARCH,
-    operation: state.operation,
-    neighborhoods: state.neighborhoods,
-    sort: state.sort,
-  });
+  const clearHref = clearFiltersHref(state);
 
   return (
     <>
-      <button type="button" className={styles.trigger} onClick={() => setOpen(true)}>
+      <button type="button" ref={triggerRef} className={styles.trigger} onClick={openSheet}>
         <SlidersHorizontal aria-hidden size={15} />
-        {active ? `Filtros · ${active}` : "Filtros"}
+        {label}
+      </button>
+
+      {/* Hidden = inert + aria-hidden: not focusable, clickable or announced. */}
+      <button
+        type="button"
+        className={styles.floating}
+        onClick={openSheet}
+        inert={floatingHidden}
+        aria-hidden={floatingHidden || undefined}
+      >
+        <SlidersHorizontal aria-hidden size={16} />
+        {label}
       </button>
 
       {open && (
@@ -368,7 +403,7 @@ export default function FiltersSheet({
 
             <div className={styles.footer}>
               <Link href={clearHref} className={styles.clear}>
-                Limpiar
+                Limpiar filtros
               </Link>
               <button type="submit" className={styles.submit}>
                 Ver resultados

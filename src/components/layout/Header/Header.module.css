@@ -8,6 +8,18 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Slid out of view on scroll down. Off-screen via transform only: it stays
+   focusable (focus brings it back) and in the accessibility tree. */
+.header[data-hidden] {
+  transform: translateY(-100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .header {
+    transition: transform var(--site-header-slide);
+  }
+}
+
 /* Home only, below 960px, while at the top: frosted glass over the hero
    photo, which extends under the header. */
 @media (max-width: 959.98px) {
@@ -21,6 +33,7 @@
   @media (prefers-reduced-motion: no-preference) {
     .header {
       transition:
+        transform var(--site-header-slide),
         background-color 0.2s ease,
         border-color 0.2s ease;
     }

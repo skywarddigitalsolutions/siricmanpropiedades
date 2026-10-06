@@ -17,6 +17,7 @@ const { listPublicProperties, getPublicNeighborhoods } = vi.hoisted(() => ({
 vi.mock("@/lib/api/public-catalog", () => ({ listPublicProperties, getPublicNeighborhoods }));
 
 import { ApiError } from "@/lib/api/client";
+import { WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 import ResultsPage, { generateMetadata } from "./page";
 
 const query = (params: Record<string, string> = {}) => ({ searchParams: Promise.resolve(params) });
@@ -92,9 +93,26 @@ describe("ResultsPage", () => {
     render(await ResultsPage(query({ operacion: "venta", tipo: "casa", ambientes: "5" })));
 
     expect(screen.getByText("Sin resultados con esos filtros")).toBeInTheDocument();
+    // Only the empty state's button: the chips hide theirs to avoid a duplicate.
+    expect(screen.getAllByRole("link", { name: "Limpiar filtros" })).toHaveLength(1);
     expect(screen.getByRole("link", { name: "Limpiar filtros" })).toHaveAttribute(
       "href",
       "/propiedades?operacion=venta",
+    );
+  });
+
+  it("clears the filters like the chips and the sheet do: keeps operation and sort only", async () => {
+    listPublicProperties.mockResolvedValue({ items: [], total: 0 });
+
+    render(
+      await ResultsPage(
+        query({ operacion: "venta", barrio: "palermo", tipo: "casa", orden: "menor-precio" }),
+      ),
+    );
+
+    expect(screen.getByRole("link", { name: "Limpiar filtros" })).toHaveAttribute(
+      "href",
+      "/propiedades?operacion=venta&orden=menor-precio",
     );
   });
 
@@ -108,6 +126,17 @@ describe("ResultsPage", () => {
       "href",
       "/propiedades?operacion=venta",
     );
+    // The copy mentions WhatsApp, so the error offers the link too.
+    const whatsapp = screen.getByRole("link", { name: "Escribinos por WhatsApp" });
+    expect(whatsapp).toHaveAttribute(
+      "href",
+      buildWhatsAppLink(
+        WHATSAPP_PHONE,
+        "Hola Gabriel, estoy buscando una propiedad y la web no me cargó los resultados.",
+      ),
+    );
+    expect(whatsapp).toHaveAttribute("target", "_blank");
+    expect(whatsapp).toHaveAttribute("rel", "noopener noreferrer");
   });
 });
 
@@ -135,7 +164,7 @@ describe("ResultsPage filter feedback", () => {
       "href",
       "/propiedades?operacion=venta&tipo=casa",
     );
-    expect(screen.getByRole("link", { name: "Limpiar todo" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Limpiar filtros" })).toBeInTheDocument();
   });
 
   it("does not promise alerts in the empty state", async () => {

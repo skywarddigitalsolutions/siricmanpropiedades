@@ -1,15 +1,95 @@
+/*
+ * Filters dialog. Phones: a bottom sheet (fixed header and footer, scrolling
+ * body); from 960px a right-hand side panel. Also styles the bar's "Filtros"
+ * trigger and the floating pill that replaces it on phones once it scrolls away.
+ */
 .trigger {
   flex: none;
   min-height: 38px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 15px;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
   border-radius: var(--radius-pill);
-  font: 700 13px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
   color: var(--color-white);
   background: var(--color-navy);
   cursor: pointer;
+}
+
+/*
+ * Phones and tablets: floating "Filtros" pill, bottom-center, shown while the
+ * bar's own button is scrolled away. The max-width keeps it clear of the
+ * WhatsApp button (58 px wide, 16 px from the right edge) with 8 px to spare
+ * at any width: right edge <= 100vw - 82px < WhatsApp's left edge (100vw - 74px).
+ * z-index 40: above the content, below the WhatsApp button (45); the sheet
+ * itself sits in the top layer (showModal).
+ */
+.floating {
+  position: fixed;
+  left: 50%;
+  /* Vertically centered on the WhatsApp button (58 px tall, 20 px from the
+     bottom): 20 + (58 - 48) / 2 = 25 px for this 48 px pill. */
+  bottom: calc(25px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  translate: -50% 0;
+  max-width: calc(100% - 2 * (var(--space-4) + 58px + var(--space-2)));
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  white-space: nowrap;
+  color: var(--color-white);
+  background: var(--color-navy);
+  box-shadow: var(--shadow-float);
+  cursor: pointer;
+}
+
+/* Hidden (inert): invisible, so also not focusable or clickable. */
+.floating[inert] {
+  visibility: hidden;
+  opacity: 0;
+  translate: -50% var(--space-2);
+}
+
+/* The outline sits outside the pill, over the page: gold-dark keeps 3:1 there. */
+.floating:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .floating {
+    transition:
+      opacity 0.2s ease,
+      translate 0.2s ease,
+      visibility 0s linear 0s;
+  }
+
+  /* Hide after the fade, so visibility does not cut it short. */
+  .floating[inert] {
+    transition:
+      opacity 0.2s ease,
+      translate 0.2s ease,
+      visibility 0s linear 0.2s;
+  }
+}
+
+/* From 1024 px the bar is sticky and its button always in view. */
+@media (min-width: 1024px) {
+  .floating {
+    display: none;
+  }
 }
 
 /* Phones: bottom sheet. */
@@ -27,7 +107,7 @@
   overscroll-behavior: contain;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   background: var(--color-white);
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-sheet);
 }
 
 /* Header and footer stay put; only the body scrolls (flex only when open). */
@@ -37,7 +117,7 @@
 }
 
 .sheet::backdrop {
-  background: rgba(15, 19, 45, 0.45);
+  background: var(--color-backdrop);
 }
 
 .form {
@@ -53,12 +133,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  /* 20px side padding: no spacing token fits (16/24). */
+  padding: var(--space-4) 20px;
   border-bottom: 1px solid var(--color-border-soft);
 }
 
 .title {
-  font: 800 18px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-snug);
 }
 
 .close {
@@ -81,26 +165,44 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-6);
+  /*
+   * Scroll cue (pure CSS): soft navy shadows at the top and bottom edges show
+   * there is more content in that direction. Two white covers scroll with the
+   * content (attachment: local) and sit over two shadows fixed to the box
+   * (attachment: scroll). At the very top the top cover hides the top shadow;
+   * at the very end the bottom cover hides the bottom shadow. With no overflow
+   * (e.g. the desktop panel with few filters) both covers stay on: no shadow.
+   * Covers (40px) are taller than shadows (12px) so they hide them fully.
+   */
+  background:
+    linear-gradient(var(--color-white) 30%, transparent) center top / 100% 40px no-repeat local,
+    linear-gradient(transparent, var(--color-white) 70%) center bottom / 100% 40px no-repeat local,
+    radial-gradient(farthest-side at 50% 0, color-mix(in srgb, var(--color-navy) 18%, transparent), transparent) center top / 100% 12px no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%, color-mix(in srgb, var(--color-navy) 18%, transparent), transparent) center bottom / 100% 12px no-repeat scroll,
+    var(--color-white);
 }
 
 .group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-3);
   min-width: 0;
   border: 0;
 }
 
 .legend {
-  margin-bottom: 10px;
-  font: 700 14px var(--font-body), sans-serif;
+  margin-bottom: var(--space-3);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
 }
 
 .pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .pill,
@@ -110,10 +212,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 14px;
+  padding: 0 var(--space-4);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-pill);
-  font: 600 14px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
   cursor: pointer;
 }
 
@@ -135,23 +240,23 @@
 
 .pill:has(.pillInput:focus-visible),
 .currencyOption:has(.pillInput:focus-visible) {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }
 
 .priceRow {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .currency {
   flex: none;
   display: flex;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .currencyOption {
-  padding: 0 12px;
+  padding: 0 var(--space-3);
 }
 
 .priceField {
@@ -162,18 +267,22 @@
 .input {
   width: 100%;
   min-height: 44px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border: 1px solid var(--color-border-strong);
-  border-radius: 12px;
-  font: 600 16px var(--font-body), sans-serif;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
 }
 
 .input:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
 }
 
 .hint {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
 }
 
@@ -182,9 +291,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
   border-bottom: 1px solid var(--color-border-soft);
-  font: 600 15px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
   cursor: pointer;
 }
 
@@ -195,10 +307,9 @@
   width: 46px;
   height: 28px;
   margin: 0;
-  border-radius: 14px;
-  background: #d9d4c8;
+  border-radius: var(--radius-pill);
+  background: var(--color-switch-track);
   cursor: pointer;
-  transition: background 0.15s ease;
 }
 
 .switch::after {
@@ -210,8 +321,17 @@
   height: 22px;
   border-radius: 50%;
   background: var(--color-white);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition: left 0.15s ease;
+  box-shadow: var(--shadow-knob);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .switch {
+    transition: background 0.15s ease;
+  }
+
+  .switch::after {
+    transition: left 0.15s ease;
+  }
 }
 
 .switch:checked {
@@ -223,7 +343,7 @@
 }
 
 .switch:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }
 
@@ -231,8 +351,8 @@
   flex: none;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 20px calc(20px + env(safe-area-inset-bottom));
+  gap: var(--space-3);
+  padding: var(--space-3) 20px calc(20px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--color-border-soft);
 }
 
@@ -241,8 +361,11 @@
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  padding: 0 10px;
-  font: 700 14px var(--font-body), sans-serif;
+  padding: 0 var(--space-2);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
   color: var(--color-text);
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -252,7 +375,10 @@
   flex: 1;
   min-height: 50px;
   border-radius: var(--radius-pill);
-  font: 800 15px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-snug);
   color: var(--color-white);
   background: var(--color-navy);
   cursor: pointer;
@@ -262,7 +388,7 @@
 .close:focus-visible,
 .clear:focus-visible,
 .submit:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }
 
@@ -290,9 +416,12 @@
 .symbol {
   position: absolute;
   top: 50%;
-  left: 12px;
+  left: var(--space-3);
   translate: 0 -50%;
-  font: 700 14px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
   color: var(--color-text-muted);
   pointer-events: none;
 }
@@ -305,7 +434,7 @@
 .mobileOnly {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-6);
 }
 
 @media (min-width: 1024px) {
@@ -317,7 +446,7 @@
 .selectedList {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
   list-style: none;
 }
 
@@ -325,10 +454,13 @@
   min-height: 36px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 12px;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
   border-radius: var(--radius-pill);
-  font: 600 13px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
   color: var(--color-white);
   background: var(--color-navy);
   cursor: pointer;
@@ -336,7 +468,7 @@
 
 .selectedChip:focus-visible,
 .check:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }
 
@@ -344,17 +476,20 @@
   max-height: 220px;
   overflow-y: auto;
   border: 1px solid var(--color-border-strong);
-  border-radius: 12px;
-  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
 }
 
 .barrioOption {
   min-height: 44px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   border-bottom: 1px solid var(--color-border-soft);
-  font: 600 15px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
   cursor: pointer;
 }
 

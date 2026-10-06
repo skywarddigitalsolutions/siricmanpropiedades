@@ -1,19 +1,26 @@
+/*
+ * Results sort: the order select plus, without JavaScript, an "Aplicar"
+ * submit button styled as an outlined pill.
+ */
 .form {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .apply {
   min-height: 44px;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-pill);
-  padding: 0 14px;
-  font: 600 13px var(--font-body), sans-serif;
+  padding: 0 var(--space-4);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
   color: var(--color-text);
   background: var(--color-white);
 }
 
 .apply:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }

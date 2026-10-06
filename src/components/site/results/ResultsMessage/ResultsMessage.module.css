@@ -1,22 +1,30 @@
+/*
+ * Results message: a centered white panel for empty and error states, with a
+ * title, optional text and optional action links/buttons.
+ */
 .message {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 40px 24px;
+  gap: var(--space-3);
+  /* 40px vertical: no spacing token fits (32/48). */
+  padding: 40px var(--space-6);
   border-radius: var(--radius-xl);
   text-align: center;
   background: var(--color-white);
 }
 
 .title {
-  font: 800 20px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-snug);
 }
 
 .text {
   max-width: 440px;
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
   color: var(--color-text-muted);
 }
 
@@ -24,11 +32,11 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  margin-top: 4px;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
 }
 
-/* Shared look for the action links passed in. */
+/* Shared look for the action links passed in (20px sides: no token fits). */
 .actions > a {
   min-height: 46px;
   display: inline-flex;
@@ -36,7 +44,10 @@
   padding: 0 20px;
   border: 1px solid var(--color-navy);
   border-radius: var(--radius-pill);
-  font: 700 14px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
   color: var(--color-navy);
   background: var(--color-white);
 }
@@ -45,7 +56,10 @@
   min-height: 46px;
   padding: 0 20px;
   border-radius: var(--radius-pill);
-  font: 700 14px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
   color: var(--color-white);
   background: var(--color-navy);
   cursor: pointer;
@@ -53,6 +67,6 @@
 
 .actions > a:focus-visible,
 .actions > button:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }

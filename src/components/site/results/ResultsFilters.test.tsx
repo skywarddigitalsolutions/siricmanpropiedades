@@ -1,7 +1,7 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { parseSearchParams } from "@/lib/public/search-params";
+import { clearFiltersHref, parseSearchParams } from "@/lib/public/search-params";
 import { pick } from "@/test/dropdown";
 import FiltersSheet from "./FiltersSheet/FiltersSheet";
 import ResultsFilterBar from "./ResultsFilterBar/ResultsFilterBar";
@@ -119,10 +119,28 @@ describe("FiltersSheet", () => {
     expect(within(dialog).getByRole("checkbox", { name: "Acepta mascotas" })).toBeChecked();
     const form = within(dialog).getByRole("button", { name: "Ver resultados" }).closest("form")!;
     expect(form.querySelector('input[type="hidden"][name="barrio"]')).toHaveValue("palermo");
-    expect(within(dialog).getByRole("link", { name: "Limpiar" })).toHaveAttribute(
-      "href",
-      "/propiedades?operacion=venta&barrio=palermo",
-    );
+  });
+
+  it("clears every filter, barrios included, keeping only operation and sort", async () => {
+    const user = userEvent.setup();
+    const state = parseSearchParams({
+      operacion: "venta",
+      barrio: "palermo",
+      tipo: "casa",
+      desde: "100000",
+      mascotas: "1",
+      codigo: "SP-0101",
+      orden: "menor-precio",
+    });
+    render(<FiltersSheet neighborhoods={NEIGHBORHOODS} state={state} />);
+
+    await user.click(screen.getByRole("button", { name: "Filtros · 3" }));
+
+    const clear = within(screen.getByRole("dialog", { name: "Filtros" })).getByRole("link", {
+      name: "Limpiar filtros",
+    });
+    expect(clear).toHaveAttribute("href", "/propiedades?operacion=venta&orden=menor-precio");
+    expect(clear).toHaveAttribute("href", clearFiltersHref(state));
   });
 
   it("shows the currency symbol inside the price inputs and follows the toggle", async () => {
@@ -210,6 +228,107 @@ describe("FiltersSheet", () => {
     await user.click(screen.getByRole("button", { name: "Cerrar filtros" }));
 
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+});
+
+/** Minimal IntersectionObserver: tests decide when the bar's button leaves the viewport. */
+class MockIntersectionObserver {
+  static instances: MockIntersectionObserver[] = [];
+  targets: Element[] = [];
+  callback: IntersectionObserverCallback;
+  constructor(callback: IntersectionObserverCallback) {
+    this.callback = callback;
+    MockIntersectionObserver.instances.push(this);
+  }
+  observe(target: Element) {
+    this.targets.push(target);
+  }
+  unobserve() {}
+  disconnect() {
+    this.targets = [];
+  }
+  takeRecords() {
+    return [];
+  }
+}
+
+function setTriggerInView(inView: boolean) {
+  act(() => {
+    for (const observer of MockIntersectionObserver.instances) {
+      const entries = observer.targets.map(
+        (target) => ({ target, isIntersecting: inView }) as IntersectionObserverEntry,
+      );
+      observer.callback(entries, observer as unknown as IntersectionObserver);
+    }
+  });
+}
+
+describe("FiltersSheet floating button", () => {
+  beforeEach(() => {
+    MockIntersectionObserver.instances = [];
+    vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  const state = parseSearchParams({ tipo: "casa", credito: "1" });
+
+  it("stays hidden and out of reach while the bar's Filtros button is in view", () => {
+    render(<FiltersSheet neighborhoods={NEIGHBORHOODS} state={state} />);
+    setTriggerInView(true);
+
+    const buttons = screen.getAllByRole("button", { hidden: true });
+    expect(buttons).toHaveLength(2);
+    const floating = buttons[1];
+    expect(floating).toHaveTextContent("Filtros · 2");
+    expect(floating).toHaveAttribute("inert");
+    expect(floating).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getAllByRole("button", { name: "Filtros · 2" })).toHaveLength(1);
+  });
+
+  it("observes the bar's own Filtros button", () => {
+    render(<FiltersSheet neighborhoods={NEIGHBORHOODS} state={state} />);
+
+    const [trigger] = screen.getAllByRole("button", { name: "Filtros · 2" });
+    expect(MockIntersectionObserver.instances.flatMap((o) => o.targets)).toContain(trigger);
+  });
+
+  it("appears with the same label and count once the bar's button scrolls away", () => {
+    render(<FiltersSheet neighborhoods={NEIGHBORHOODS} state={state} />);
+    setTriggerInView(false);
+
+    const buttons = screen.getAllByRole("button", { name: "Filtros · 2" });
+    expect(buttons).toHaveLength(2);
+    expect(buttons[1]).not.toHaveAttribute("inert");
+    expect(buttons[1].querySelector("svg")).not.toBeNull();
+
+    setTriggerInView(true);
+    expect(screen.getAllByRole("button", { name: "Filtros · 2" })).toHaveLength(1);
+  });
+
+  it("reads just Filtros without active filters", () => {
+    render(<FiltersSheet neighborhoods={NEIGHBORHOODS} state={parseSearchParams({})} />);
+    setTriggerInView(false);
+
+    expect(screen.getAllByRole("button", { name: "Filtros" })).toHaveLength(2);
+  });
+
+  it("opens the same sheet, hides while it is open and takes focus back on close", async () => {
+    const user = userEvent.setup();
+    render(<FiltersSheet neighborhoods={NEIGHBORHOODS} state={state} />);
+    setTriggerInView(false);
+
+    const floating = screen.getAllByRole("button", { name: "Filtros · 2" })[1];
+    await user.click(floating);
+
+    expect(screen.getByRole("dialog", { name: "Filtros" })).toBeInTheDocument();
+    expect(floating).toHaveAttribute("inert");
+    expect(floating).toHaveAttribute("aria-hidden", "true");
+
+    await user.click(screen.getByRole("button", { name: "Cerrar filtros" }));
+
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(floating).not.toHaveAttribute("inert");
+    expect(floating).toHaveFocus();
   });
 });
 

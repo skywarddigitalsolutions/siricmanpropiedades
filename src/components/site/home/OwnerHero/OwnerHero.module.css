@@ -1,0 +1,304 @@
+/*
+ * Below 960px, "glass panel" hero: a full-bleed photo with no overlay, scrim
+ * or gradient, and the copy in a light frosted-glass card floating over it.
+ * The card's own near-opaque background carries the text contrast. The hero
+ * slides up under the sticky header (glass on home while at the top) so the
+ * photo shows through it. From 640px the buttons sit side by side.
+ *
+ * From 960px, "photo panel": a white section holding one rounded panel the
+ * photo fills (still no overlay, and no zoom), with the same glass card
+ * anchored bottom-left over it and a small glass location pill top-right.
+ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Pulled up under the sticky header; its height is added back to the top
+     padding so the card keeps the same place below the header. Larger
+     bottom padding lifts the card slightly above the middle. */
+  margin-top: calc(-1 * var(--site-header-height));
+  padding: calc(var(--space-3) + var(--site-header-height)) var(--space-3) var(--space-12);
+  /* Fill the viewport below the header (vh fallback first), never under
+     600px, plus the header height it now sits under. */
+  min-height: calc(max(600px, 100vh - var(--site-header-height)) + var(--site-header-height));
+  min-height: calc(max(600px, 100svh - var(--site-header-height)) + var(--site-header-height));
+  /* Fallback while the photo loads or if it fails. */
+  background: var(--color-surface-muted);
+}
+
+/* Below 960px the inner wrapper is not positioned, so the photo box fills
+   the whole section behind the card. */
+.photoBox {
+  position: absolute;
+  inset: 0;
+}
+
+.photo {
+  object-fit: cover;
+  /* Portrait crop: French windows and armchair in view. */
+  object-position: 30% 50%;
+  transform-origin: center;
+}
+
+.inner {
+  width: 100%;
+}
+
+/* Positioned above the absolutely positioned photo box. */
+.card {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-12) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+/* Without backdrop blur the card turns solid so the text stays legible. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card {
+    background: var(--color-surface-translucent);
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  /* Deeper than gold-dark so it stays >= 4.5:1 over the translucent glass. */
+  color: var(--color-gold-deep);
+}
+
+/* Short gold hairline before the eyebrow (decorative, no contrast floor). */
+.eyebrow::before {
+  content: "";
+  width: var(--space-6);
+  height: 1px;
+  background: var(--color-gold);
+}
+
+.title {
+  max-width: 16ch;
+  margin-top: var(--space-6);
+  font-family: var(--font-body), sans-serif;
+  /* At least 36px on phones (the card is the whole first screen there),
+     growing with --text-h1 up to 44px. */
+  font-size: max(2.25rem, var(--text-h1));
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-navy);
+  text-wrap: balance;
+}
+
+.subtitle {
+  max-width: 36ch;
+  margin-top: var(--space-6);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-lg);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted-2);
+}
+
+.actions {
+  width: 100%;
+  margin-top: var(--space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.primary,
+.secondary {
+  min-height: 52px;
+  padding: 0 var(--space-6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+}
+
+.primary {
+  color: var(--color-white);
+  background: var(--color-navy);
+}
+
+.primary:hover {
+  background: var(--color-navy-dark);
+}
+
+.secondary {
+  border: 1px solid var(--color-navy);
+  color: var(--color-navy);
+  background: transparent;
+}
+
+.secondary:hover {
+  background: var(--color-surface-hover);
+}
+
+.primary:focus-visible,
+.secondary:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .primary,
+  .secondary {
+    transition: background-color 0.15s ease;
+  }
+
+  /* Slow "Ken Burns" zoom on the backdrop. */
+  .photo {
+    animation: owner-hero-zoom 22s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes owner-hero-zoom {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.07);
+  }
+}
+
+@media (min-width: 640px) {
+  .actions {
+    width: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+/* Location pill: desktop only. */
+.pill {
+  display: none;
+}
+
+/* Desktop: photo panel. */
+@media (min-width: 960px) {
+  /* The desktop header is not glass, so the hero no longer slides under it. */
+  .hero {
+    display: block;
+    margin-top: 0;
+    padding: var(--space-2) var(--space-6) var(--space-6);
+    min-height: 0;
+    background: var(--color-surface);
+  }
+
+  .inner {
+    position: relative;
+    overflow: hidden;
+    /* Fill the viewport below the header minus the section padding
+       (vh fallback first), between 600px and 860px. */
+    height: clamp(600px, calc(100vh - var(--site-header-height) - 32px), 860px);
+    height: clamp(600px, calc(100svh - var(--site-header-height) - 32px), 860px);
+    border-radius: var(--radius-4xl);
+    /* Fallback while the photo loads or if it fails. */
+    background: var(--color-surface-muted);
+  }
+
+  .photo {
+    object-position: 50% 42%;
+    animation: none;
+  }
+
+  /*
+   * Anchored bottom-left. Below ~1030px viewports the card narrows to keep
+   * clear of the pill column (pill ~250px wide + 28px inset + ~26px gap +
+   * 76px left offset = 380px), so the two never collide, even at the 600px
+   * minimum panel height. Worst case at 960px: 532px wide and about 485px
+   * tall (44px padding top and bottom, 3-line title at 44px, up to a 3-line
+   * subtitle, one row of 56px buttons), leaving ~59px above it.
+   */
+  .card {
+    position: absolute;
+    left: 76px;
+    bottom: 56px;
+    width: min(600px, 100% - 380px);
+    padding: 44px;
+    border-radius: var(--radius-2xl);
+  }
+
+  .title {
+    max-width: none;
+    font-size: var(--text-hero);
+  }
+
+  .subtitle {
+    max-width: 40ch;
+    font-size: 1.125rem; /* 18 */
+  }
+
+  .actions {
+    margin-top: var(--space-8);
+  }
+
+  .primary,
+  .secondary {
+    min-height: 56px;
+  }
+
+  /* Over the glass worst case navy text is 8.62:1. */
+  .pill {
+    position: absolute;
+    z-index: 1;
+    top: 28px;
+    right: 28px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 10px 18px 10px 10px;
+    border: 1px solid var(--color-glass-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-glass);
+    box-shadow: var(--shadow-glass);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    font-family: var(--font-body), sans-serif;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-snug);
+    color: var(--color-navy);
+    white-space: nowrap;
+  }
+
+  .pillIcon {
+    width: var(--space-8);
+    height: var(--space-8);
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    color: var(--color-gold);
+    background: var(--color-navy);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .pill {
+    background: var(--color-surface-translucent);
+  }
+}

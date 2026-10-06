@@ -55,6 +55,25 @@ describe("FeaturedSection", () => {
     );
   });
 
+  it("is named by its level-2 heading", () => {
+    render(<FeaturedSection {...sale} properties={properties} />);
+
+    const section = screen.getByRole("region", { name: "Destacadas en venta" });
+    expect(
+      within(section).getByRole("heading", { level: 2, name: "Destacadas en venta" }),
+    ).toBeInTheDocument();
+  });
+
+  it("still renders with a single property (no minimum)", () => {
+    render(<FeaturedSection {...sale} properties={properties.slice(0, 1)} />);
+
+    const section = screen.getByRole("region", { name: "Destacadas en venta" });
+    expect(within(section).getAllByRole("article")).toHaveLength(1);
+    expect(within(section).getByRole("link", { name: /Ver todas/ })).toBeInTheDocument();
+    expect(within(section).getByRole("button", { name: "Anterior" })).toBeInTheDocument();
+    expect(within(section).getByRole("button", { name: "Siguiente" })).toBeInTheDocument();
+  });
+
   it("renders nothing without properties", () => {
     const { container } = render(<FeaturedSection {...sale} properties={[]} />);
     expect(container).toBeEmptyDOMElement();

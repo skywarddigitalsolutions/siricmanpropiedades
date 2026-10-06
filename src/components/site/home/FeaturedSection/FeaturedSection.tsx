@@ -30,7 +30,7 @@ export default function FeaturedSection({
     <section aria-labelledby={titleId} className={styles.section}>
       <header className={styles.header}>
         <div className={styles.heading}>
-          <span className={styles.eyebrow}>{eyebrow}</span>
+          <p className={styles.eyebrow}>{eyebrow}</p>
           <h2 id={titleId} className={styles.title}>
             {title}
           </h2>
@@ -38,7 +38,7 @@ export default function FeaturedSection({
         </div>
         <Link href={buildSearchHref(EMPTY_SEARCH, { operation })} className={styles.seeAll}>
           Ver todas
-          <ArrowRight aria-hidden size={16} />
+          <ArrowRight aria-hidden size={18} className={styles.seeAllIcon} />
         </Link>
       </header>
       <FeaturedTrack properties={properties} />

@@ -1,21 +1,21 @@
 import Link from "next/link";
 import { X } from "lucide-react";
-import {
-  EMPTY_SEARCH,
-  activeFilters,
-  buildSearchHref,
-  type SearchState,
-} from "@/lib/public/search-params";
+import { activeFilters, clearFiltersHref, type SearchState } from "@/lib/public/search-params";
 import type { PublicNeighborhood } from "@/lib/public/types";
 import styles from "./ActiveFilters.module.css";
 
-type ActiveFiltersProps = { state: SearchState; neighborhoods: PublicNeighborhood[] };
+type ActiveFiltersProps = {
+  state: SearchState;
+  neighborhoods: PublicNeighborhood[];
+  /** False where the page already offers the same clear action (empty state). */
+  showClear?: boolean;
+};
 
-/** One removable chip per applied filter, plus "Limpiar todo" (keeps the operation). */
-export default function ActiveFilters({ state, neighborhoods }: ActiveFiltersProps) {
+/** One removable chip per applied filter, plus "Limpiar filtros" (keeps operation and sort). */
+export default function ActiveFilters({ state, neighborhoods, showClear = true }: ActiveFiltersProps) {
   const filters = activeFilters(state, neighborhoods);
   if (filters.length === 0) return null;
-  const clearHref = buildSearchHref({ ...EMPTY_SEARCH, operation: state.operation });
+  const clearHref = clearFiltersHref(state);
   return (
     <ul aria-label="Filtros aplicados" className={styles.list}>
       {filters.map((filter) => (
@@ -31,11 +31,13 @@ export default function ActiveFilters({ state, neighborhoods }: ActiveFiltersPro
           </Link>
         </li>
       ))}
-      <li>
-        <Link href={clearHref} scroll={false} className={styles.clear}>
-          Limpiar todo
-        </Link>
-      </li>
+      {showClear && (
+        <li>
+          <Link href={clearHref} scroll={false} className={styles.clear}>
+            Limpiar filtros
+          </Link>
+        </li>
+      )}
     </ul>
   );
 }

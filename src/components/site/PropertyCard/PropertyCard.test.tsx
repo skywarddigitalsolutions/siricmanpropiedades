@@ -13,7 +13,6 @@ describe("PropertyCard", () => {
       "/propiedades/luminoso-3-ambientes-con-balcon",
     );
     expect(within(card).getByText("US$ 185.000")).toBeInTheDocument();
-    expect(within(card).getByText("SP-0101")).toBeInTheDocument();
     expect(within(card).getByText("+ $ 145.000 expensas")).toBeInTheDocument();
     expect(within(card).getByText("Venta")).toBeInTheDocument();
     expect(within(card).getByText(/Departamento · Palermo/)).toBeInTheDocument();
@@ -38,6 +37,12 @@ describe("PropertyCard", () => {
 
     expect(screen.getByText("Oportunidad")).toBeInTheDocument();
     expect(screen.getByText("Vendida")).toBeInTheDocument();
+  });
+
+  it("does not show the internal property code on the card", () => {
+    render(<PropertyCard property={makePublicProperty()} />);
+
+    expect(within(screen.getByRole("article")).queryByText("SP-0101")).toBeNull();
   });
 
   it("uses the requested heading level", () => {

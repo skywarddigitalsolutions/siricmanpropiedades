@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { pageItems } from "@/lib/public/pagination";
+import { responsivePageItems } from "@/lib/public/pagination";
 import { buildSearchHref, type SearchState } from "@/lib/public/search-params";
 import styles from "./ResultsPagination.module.css";
 
@@ -28,8 +28,9 @@ export default function ResultsPagination({ state, totalPages }: ResultsPaginati
         <span className={styles.stepPlaceholder} aria-hidden />
       )}
       <ol className={styles.pages}>
-        {pageItems(page, totalPages).map((item, index) => (
-          <li key={item === "ellipsis" ? `gap-${index}` : item}>
+        {responsivePageItems(page, totalPages).map(({ item, key, full, compact }) => (
+          // data-only: the item belongs to one width's list; CSS hides it at the other.
+          <li key={key} data-only={full && compact ? undefined : full ? "wide" : "narrow"}>
             {item === "ellipsis" ? (
               <span className={styles.ellipsis}>…</span>
             ) : item === page ? (

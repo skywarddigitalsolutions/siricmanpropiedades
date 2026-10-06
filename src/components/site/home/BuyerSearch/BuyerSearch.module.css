@@ -1,0 +1,391 @@
+/*
+ * Buyer search. Mobile-first: intro, two stacked photo cards (sale, rent), a
+ * 2-column grid of property type rows and a full-width "see all" link, in
+ * DOM order. Nothing scrolls horizontally.
+ *
+ * 640-959px: the photo cards sit side by side and the types use 4 columns.
+ * From 960px a grid lays out a header row (intro on the left, "see all" on
+ * the right, aligned to the bottom), the cards below it and the 7 types as a
+ * single row of column cards (icon on top, label below).
+ */
+.section {
+  padding: var(--section-gap) var(--page-gutter);
+  background: var(--color-surface-muted);
+}
+
+.inner {
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Eyebrow with a short gold hairline (same look as the owner sections). */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-gold-dark);
+}
+
+/* Decorative, no contrast floor. */
+.eyebrow::before {
+  content: "";
+  width: var(--space-6);
+  height: 1px;
+  background: var(--color-gold);
+}
+
+.title {
+  margin-top: var(--space-4);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-h1);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-navy);
+  text-wrap: balance;
+}
+
+/* Operation photo cards. */
+.cards {
+  margin-top: var(--space-8);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  list-style: none;
+}
+
+.card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: 200px;
+  display: block;
+  border-radius: var(--radius-xl);
+  text-decoration: none;
+  /* Fallback while the photo loads or if it fails. */
+  background: var(--color-surface-hover);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 3px;
+}
+
+.photo {
+  object-fit: cover;
+}
+
+/* Facade framed a little above the middle. */
+.photoBuy {
+  object-position: 50% 28%;
+}
+
+.photoRent {
+  object-position: 50% 50%;
+}
+
+/* Glass label anchored bottom-left. */
+.label {
+  position: absolute;
+  z-index: 1;
+  left: var(--space-3);
+  bottom: var(--space-3);
+  max-width: calc(100% - 2 * var(--space-3));
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 12px 12px 12px 18px;
+  border: 1px solid var(--color-glass-border);
+  border-radius: 18px;
+  background: var(--color-surface-glass);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+/* Without backdrop blur the label turns solid so the text stays legible. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .label {
+    background: var(--color-surface-translucent);
+  }
+}
+
+.labelText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.labelTitle {
+  font-family: var(--font-body), sans-serif;
+  font-size: 1.125rem; /* 18 */
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-snug);
+  color: var(--color-navy);
+}
+
+.labelSubtitle {
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.8125rem; /* 13 */
+  line-height: var(--leading-snug);
+  color: var(--color-text-muted-2);
+}
+
+.labelArrow {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--color-white);
+  background: var(--color-navy);
+}
+
+/* Property types. */
+.typesTitle {
+  margin-top: 36px;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  color: var(--color-navy);
+}
+
+.typeList {
+  margin-top: var(--space-4);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  list-style: none;
+}
+
+/* Column card (icon on top, label below): at 2 columns on a 360px phone a
+   row layout leaves too little width for "Departamentos". */
+.type {
+  height: 100%;
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.9375rem; /* 15 */
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  text-decoration: none;
+  color: var(--color-navy);
+  background: var(--color-white);
+}
+
+.typeLabel {
+  min-width: 0;
+}
+
+.type:hover {
+  color: var(--color-navy);
+}
+
+.type:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}
+
+.typeIcon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--color-gold-dark);
+  background: var(--color-gold-soft);
+}
+
+/* "See all": outline pill. */
+.all {
+  margin-top: 28px;
+  min-height: 52px;
+  padding: 0 var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid var(--color-navy);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  color: var(--color-navy);
+  background: transparent;
+}
+
+.all:hover {
+  color: var(--color-navy);
+  background: var(--color-surface-hover);
+}
+
+.all:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .type:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-hover);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .photo {
+    transition: transform 0.4s ease;
+  }
+
+  .type {
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .all {
+    transition: background-color 0.15s ease;
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .card:hover .photo {
+    transform: scale(1.04);
+  }
+
+  .type:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@media (min-width: 640px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card {
+    height: 260px;
+  }
+
+  .typeList {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .all {
+    align-self: flex-start;
+  }
+}
+
+@media (min-width: 960px) {
+  .inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "intro all"
+      "cards cards"
+      "types types";
+    column-gap: var(--space-8);
+    align-items: end;
+  }
+
+  .intro {
+    grid-area: intro;
+  }
+
+  .cards {
+    grid-area: cards;
+    margin-top: 40px;
+    gap: var(--space-6);
+  }
+
+  .card {
+    height: 330px;
+    border-radius: var(--radius-2xl);
+  }
+
+  .label {
+    left: 20px;
+    bottom: 20px;
+    max-width: calc(100% - 40px);
+    padding: 16px 16px 16px 22px;
+    border-radius: 20px;
+  }
+
+  .labelTitle {
+    font-size: 1.375rem; /* 22 */
+  }
+
+  .labelSubtitle {
+    font-size: var(--text-sm);
+  }
+
+  .labelArrow {
+    width: 44px;
+    height: 44px;
+  }
+
+  .types {
+    grid-area: types;
+  }
+
+  .typesTitle {
+    margin-top: 44px;
+    font-size: var(--text-xl);
+  }
+
+  /* 4 columns until 1200px: below that, 7 columns are too narrow for
+     "Departamentos". */
+  .typeList {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .type {
+    height: 116px;
+    padding: var(--space-4);
+    border-radius: 20px;
+  }
+
+  .typeIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .typeIcon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .all {
+    grid-area: all;
+    align-self: end;
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .typeList {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}

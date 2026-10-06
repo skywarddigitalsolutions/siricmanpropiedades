@@ -1,17 +1,17 @@
-import { getPublicNeighborhoods, listPublicProperties } from "@/lib/api/public-catalog";
+import { listPublicProperties } from "@/lib/api/public-catalog";
 import type { Operation } from "@/lib/properties/enums";
 import { SHOWCASE_SIZE, needsFallback, pickShowcase } from "@/lib/public/featured";
 import { agencyJsonLd } from "@/lib/public/structured-data";
-import type { PublicNeighborhood, PublicPropertyListItem } from "@/lib/public/types";
+import type { PublicPropertyListItem } from "@/lib/public/types";
 import { getSiteUrl } from "@/lib/site-url";
 import JsonLd from "@/components/site/JsonLd/JsonLd";
 import FeaturedSection from "@/components/site/home/FeaturedSection/FeaturedSection";
-import HeroSearch from "@/components/site/home/HeroSearch/HeroSearch";
-import {
-  AppraisalCta,
-  ServicesGrid,
-  TypeChips,
-} from "@/components/site/home/HomeSections/HomeSections";
+import OwnerHero from "@/components/site/home/OwnerHero/OwnerHero";
+import OwnerProcess from "@/components/site/home/OwnerProcess/OwnerProcess";
+import BuyerSearch from "@/components/site/home/BuyerSearch/BuyerSearch";
+import { ServicesGrid } from "@/components/site/home/HomeSections/HomeSections";
+import AboutTeaser from "@/components/site/home/AboutTeaser/AboutTeaser";
+import ManagementSection from "@/components/site/home/ManagementSection/ManagementSection";
 
 // Rendered per request (the catalog is cached for 60 s by the data layer), so
 // the Docker build never needs the API.
@@ -27,23 +27,18 @@ async function loadShowcase(operation: Operation): Promise<PublicPropertyListIte
 
 /**
  * Home. The catalog is optional here: if the API is down the page still
- * renders the search and the institutional sections, and a failing
+ * renders the hero and the institutional sections, and a failing
  * operation only hides its own section.
  */
 export default async function Home() {
-  const [sale, rent, neighborhoods] = await Promise.allSettled([
-    loadShowcase("sale"),
-    loadShowcase("rent"),
-    getPublicNeighborhoods(),
-  ]);
-  const barrios: PublicNeighborhood[] =
-    neighborhoods.status === "fulfilled" ? neighborhoods.value : [];
+  const [sale, rent] = await Promise.allSettled([loadShowcase("sale"), loadShowcase("rent")]);
 
   return (
     <main>
       <JsonLd data={agencyJsonLd(getSiteUrl())} />
-      <HeroSearch neighborhoods={barrios} />
-      <TypeChips />
+      <OwnerHero />
+      <OwnerProcess />
+      <BuyerSearch />
       <FeaturedSection
         operation="sale"
         eyebrow="En venta"
@@ -59,7 +54,8 @@ export default async function Home() {
         properties={rent.status === "fulfilled" ? rent.value : []}
       />
       <ServicesGrid />
-      <AppraisalCta />
+      <ManagementSection />
+      <AboutTeaser />
     </main>
   );
 }

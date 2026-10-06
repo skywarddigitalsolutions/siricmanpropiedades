@@ -1,8 +1,12 @@
+/*
+ * Active filters: one removable outlined chip per applied filter, followed by
+ * a "Limpiar filtros" text link. Wraps onto as many rows as needed.
+ */
 .list {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   list-style: none;
 }
 
@@ -10,11 +14,14 @@
   min-height: 36px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 12px 0 14px;
+  gap: var(--space-2);
+  padding: 0 var(--space-3) 0 var(--space-4);
   border: 1px solid var(--color-navy);
   border-radius: var(--radius-pill);
-  font: 600 13px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
   color: var(--color-navy);
   background: var(--color-white);
 }
@@ -28,8 +35,11 @@
   min-height: 36px;
   display: inline-flex;
   align-items: center;
-  padding: 0 8px;
-  font: 700 13px var(--font-body), sans-serif;
+  padding: 0 var(--space-2);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
   color: var(--color-navy);
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -37,6 +47,6 @@
 
 .chip:focus-visible,
 .clear:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
 }
