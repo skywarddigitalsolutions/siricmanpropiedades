@@ -35,7 +35,8 @@ const OPTIONS: ContactOption[] = [
   {
     key: "whatsapp",
     label: "WhatsApp",
-    value: PHONE_DISPLAY,
+    // The number is on the phone row; here, the action.
+    value: "Escribinos ahora",
     href: buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE),
     icon: <WhatsAppIcon size={18} />,
   },
@@ -71,7 +72,6 @@ const OPTIONS: ContactOption[] = [
       </svg>
     ),
   },
-  { key: "hours", label: "Horario (con cita previa)", value: OFFICE_HOURS, icon: <Clock size={18} /> },
 ];
 
 /** `/contacto` — contact channels, message form, office map and address. */
@@ -86,6 +86,9 @@ export default function ContactPage() {
             <div className={styles.intro}>
               <span className={styles.eyebrow}>CONTACTO</span>
               <h1 className={styles.title}>Hablemos de tu próxima operación</h1>
+              <p className={styles.lead}>
+                Escribinos por el medio que prefieras y te responde Gabriel.
+              </p>
             </div>
 
             <ul className={styles.contactList} aria-label="Contacto directo">
@@ -128,11 +131,8 @@ export default function ContactPage() {
         </div>
 
         <div className={styles.visit}>
-          <MapEmbed
-            query={OFFICE_MAP_QUERY}
-            title="Mapa de la oficina"
-            label={`${OFFICE_ADDRESS} · ${OFFICE_NEIGHBORHOOD}`}
-          />
+          {/* No label over the map: the office block beside it has the address. */}
+          <MapEmbed query={OFFICE_MAP_QUERY} title="Mapa de la oficina" />
           <section aria-labelledby="contact-office" className={`${styles.navy} ${styles.office}`}>
             <span className={styles.eyebrow}>Oficina</span>
             <h2 id="contact-office" className={styles.officeTitle}>

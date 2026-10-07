@@ -227,3 +227,11 @@
     transition: filter 0.2s ease;
   }
 }
+
+@media (min-width: 640px) and (max-width: 959px) {
+  /* Tablets: a wider photo, so it doesn't fill the whole screen height. */
+  .slide,
+  .empty {
+    aspect-ratio: 16 / 9;
+  }
+}

@@ -108,3 +108,21 @@
     transition: background-color 0.15s ease;
   }
 }
+
+.privacy {
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.privacyLink {
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.privacyLink:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}

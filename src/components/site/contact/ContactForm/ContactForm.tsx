@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useRef, useState, type InputHTMLAttributes } from "react";
 import type { ContactField, ContactState } from "@/lib/leads/contact-form";
 import { LEAD_TOPICS, LEAD_TOPIC_LABELS } from "@/lib/leads/labels";
 import Select from "../../Select/Select";
-import { FormHint, FormLiveRegion, Optional } from "../../forms/FormParts";
+import { FormHint, FormLiveRegion } from "../../forms/FormParts";
 import FormSuccess from "../../forms/FormSuccess";
 import { countFieldErrors, useFocusOnError } from "../../forms/useFocusOnError";
 import styles from "./ContactForm.module.css";
@@ -138,7 +139,7 @@ export default function ContactForm({ action }: ContactFormProps) {
         </div>
         <div className={styles.field}>
           <label htmlFor="contact-message" className={styles.label}>
-            Tu mensaje <Optional />
+            Tu mensaje
           </label>
           <textarea
             id="contact-message"
@@ -162,6 +163,12 @@ export default function ContactForm({ action }: ContactFormProps) {
         <button type="submit" className={styles.submit} disabled={pending} aria-busy={pending}>
           {pending ? "Enviando…" : "Enviar"}
         </button>
+        <p className={styles.privacy}>
+          Usamos tus datos solo para responder tu consulta.{" "}
+          <Link href="/privacidad" className={styles.privacyLink}>
+            Privacidad
+          </Link>
+        </p>
       </form>
       <FormLiveRegion fieldErrors={countFieldErrors(errors)} />
     </>

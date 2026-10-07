@@ -23,9 +23,6 @@ export default function WhatsAppButton() {
       className={styles.button}
     >
       <WhatsAppIcon size={28} />
-      <span className={styles.label} aria-hidden="true">
-        Escribinos
-      </span>
     </a>
   );
 }

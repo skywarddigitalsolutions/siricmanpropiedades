@@ -1,47 +1,38 @@
+/*
+ * Floating WhatsApp button: the logo only, on every screen (the accessible
+ * name stays on the link). Round on purpose: it's the widely recognized
+ * floating-chat shape, not an icon tile.
+ */
 .button {
   position: fixed;
-  right: 16px;
+  right: var(--page-gutter);
   bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   z-index: 45;
   width: 58px;
   height: 58px;
-  border-radius: var(--radius-pill);
-  background: var(--color-whatsapp);
-  color: var(--color-white);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  border-radius: var(--radius-pill);
+  color: var(--color-white);
+  background: var(--color-whatsapp);
   box-shadow: var(--shadow-float);
-}
-
-.label {
-  display: none;
-  font: 700 15px var(--font-body), sans-serif;
-  letter-spacing: 0.01em;
 }
 
 @media (hover: hover) {
   .button:hover {
-    background: var(--color-whatsapp-dark);
     color: var(--color-white);
+    background: var(--color-whatsapp-dark);
   }
 }
 
 .button:focus-visible {
-  outline: 3px solid var(--color-gold);
+  outline: 3px solid var(--color-gold-dark);
   outline-offset: 3px;
 }
 
-/* Desktop: a pill with a visible label (the accessible name stays on the link). */
-@media (min-width: 1024px) {
+@media (prefers-reduced-motion: no-preference) {
   .button {
-    right: 24px;
-    width: auto;
-    padding: 0 22px 0 18px;
-  }
-
-  .label {
-    display: inline;
+    transition: background-color 0.15s ease;
   }
 }

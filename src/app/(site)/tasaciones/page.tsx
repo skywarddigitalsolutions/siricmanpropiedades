@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Clock, Minus, Phone, Plus } from "lucide-react";
 import AppraisalForm from "@/components/site/appraisal/AppraisalForm/AppraisalForm";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
+import JsonLd from "@/components/site/JsonLd/JsonLd";
 import { getPublicNeighborhoods } from "@/lib/api/public-catalog";
+import { appraisalServiceJsonLd } from "@/lib/public/structured-data";
+import { getSiteUrl } from "@/lib/site-url";
 import { OFFICE_HOURS, PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
 import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 import { sendAppraisalAction } from "./actions";
@@ -107,6 +110,7 @@ export default async function AppraisalPage() {
 
   return (
     <main className={styles.main}>
+      <JsonLd data={appraisalServiceJsonLd(getSiteUrl())} />
       <section className={styles.page}>
         {/* The sticky side column stops at the end of this block, before the questions. */}
         <div className={styles.split}>

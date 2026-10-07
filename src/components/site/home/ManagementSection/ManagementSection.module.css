@@ -8,7 +8,7 @@
  * hairline, buttons full width.
  *
  * From 640px the actions sit inline, aligned to the start, and wrap. From
- * 900px the services become two equal columns separated by a vertical 1px
+ * 960px the services become two equal columns separated by a vertical 1px
  * on-dark hairline.
  */
 .section {
@@ -236,7 +236,7 @@
   }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 960px) {
   .blocks {
     margin-top: var(--space-12);
     display: grid;

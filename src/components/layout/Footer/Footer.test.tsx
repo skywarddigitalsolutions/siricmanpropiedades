@@ -44,21 +44,32 @@ describe("Footer", () => {
     );
   });
 
-  it("has icon buttons for Instagram and WhatsApp in the brand column", () => {
+  it("lists WhatsApp and Instagram once, in Contacto, with no icon-only duplicates", () => {
     render(<Footer />);
 
-    expect(screen.getByRole("link", { name: "Instagram" })).toHaveAttribute(
+    expect(screen.queryByRole("link", { name: "Instagram" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "WhatsApp" })).toBeNull();
+    expect(screen.getAllByRole("link", { name: /WhatsApp/ })).toHaveLength(1);
+  });
+
+  it("names every service in the tagline and offers the appraisal as the closing action", () => {
+    render(<Footer />);
+
+    expect(
+      screen.getByText(
+        "Venta, alquiler, tasaciones y administración de consorcios en CABA, con trato personal de principio a fin.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Tasá tu propiedad" })).toHaveAttribute(
       "href",
-      "https://www.instagram.com/gabrielsiricman/",
-    );
-    expect(screen.getByRole("link", { name: "WhatsApp" })).toHaveAttribute(
-      "href",
-      expect.stringContaining("https://wa.me/5491138967363"),
+      "/tasaciones",
     );
   });
 
-  it("organises the footer in Contacto and Navegación columns", () => {
+  it("organises the footer in Contacto and Secciones columns", () => {
     render(<Footer />);
+
+    expect(screen.getByRole("heading", { name: "Secciones" })).toBeInTheDocument();
 
     const contact = screen.getByRole("heading", { name: "Contacto" }).parentElement!;
     expect(within(contact).getByText("Las Casas 4054, 1° B · Boedo, CABA")).toBeInTheDocument();

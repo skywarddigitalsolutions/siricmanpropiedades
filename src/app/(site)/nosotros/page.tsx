@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Award,
-  ClipboardCheck,
   Compass,
   Eye,
   Handshake,
@@ -56,11 +55,6 @@ const VALUES: { icon: LucideIcon; title: string; text: string }[] = [
     title: "Cercanía humana",
     text: "Relaciones construidas con respeto, escucha y amistad.",
   },
-  {
-    icon: ClipboardCheck,
-    title: "Responsabilidad",
-    text: "Seriedad, organización y vocación de servicio.",
-  },
 ];
 
 const WHATSAPP_MESSAGE = "Hola Gabriel, te escribo desde la web.";
@@ -84,12 +78,68 @@ export default function AboutPage() {
             Once años cuidando propiedades y a las personas que viven en ellas
           </h1>
           <p className={styles.lead}>
-            Siricman Propiedades nace de más de una década administrando consorcios en la Ciudad de
-            Buenos Aires. Hoy acompañamos operaciones de compra, venta y alquiler con la misma
-            cercanía.
+            Siricman Propiedades nace de la administración de consorcios en la Ciudad de Buenos
+            Aires. Hoy acompañamos operaciones de compra, venta y alquiler con la misma cercanía.
           </p>
         </section>
       </div>
+
+      <section className={`${styles.inner} ${styles.block}`}>
+        <h2 id="about-team" className={styles.heading}>
+          Quién está detrás
+        </h2>
+        <ul className={styles.team} aria-labelledby="about-team">
+          {TEAM.map((member) => (
+            <li key={member.name} className={styles.member}>
+              <span className={styles.avatar}>
+                <Image
+                  src={member.photo}
+                  alt={member.name}
+                  width={200}
+                  height={200}
+                  sizes="(min-width: 960px) 200px, 132px"
+                  className={styles.avatarPhoto}
+                />
+              </span>
+              <div className={styles.memberBody}>
+                <span className={styles.memberName}>{member.name}</span>
+                <span className={styles.memberRole}>{member.role}</span>
+                <span className={styles.memberLicense}>{member.license}</span>
+                {member.credentials.length > 0 && (
+                  <ul className={styles.memberCredentials}>
+                    {member.credentials.map((credential) => (
+                      <li key={credential}>{credential}</li>
+                    ))}
+                  </ul>
+                )}
+                <p className={styles.memberBio}>{member.bio}</p>
+                <div className={styles.memberActions}>
+                  <a
+                    href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_MESSAGE)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.memberPrimary}
+                  >
+                    <WhatsAppIcon size={18} />
+                    WhatsApp
+                  </a>
+                  <Link href="/contacto" className={styles.memberSecondary}>
+                    Escribinos
+                  </Link>
+                  <a
+                    href={INSTAGRAM_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.memberSecondary}
+                  >
+                    Instagram
+                  </a>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <div className={`${styles.inner} ${styles.pillars}`}>
         <div className={`${styles.navy} ${styles.pillar}`}>
@@ -136,55 +186,6 @@ export default function AboutPage() {
         </section>
       </div>
 
-      <section className={`${styles.inner} ${styles.block}`}>
-        <h2 id="about-team" className={styles.heading}>
-          Equipo
-        </h2>
-        <ul className={styles.team} aria-labelledby="about-team">
-          {TEAM.map((member) => (
-            <li key={member.name} className={styles.member}>
-              <span className={styles.avatar}>
-                <Image
-                  src={member.photo}
-                  alt={member.name}
-                  width={200}
-                  height={200}
-                  sizes="(min-width: 960px) 200px, 132px"
-                  className={styles.avatarPhoto}
-                />
-              </span>
-              <div className={styles.memberBody}>
-                <span className={styles.memberName}>{member.name}</span>
-                <span className={styles.memberRole}>{member.role}</span>
-                <span className={styles.memberLicense}>{member.license}</span>
-                <p className={styles.memberBio}>{member.bio}</p>
-                <div className={styles.memberActions}>
-                  <a
-                    href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_MESSAGE)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.memberPrimary}
-                  >
-                    <WhatsAppIcon size={18} />
-                    WhatsApp
-                  </a>
-                  <Link href="/contacto" className={styles.memberSecondary}>
-                    Escribinos
-                  </Link>
-                  <a
-                    href={INSTAGRAM_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.memberSecondary}
-                  >
-                    Instagram
-                  </a>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
 
       <div className={`${styles.inner} ${styles.ctaWrap}`}>
         <div className={`${styles.navy} ${styles.cta}`}>

@@ -11,7 +11,7 @@
  * the next one peeks. The gutter lives on the header and the track (not the
  * section) so the cards scroll edge to edge but snap aligned with the text.
  *
- * From 900px the header is a row (copy on the left, link on the right,
+ * From 960px the header is a row (copy on the left, link on the right,
  * aligned to the bottom), three cards fit per view and rounded-square
  * prev/next buttons sit over the sides, muted at the ends.
  */
@@ -156,7 +156,7 @@
   }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 960px) {
   .section {
     --featured-gap: var(--space-6);
   }

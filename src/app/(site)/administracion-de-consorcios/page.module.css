@@ -13,9 +13,6 @@
   width: 100%;
 }
 
-.bandAlt {
-  background: var(--color-surface);
-}
 
 .inner {
   max-width: 1080px;
@@ -50,8 +47,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-8);
-  padding-top: var(--space-6);
-  padding-bottom: var(--space-8);
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-12);
 }
 
 .intro {
@@ -203,6 +200,36 @@
   color: var(--color-gold-dark);
 }
 
+/* The hero's stat card goes navy: this page's own accent, the "+11" in gold. */
+.panel {
+  color: var(--color-white);
+  border-color: transparent;
+  background:
+    radial-gradient(120% 140% at 100% 0%, var(--color-gold-tint-20) 0%, transparent 55%),
+    linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-dark) 70%);
+}
+
+.panel .stat {
+  border-bottom-color: var(--color-on-dark-20);
+}
+
+.panel .statNumber {
+  color: var(--color-gold);
+}
+
+.panel .statLabel {
+  color: var(--color-text-on-dark-soft);
+}
+
+.panel .highlight {
+  color: var(--color-white);
+}
+
+.panel .check {
+  color: var(--color-gold);
+  background: transparent;
+}
+
 /* Sections */
 /* Navy blocks, as the management card on the home: they give the page its rhythm. */
 .navy {
@@ -248,45 +275,171 @@
 }
 
 /* What is included: a light icon list, not boxed cards. */
-/* Each service is a white card with its gold icon tile. */
-.includes {
+/* What it includes: three themed cards, each a short checklist. */
+.groups {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-3);
+  gap: var(--space-4);
   list-style: none;
 }
 
-.include {
+.group {
   display: flex;
-  gap: var(--space-4);
-  padding: var(--space-4) var(--space-6) var(--space-6) var(--space-4);
+  flex-direction: column;
+  padding: var(--space-6);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
 }
 
-.include:hover {
+.group:hover {
   border-color: var(--color-gold);
 }
 
-.includeBody {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+.groupTitle {
+  margin-top: var(--space-4);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  color: var(--color-navy);
 }
 
-.includeTitle {
+.groupLead {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
+}
+
+.groupItems {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-soft);
+  list-style: none;
+}
+
+.groupItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
   font-family: var(--font-body), sans-serif;
   font-size: var(--text-base);
-  font-weight: var(--weight-extrabold);
+  font-weight: var(--weight-semibold);
   line-height: var(--leading-snug);
   color: var(--color-ink);
 }
 
-.includeText {
+.groupCheck {
+  flex: none;
+  margin-top: 2px;
+  color: var(--color-gold-dark);
+}
+
+/* Who runs it: Gabriel's photo and data, backing the "trato directo" promise. */
+.who {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.whoPhoto {
+  flex: none;
+  width: 112px;
+  height: 112px;
+  overflow: hidden;
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-lg);
+}
+
+.whoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.whoBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.whoName {
+  margin-top: var(--space-3);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-h3);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  color: var(--color-navy);
+}
+
+/* The consortium registration leads here: it's the one this service requires. */
+.whoRpa {
+  margin-top: var(--space-2);
+  font-family: var(--font-body), sans-serif;
   font-size: var(--text-sm);
-  line-height: var(--leading-normal);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  color: var(--color-gold-dark);
+}
+
+.whoRole {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
   color: var(--color-text-muted);
+}
+
+.whoLicense {
+  font-weight: var(--weight-semibold);
+  color: var(--color-gold-dark);
+}
+
+.whoText {
+  margin-top: var(--space-3);
+  max-width: 52ch;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted-2);
+}
+
+/* WhatsApp pill, as on the property page: --color-whatsapp-strong keeps white text readable. */
+.whoLink {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-extrabold);
+  color: var(--color-white);
+  background: var(--color-whatsapp-strong);
+}
+
+.whoLink:hover {
+  color: var(--color-white);
+  background: var(--color-whatsapp-dark);
+}
+
+.whoLink:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}
+
+.processTitle {
+  margin-top: var(--space-3);
+  text-wrap: balance;
 }
 
 /* How we work: numbered circles joined by a gold line (vertical on phones). */
@@ -488,7 +641,7 @@
   }
 
   .faqItem,
-  .include {
+  .group {
     transition: border-color 0.2s ease;
   }
 }
@@ -503,9 +656,6 @@
     padding: var(--space-8);
   }
 
-  .includes {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 
   .card {
     padding: var(--space-8);
@@ -513,6 +663,25 @@
 }
 
 @media (min-width: 960px) {
+  /* Photo beside the data. */
+  .who {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-8);
+    padding: var(--space-8);
+  }
+
+  .whoPhoto {
+    width: 160px;
+    height: 160px;
+  }
+
+  /* The three themes side by side. */
+  .groups {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+
   .inner {
     padding-block: var(--space-16);
   }
@@ -526,16 +695,7 @@
     padding-bottom: var(--space-12);
   }
 
-  /* Eight services in two even rows of four, icon on top. */
-  .includes {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-4);
-  }
 
-  .include {
-    flex-direction: column;
-    padding: var(--space-6);
-  }
 
   /* Steps turn horizontal: one line from the first circle's center to the last one's. */
   .steps {
@@ -577,5 +737,20 @@
     grid-template-columns: 5fr 7fr;
     gap: var(--space-12);
     align-items: start;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 959px) {
+  /* Larger tablets: the three themes already fit side by side. */
+  .groups {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 640px) and (max-width: 959px) {
+  /* Tablets: the proposal form doesn't stretch across the whole block. */
+  .proposal {
+    max-width: 720px;
+    margin-inline: auto;
   }
 }

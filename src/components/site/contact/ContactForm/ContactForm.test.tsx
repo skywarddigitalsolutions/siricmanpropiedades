@@ -22,7 +22,10 @@ describe("ContactForm", () => {
     expect(screen.getByRole("heading", { name: "Envianos un mensaje" })).toBeInTheDocument();
     expect(screen.getByLabelText("Nombre y apellido")).toBeRequired();
     expect(screen.getByLabelText("Teléfono o email")).toBeRequired();
-    expect(screen.getByLabelText("Tu mensaje (opcional)")).toBeInTheDocument();
+    expect(screen.getByLabelText("Tu mensaje")).toBeInTheDocument();
+    expect(screen.queryByText(/opcional/i)).toBeNull();
+    expect(screen.getByText(/Usamos tus datos solo para responder tu consulta/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Privacidad" })).toHaveAttribute("href", "/privacidad");
     const options = await openLabels(user, screen.getByLabelText("Motivo de consulta"));
     expect(options).toEqual([
       "Quiero comprar",
@@ -70,7 +73,7 @@ describe("ContactForm", () => {
     expect(screen.getByLabelText("Teléfono o email")).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByLabelText("Nombre y apellido")).toHaveValue("Ana");
     expect(dropdownValue(screen.getByLabelText("Motivo de consulta"))).toBe("sell");
-    expect(screen.getByLabelText("Tu mensaje (opcional)")).toHaveValue("Mi mensaje");
+    expect(screen.getByLabelText("Tu mensaje")).toHaveValue("Mi mensaje");
   });
 
   it("shows general errors as an alert", async () => {

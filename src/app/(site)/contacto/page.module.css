@@ -65,6 +65,15 @@
   text-wrap: balance;
 }
 
+.lead {
+  margin-top: var(--space-3);
+  max-width: 52ch;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted-2);
+  text-wrap: pretty;
+}
+
 /* The list starts right after the hairline: each 48px row brings its own air. */
 .contactList {
   grid-area: contact;
@@ -255,5 +264,12 @@
   /* Moves with the header as it slides in and out. */
   .side {
     transition: top var(--site-header-slide);
+  }
+}
+
+@media (min-width: 640px) and (max-width: 959px) {
+  /* Tablets: the phone layout, kept to a comfortable width (forms don't stretch). */
+  .page {
+    max-width: 720px;
   }
 }

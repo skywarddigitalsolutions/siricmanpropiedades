@@ -70,32 +70,16 @@ export default function Footer() {
             </span>
           </div>
           <p className={styles.tagline}>
-            Venta y alquiler en CABA con asesoramiento personal, de principio a fin.
+            Venta, alquiler, tasaciones y administración de consorcios en CABA, con trato personal
+            de principio a fin.
           </p>
           <p className={styles.professional}>
             Gabriel Siricman · Martillero Público y Corredor Inmobiliario
             <span className={styles.license}>{BROKER_LICENSE}</span>
           </p>
-          <div className={styles.social}>
-            <a
-              href={INSTAGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className={styles.socialButton}
-            >
-              <InstagramIcon size={20} />
-            </a>
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="WhatsApp"
-              className={styles.socialButton}
-            >
-              <WhatsAppIcon size={20} />
-            </a>
-          </div>
+          <Link href="/tasaciones" className={styles.cta}>
+            Tasá tu propiedad
+          </Link>
         </div>
 
         <div className={styles.column}>
@@ -149,7 +133,7 @@ export default function Footer() {
         </div>
 
         <nav aria-label="Navegación del sitio" className={styles.column}>
-          <h2 className={styles.heading}>Navegación</h2>
+          <h2 className={styles.heading}>Secciones</h2>
           <ul className={styles.list}>
             {NAV_LINKS.map((item) => (
               <li key={item.href}>

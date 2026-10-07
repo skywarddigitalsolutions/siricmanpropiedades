@@ -289,3 +289,10 @@
     transition: top var(--site-header-slide);
   }
 }
+
+@media (min-width: 640px) and (max-width: 959px) {
+  /* Tablets: the phone layout, kept to a comfortable width (forms don't stretch). */
+  .page {
+    max-width: 720px;
+  }
+}

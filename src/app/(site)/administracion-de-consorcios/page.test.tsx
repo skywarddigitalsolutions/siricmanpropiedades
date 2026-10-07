@@ -35,9 +35,35 @@ describe("ConsortiumPage", () => {
     render(<ConsortiumPage />);
 
     const section = screen.getByRole("region", { name: "Qué incluye" });
-    expect(within(section).getAllByRole("listitem")).toHaveLength(8);
+    // Three themes, each a titled checklist; the eight services split among them.
+    const groups = within(section).getAllByRole("heading", { level: 3 });
+    expect(groups.map((group) => group.textContent)).toEqual(["Cuentas", "Edificio", "Gestión"]);
+    const items = within(section).getAllByRole("listitem").filter((item) => item.closest("ul ul"));
+    expect(items).toHaveLength(8);
     expect(within(section).getByText("Liquidación de expensas")).toBeInTheDocument();
     expect(within(section).getByText(/Ley 941/)).toBeInTheDocument();
+  });
+
+  it("shows who runs the administration: Gabriel's photo, role and license", () => {
+    render(<ConsortiumPage />);
+
+    const who = screen.getByRole("region", { name: "Quién te administra" });
+    expect(within(who).getByRole("img", { name: "Gabriel Siricman" })).toBeInTheDocument();
+    expect(within(who).getByText("Gabriel Siricman")).toBeInTheDocument();
+    expect(within(who).getByText(/Martillero Público y Corredor Inmobiliario/)).toBeInTheDocument();
+    expect(within(who).getByText("Matrícula N° 10024")).toBeInTheDocument();
+    // Here the consortium registration leads: it's the one that matters for this service.
+    expect(
+      within(who).getByText("Administrador de consorcios · Matrícula RPA N° 12221"),
+    ).toBeInTheDocument();
+    expect(within(who).getByRole("link", { name: /Escribile a Gabriel/ })).toHaveAttribute(
+      "href",
+      expect.stringContaining("wa.me"),
+    );
+    const includes = screen.getByRole("region", { name: "Qué incluye" });
+    const process = screen.getByRole("region", { name: "Cómo trabajamos" });
+    expect(includes.compareDocumentPosition(who) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(who.compareDocumentPosition(process) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("explains how we work and why choose us", () => {

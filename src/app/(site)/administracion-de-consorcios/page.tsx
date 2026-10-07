@@ -3,17 +3,15 @@ import {
   ArrowRight,
   Calculator,
   Check,
-  HandCoins,
-  MessageCircle,
   Minus,
   Plus,
-  ReceiptText,
-  Scale,
-  ShieldCheck,
   Users,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
+import Image from "next/image";
+import { CONSORTIUM_LICENSE } from "@/lib/contact";
+import { FOUNDER } from "@/lib/public/team";
 import ConsortiumForm from "@/components/site/consortium/ConsortiumForm/ConsortiumForm";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
 import { WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
@@ -44,46 +42,25 @@ const HIGHLIGHTS = [
   "Atención por WhatsApp y teléfono",
 ];
 
-const INCLUDES: { icon: LucideIcon; title: string; text: string }[] = [
+/** What the administration covers, grouped by theme so it reads at a glance. */
+const INCLUDE_GROUPS: { icon: LucideIcon; title: string; lead: string; items: string[] }[] = [
   {
     icon: Calculator,
-    title: "Liquidación de expensas",
-    text: "Cálculo mensual claro y detallado, listo para que cada propietario entienda qué paga.",
-  },
-  {
-    icon: HandCoins,
-    title: "Cobranza y morosidad",
-    text: "Seguimiento de los pagos y gestión ordenada de las deudas del consorcio.",
-  },
-  {
-    icon: ReceiptText,
-    title: "Pago a proveedores y servicios",
-    text: "Control de facturas y pago puntual de servicios, personal y proveedores.",
+    title: "Cuentas",
+    lead: "Expensas claras y pagos al día.",
+    items: ["Liquidación de expensas", "Cobranza y morosidad", "Pago a proveedores y servicios"],
   },
   {
     icon: Wrench,
-    title: "Mantenimiento y reparaciones",
-    text: "Relevamos el estado del edificio, pedimos presupuestos y coordinamos los trabajos.",
+    title: "Edificio",
+    lead: "El edificio en condiciones, sin sorpresas.",
+    items: ["Mantenimiento y reparaciones", "Seguros y matafuegos"],
   },
   {
     icon: Users,
-    title: "Asambleas y actas",
-    text: "Convocatoria, organización y registro de cada asamblea, con sus actas al día.",
-  },
-  {
-    icon: Scale,
-    title: "Cumplimiento legal",
-    text: "Gestión alineada con la Ley 941 y el Registro Público de Administradores de Consorcios de la Ciudad.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Seguros y matafuegos",
-    text: "Seguimos los vencimientos de pólizas y la recarga de matafuegos del edificio.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Atención a propietarios",
-    text: "Un canal directo para reclamos, consultas y novedades del edificio.",
+    title: "Gestión",
+    lead: "Asambleas, normas y atención a cada propietario.",
+    items: ["Asambleas y actas", "Cumplimiento legal (Ley 941)", "Atención a propietarios"],
   },
 ];
 
@@ -182,28 +159,76 @@ export default function ConsortiumPage() {
           <h2 id="consortium-includes" className={styles.heading}>
             Qué incluye
           </h2>
-          <ul className={styles.includes}>
-            {INCLUDES.map(({ icon: Icon, title, text }) => (
-              <li key={title} className={styles.include}>
+          <ul className={styles.groups}>
+            {INCLUDE_GROUPS.map(({ icon: Icon, title, lead, items }) => (
+              <li key={title} className={styles.group}>
                 <span className={styles.includeIcon} aria-hidden="true">
                   <Icon size={18} />
                 </span>
-                <span className={styles.includeBody}>
-                  <span className={styles.includeTitle}>{title}</span>
-                  <span className={styles.includeText}>{text}</span>
-                </span>
+                <h3 className={styles.groupTitle}>{title}</h3>
+                <p className={styles.groupLead}>{lead}</p>
+                <ul className={styles.groupItems}>
+                  {items.map((item) => (
+                    <li key={item} className={styles.groupItem}>
+                      <Check aria-hidden size={16} strokeWidth={2.5} className={styles.groupCheck} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ul>
         </section>
       </div>
 
-      <div className={`${styles.band} ${styles.bandAlt}`}>
-        <section aria-labelledby="consortium-process" className={`${styles.inner} ${styles.block}`}>
+      <div className={styles.band}>
+        <section aria-label="Quién te administra" className={styles.inner}>
+          <div className={styles.who}>
+            <span className={styles.whoPhoto}>
+              <Image
+                src={FOUNDER.photo}
+                alt={FOUNDER.name}
+                width={200}
+                height={200}
+                sizes="(min-width: 960px) 160px, 112px"
+                className={styles.whoImage}
+              />
+            </span>
+            <div className={styles.whoBody}>
+              <span className={styles.eyebrow}>Quién te administra</span>
+              <h2 className={styles.whoName}>
+                {FOUNDER.name}
+              </h2>
+              <p className={styles.whoRpa}>Administrador de consorcios · {CONSORTIUM_LICENSE}</p>
+              <p className={styles.whoRole}>
+                {FOUNDER.role} · <span className={styles.whoLicense}>{FOUNDER.license}</span>
+              </p>
+              <p className={styles.whoText}>
+                Te atiende personalmente, desde la propuesta hasta la gestión de cada mes.
+              </p>
+              <a
+                href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_MESSAGE)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.whoLink}
+              >
+                <WhatsAppIcon size={18} />
+                Escribile a Gabriel
+              </a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div className={styles.band}>
+        <section aria-label="Cómo trabajamos" className={`${styles.inner} ${styles.block}`}>
           <div className={`${styles.navy} ${styles.block}`}>
-            <h2 id="consortium-process" className={styles.heading}>
-              Cómo trabajamos
-            </h2>
+            <div>
+              <span className={styles.eyebrow}>Cómo trabajamos</span>
+              <h2 className={`${styles.heading} ${styles.processTitle}`}>
+                Un cambio de administración simple y acompañado
+              </h2>
+            </div>
             <ol className={styles.steps}>
               {STEPS.map((step, index) => (
                 <li key={step.title} className={styles.step}>

@@ -38,10 +38,10 @@ describe("WhatsAppButton", () => {
     expect(link).toHaveAttribute("rel", expect.stringContaining("noopener"));
   });
 
-  it("shows a visible label for desktop while keeping the accessible name", () => {
+  it("is the logo only on every screen, keeping its accessible name", () => {
     render(<WhatsAppButton />);
 
     const link = screen.getByRole("link", { name: "Escribinos por WhatsApp" });
-    expect(link).toHaveTextContent("Escribinos");
+    expect(link).toHaveTextContent("");
   });
 });

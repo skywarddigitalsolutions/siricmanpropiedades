@@ -1,9 +1,11 @@
-import { BROKER_LICENSE } from "@/lib/contact";
+import { BROKER_LICENSE, CONSORTIUM_LICENSE } from "@/lib/contact";
 
 export interface TeamMember {
   name: string;
   role: string;
   license: string;
+  /** Extra credentials confirmed by the person (registrations, teaching). */
+  credentials: readonly string[];
   /** Public path; the source image is 400×400. */
   photo: string;
   bio: string;
@@ -15,6 +17,7 @@ export const TEAM: readonly TeamMember[] = [
     name: "Gabriel Siricman",
     role: "Martillero Público y Corredor Inmobiliario",
     license: BROKER_LICENSE,
+    credentials: [`Administrador de consorcios · ${CONSORTIUM_LICENSE}`, "Docente en la UBA"],
     photo: "/team/gabriel.jpg",
     bio: "Más de 11 años administrando consorcios en la Ciudad de Buenos Aires. Hoy acompaña operaciones de compra, venta y alquiler con la misma cercanía.",
   },

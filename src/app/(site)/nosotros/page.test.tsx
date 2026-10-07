@@ -15,7 +15,12 @@ describe("AboutPage", () => {
         name: "Once años cuidando propiedades y a las personas que viven en ellas",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/nace de más de una década administrando consorcios/)).toBeInTheDocument();
+    expect(screen.getByText(/nace de la administración de consorcios/)).toBeInTheDocument();
+    expect(screen.queryByText(/una década/)).toBeNull();
+    // Gabriel's own mission text stays word for word.
+    expect(
+      screen.getByText(/acompañando a cada cliente con la experiencia y la confianza de más de 11 años\./),
+    ).toBeInTheDocument();
     expect(screen.getByAltText("Logo Siricman Propiedades")).toBeInTheDocument();
   });
 
@@ -28,12 +33,13 @@ describe("AboutPage", () => {
     expect(screen.getByText(/Ser una inmobiliaria referente/)).toBeInTheDocument();
   });
 
-  it("lists the seven values with their descriptions", () => {
+  it("lists the six values with their descriptions", () => {
     render(<AboutPage />);
 
     expect(screen.getByRole("heading", { level: 2, name: "Nuestros valores" })).toBeInTheDocument();
     const values = screen.getByRole("list", { name: "Nuestros valores" });
-    expect(within(values).getAllByRole("listitem")).toHaveLength(7);
+    expect(within(values).getAllByRole("listitem")).toHaveLength(6);
+    expect(within(values).queryByText("Responsabilidad")).toBeNull();
     expect(within(values).getByText("Cercanía humana")).toBeInTheDocument();
     expect(
       within(values).getByText("Relaciones construidas con respeto, escucha y amistad."),
@@ -43,12 +49,23 @@ describe("AboutPage", () => {
   it("shows only Gabriel Siricman in the team, with his photo and no placeholders", () => {
     const { container } = render(<AboutPage />);
 
-    expect(screen.getByRole("heading", { level: 2, name: "Equipo" })).toBeInTheDocument();
-    const team = screen.getByRole("list", { name: "Equipo" });
-    expect(within(team).getAllByRole("listitem")).toHaveLength(1);
+    expect(screen.getByRole("heading", { level: 2, name: "Quién está detrás" })).toBeInTheDocument();
+    // Right after the hero: the person behind the agency comes before mission and values.
+    const who = screen.getByRole("heading", { level: 2, name: "Quién está detrás" });
+    const values = screen.getByRole("heading", { level: 2, name: "Nuestros valores" });
+    expect(who.compareDocumentPosition(values) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(who.compareDocumentPosition(screen.getByText("MISIÓN")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const team = screen.getByRole("list", { name: "Quién está detrás" });
+    // One person: count the team list's own rows, not the nested credentials.
+    expect(team.children).toHaveLength(1);
     expect(within(team).getByText("Gabriel Siricman")).toBeInTheDocument();
     expect(within(team).getByText("Martillero Público y Corredor Inmobiliario")).toBeInTheDocument();
     expect(within(team).getByText("Matrícula N° 10024")).toBeInTheDocument();
+    // Data from the client: consortium administrator registration and UBA teaching.
+    expect(
+      within(team).getByText("Administrador de consorcios · Matrícula RPA N° 12221"),
+    ).toBeInTheDocument();
+    expect(within(team).getByText("Docente en la UBA")).toBeInTheDocument();
     const photo = within(team).getByRole("img", { name: "Gabriel Siricman" });
     expect(decodeURIComponent(photo.getAttribute("src")!)).toContain("/team/gabriel.jpg");
     expect(within(team).queryByText("GS")).not.toBeInTheDocument();
@@ -58,7 +75,7 @@ describe("AboutPage", () => {
   it("gives Gabriel a profile card with a bio and direct contact buttons", () => {
     render(<AboutPage />);
 
-    const team = screen.getByRole("list", { name: "Equipo" });
+    const team = screen.getByRole("list", { name: "Quién está detrás" });
     expect(within(team).getByText(/Más de 11 años administrando consorcios/)).toBeInTheDocument();
     expect(within(team).getByRole("link", { name: "WhatsApp" })).toHaveAttribute(
       "href",

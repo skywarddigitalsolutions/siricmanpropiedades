@@ -39,8 +39,12 @@ export function propertyJsonLd(property: PublicPropertyDetail, siteUrl: string) 
 }
 
 export function agencyJsonLd(siteUrl: string) {
+  return { "@context": "https://schema.org", ...agency(siteUrl) };
+}
+
+/** The agency itself, reused as the provider of its services. */
+function agency(siteUrl: string) {
   return {
-    "@context": "https://schema.org",
     "@type": "RealEstateAgent",
     name: "Siricman Propiedades",
     url: siteUrl,
@@ -52,6 +56,19 @@ export function agencyJsonLd(siteUrl: string) {
       addressLocality: "Ciudad Autónoma de Buenos Aires",
       addressCountry: "AR",
     },
+  };
+}
+
+/** The appraisal page as a `Service` offered by the agency (nested, without its own @context). */
+export function appraisalServiceJsonLd(siteUrl: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    serviceType: "Tasación de propiedades",
+    name: "Tasación de propiedades para venta y alquiler",
+    url: `${siteUrl}/tasaciones`,
+    areaServed: "Ciudad Autónoma de Buenos Aires",
+    provider: agency(siteUrl),
   };
 }
 

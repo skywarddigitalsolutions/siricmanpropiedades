@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { makePublicPropertyDetail } from "@/test/fixtures/public-property";
-import { agencyJsonLd, propertyJsonLd, serializeJsonLd } from "./structured-data";
+import {
+  agencyJsonLd,
+  appraisalServiceJsonLd,
+  propertyJsonLd,
+  serializeJsonLd,
+} from "./structured-data";
 
 const SITE = "https://siricman.com.ar";
 
@@ -71,5 +76,21 @@ describe("serializeJsonLd", () => {
     expect(json).not.toContain("<");
     expect(json).toBe(String.raw`{"name":"\u003c/script>\u003cb>"}`);
     expect(JSON.parse(json)).toEqual({ name: "</script><b>" });
+  });
+});
+
+describe("appraisalServiceJsonLd", () => {
+  it("describes the appraisal service, provided by the agency in CABA", () => {
+    const data = appraisalServiceJsonLd(SITE);
+    expect(data).toMatchObject({
+      "@context": "https://schema.org",
+      "@type": "Service",
+      serviceType: "Tasación de propiedades",
+      url: "https://siricman.com.ar/tasaciones",
+      areaServed: "Ciudad Autónoma de Buenos Aires",
+      provider: { "@type": "RealEstateAgent", name: "Siricman Propiedades", url: SITE },
+    });
+    // The provider is nested, so it carries no @context of its own.
+    expect(data.provider).not.toHaveProperty("@context");
   });
 });

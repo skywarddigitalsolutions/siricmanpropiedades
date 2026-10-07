@@ -1,144 +1,147 @@
 .footer {
-  background: var(--color-navy-dark);
-  color: var(--color-text-on-dark-muted);
-  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
   margin-top: auto;
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  color: var(--color-text-on-dark-muted);
+  background: var(--color-navy-dark);
 }
 
-/* Mobile: stacked sections. Desktop: brand | contact | navigation. */
+/* Phones: stacked sections. Desktop: brand | contact | navigation. */
 .inner {
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 48px 16px 36px;
+  padding: var(--space-12) var(--page-gutter) var(--space-8);
   display: grid;
-  gap: 36px;
+  gap: var(--space-8);
 }
 
 .brandColumn {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 14px;
+  gap: var(--space-4);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .logoImg {
-  width: 52px;
-  height: auto;
   flex: none;
   display: block;
+  width: 52px;
+  height: auto;
 }
 
 .wordmark {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--space-1);
 }
 
+/* The wordmark keeps its own fixed letterforms, like the logo it sits next to. */
 .brandName {
-  font: 500 17px/1 var(--font-display), serif;
+  font-family: var(--font-display), serif;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  line-height: 1;
   letter-spacing: 0.2em;
   color: var(--color-white);
 }
 
 .brandSub {
-  font: 700 9px/1 var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.5625rem; /* 9: part of the logo lockup, below the text scale on purpose */
+  font-weight: var(--weight-bold);
+  line-height: 1;
   letter-spacing: 0.42em;
   color: var(--color-gold);
 }
 
 .tagline {
-  max-width: 320px;
-  font-size: 14px;
-  line-height: 1.6;
+  max-width: 34ch;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
 }
 
 .professional {
-  max-width: 320px;
-  font: 600 13px/1.5 var(--font-body), sans-serif;
+  max-width: 34ch;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
   color: var(--color-white);
 }
 
 .license {
   display: block;
-  margin-top: 2px;
-  font-weight: 500;
-  color: var(--color-text-on-dark-muted);
+  margin-top: var(--space-1);
+  font-weight: var(--weight-medium);
+  color: var(--color-gold);
 }
 
-.social {
-  display: flex;
-  gap: 10px;
-  margin-top: 4px;
-}
-
-.socialButton {
-  width: 44px;
-  height: 44px;
+/* Closing action: the gold pill used on navy across the site. */
+.cta {
+  min-height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-on-dark-20);
-  border-radius: 50%;
-  color: var(--color-white);
-  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  margin-top: var(--space-2);
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-extrabold);
+  color: var(--color-navy-dark);
+  background: var(--color-gold);
 }
 
-.socialButton:hover {
-  color: var(--color-white);
-  border-color: var(--color-gold);
-  background: var(--color-gold);
+.cta:hover {
+  color: var(--color-navy-dark);
+  background: var(--color-gold-hover);
 }
 
 .column {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-2);
 }
 
 .heading {
-  font: 700 12px var(--font-body), sans-serif;
-  letter-spacing: 0.14em;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
   color: var(--color-gold);
 }
 
 .list {
-  list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  font-size: 14px;
-  line-height: 1.5;
+  list-style: none;
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
 }
 
+/* Each row is at least 44px tall, so links are easy to tap. */
 .item {
+  min-height: 44px;
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: var(--space-3);
   color: var(--color-text-on-dark-muted);
 }
 
-.itemIcon {
-  flex: none;
-  margin-top: 2px;
-  color: var(--color-gold);
-}
-
-/* Instagram glyph has no class hook: keep its colour in line with the others. */
+.itemIcon,
 .item > svg {
   flex: none;
-  margin-top: 2px;
   color: var(--color-gold);
 }
 
 .link {
-  min-height: 24px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   color: var(--color-white);
@@ -153,40 +156,42 @@
   color: var(--color-gold);
 }
 
+/* On the dark navy, the lighter gold keeps the focus ring visible. */
 .link:focus-visible,
-.socialButton:focus-visible {
+.cta:focus-visible,
+.legal a:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
-  border-radius: 4px;
-}
-
-.socialButton:focus-visible {
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
 }
 
 /*
  * The fixed WhatsApp button (58px + 20px offset) sits over the bottom-right
- * corner: the extra bottom padding keeps the legal links always clear of it.
+ * corner: on phones the extra bottom padding keeps the legal links clear of it;
+ * on desktop the links sit on the left, so half the room is enough.
  */
 .bottomBar {
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 18px 16px calc(100px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid var(--color-on-dark-10);
+  padding: var(--space-4) var(--page-gutter) calc(100px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 12px;
+  gap: var(--space-2);
+  border-top: 1px solid var(--color-on-dark-10);
+  font-size: var(--text-xs);
   color: var(--color-text-on-dark-muted);
 }
 
 .legal {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 16px;
+  gap: 0 var(--space-4);
 }
 
 .legal a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -196,22 +201,27 @@
   color: var(--color-gold);
 }
 
-.legal a:focus-visible {
-  outline: 2px solid var(--color-gold);
-  outline-offset: 2px;
-  border-radius: 4px;
+@media (prefers-reduced-motion: no-preference) {
+  .cta,
+  .link,
+  .legal a {
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+  }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 960px) {
   .inner {
     grid-template-columns: 1.3fr 1.4fr 0.8fr;
-    gap: 56px;
-    padding: 64px 24px 48px;
+    gap: var(--space-12);
+    padding: var(--space-16) var(--page-gutter) var(--space-12);
   }
 
   .bottomBar {
     flex-direction: row;
+    align-items: center;
     justify-content: space-between;
-    padding: 20px 24px calc(96px + env(safe-area-inset-bottom, 0px));
+    padding: var(--space-4) var(--page-gutter) calc(var(--space-12) + env(safe-area-inset-bottom, 0px));
   }
 }
