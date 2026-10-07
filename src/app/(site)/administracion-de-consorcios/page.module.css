@@ -37,14 +37,8 @@
   color: var(--color-gold-dark);
 }
 
-/* On the navy block the lighter gold keeps the contrast. */
-.eyebrowLight {
-  color: var(--color-gold);
-}
-
 /* Decorative, no contrast floor. */
-.eyebrow::before,
-.eyebrowLight::before {
+.eyebrow::before {
   content: "";
   width: var(--space-6);
   height: 1px;
@@ -210,6 +204,32 @@
 }
 
 /* Sections */
+/* Navy blocks, as the management card on the home: they give the page its rhythm. */
+.navy {
+  padding: clamp(var(--space-6), 5vw, var(--space-12));
+  border-radius: var(--radius-2xl);
+  color: var(--color-white);
+  background:
+    radial-gradient(120% 140% at 100% 0%, var(--color-gold-tint-20) 0%, transparent 55%),
+    linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-dark) 70%);
+}
+
+/* On navy, the lighter gold keeps the contrast; titles go white. */
+.navy .eyebrow {
+  color: var(--color-gold);
+}
+
+.navy .heading,
+.navy .proposalTitle,
+.navy .stepTitle {
+  color: var(--color-white);
+}
+
+.navy .stepText,
+.navy .proposalLead {
+  color: var(--color-text-on-dark-soft);
+}
+
 .block {
   display: flex;
   flex-direction: column;
@@ -228,18 +248,25 @@
 }
 
 /* What is included: a light icon list, not boxed cards. */
+/* Each service is a white card with its gold icon tile. */
 .includes {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  column-gap: var(--space-8);
+  gap: var(--space-3);
   list-style: none;
 }
 
 .include {
   display: flex;
   gap: var(--space-4);
-  padding: var(--space-4) 0;
-  border-top: 1px solid var(--color-border-strong);
+  padding: var(--space-4) var(--space-6) var(--space-6) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.include:hover {
+  border-color: var(--color-gold);
 }
 
 .includeBody {
@@ -410,14 +437,11 @@
   padding-bottom: var(--section-gap);
 }
 
+/* Same pattern as /tasaciones: copy on the page background, the form in a bordered white card. */
 .proposal {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-6);
-  padding: var(--space-6);
-  border-radius: var(--radius-2xl);
-  color: var(--color-white);
-  background: linear-gradient(150deg, var(--color-navy) 0%, var(--color-navy-dark) 100%);
 }
 
 .proposalText {
@@ -433,6 +457,7 @@
   font-weight: var(--weight-extrabold);
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-heading);
+  color: var(--color-navy);
   text-wrap: balance;
 }
 
@@ -441,14 +466,15 @@
   max-width: 52ch;
   font-size: var(--text-base);
   line-height: var(--leading-normal);
-  color: var(--color-text-on-dark-soft);
+  color: var(--color-text-muted-2);
 }
 
 /* White card, so the form keeps its light-surface colors and contrast. */
 .card {
   min-width: 0;
   padding: var(--space-6);
-  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   color: var(--color-text);
   background: var(--color-surface);
 }
@@ -461,7 +487,8 @@
       border-color 0.15s ease;
   }
 
-  .faqItem {
+  .faqItem,
+  .include {
     transition: border-color 0.2s ease;
   }
 }
@@ -478,10 +505,6 @@
 
   .includes {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .proposal {
-    padding: var(--space-8);
   }
 
   .card {
@@ -503,10 +526,15 @@
     padding-bottom: var(--space-12);
   }
 
-  /* Eight services in two even rows of four. */
+  /* Eight services in two even rows of four, icon on top. */
   .includes {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: var(--space-6);
+    gap: var(--space-4);
+  }
+
+  .include {
+    flex-direction: column;
+    padding: var(--space-6);
   }
 
   /* Steps turn horizontal: one line from the first circle's center to the last one's. */
@@ -548,7 +576,6 @@
   .proposal {
     grid-template-columns: 5fr 7fr;
     gap: var(--space-12);
-    padding: var(--space-12);
+    align-items: start;
   }
-
 }

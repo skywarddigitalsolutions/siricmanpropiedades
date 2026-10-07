@@ -92,9 +92,11 @@ export default function AboutPage() {
       </div>
 
       <div className={`${styles.inner} ${styles.pillars}`}>
-        <div className={`${styles.pillar} ${styles.pillarDark}`}>
-          <Target aria-hidden size={28} className={styles.pillarIcon} />
-          <span className={styles.eyebrowLight}>MISIÓN</span>
+        <div className={`${styles.navy} ${styles.pillar}`}>
+          <span className={styles.pillarIcon} aria-hidden="true">
+            <Target size={18} />
+          </span>
+          <span className={styles.eyebrow}>MISIÓN</span>
           <p className={styles.pillarText}>
             Brindar soluciones inmobiliarias y de administración de consorcios con un servicio
             cercano, transparente y personalizado, acompañando a cada cliente con la experiencia y
@@ -102,7 +104,9 @@ export default function AboutPage() {
           </p>
         </div>
         <div className={`${styles.pillar} ${styles.pillarLight}`}>
-          <Compass aria-hidden size={28} className={styles.pillarIconDark} />
+          <span className={styles.pillarIcon} aria-hidden="true">
+            <Compass size={18} />
+          </span>
           <span className={styles.eyebrow}>VISIÓN</span>
           <p className={styles.pillarText}>
             Ser una inmobiliaria referente por la calidad humana y profesional de nuestro servicio,
@@ -119,11 +123,13 @@ export default function AboutPage() {
           <ul className={styles.values} aria-labelledby="about-values">
             {VALUES.map(({ icon: Icon, title, text }) => (
               <li key={title} className={styles.value}>
-                <span className={styles.valueIcon}>
-                  <Icon aria-hidden size={22} />
+                <span className={styles.valueIcon} aria-hidden="true">
+                  <Icon size={18} />
                 </span>
-                <span className={styles.valueTitle}>{title}</span>
-                <span className={styles.valueText}>{text}</span>
+                <span className={styles.valueBody}>
+                  <span className={styles.valueTitle}>{title}</span>
+                  <span className={styles.valueText}>{text}</span>
+                </span>
               </li>
             ))}
           </ul>
@@ -141,9 +147,9 @@ export default function AboutPage() {
                 <Image
                   src={member.photo}
                   alt={member.name}
-                  width={180}
-                  height={180}
-                  sizes="(min-width: 1024px) 180px, 132px"
+                  width={200}
+                  height={200}
+                  sizes="(min-width: 960px) 200px, 132px"
                   className={styles.avatarPhoto}
                 />
               </span>
@@ -181,7 +187,7 @@ export default function AboutPage() {
       </section>
 
       <div className={`${styles.inner} ${styles.ctaWrap}`}>
-        <div className={styles.cta}>
+        <div className={`${styles.navy} ${styles.cta}`}>
           <div className={styles.ctaText}>
             <h2 className={styles.ctaTitle}>¿Querés vender, alquilar o consultarnos algo?</h2>
             <p className={styles.ctaBody}>

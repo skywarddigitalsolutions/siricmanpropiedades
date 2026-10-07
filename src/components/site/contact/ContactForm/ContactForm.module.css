@@ -1,39 +1,48 @@
 .title {
-  font: 800 17px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-snug);
+  color: var(--color-navy);
 }
 
 .form {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .label {
-  font: 600 13px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
   color: var(--color-text-muted-2);
 }
 
 .input {
   width: 100%;
   min-height: 48px;
-  padding: 12px 13px;
+  padding: var(--space-3);
   border: 1px solid var(--color-border-strong);
-  border-radius: 12px;
-  font: 500 16px / 1.45 var(--font-body), sans-serif;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-snug);
   color: var(--color-text);
-  background: var(--color-white);
+  background: var(--color-surface);
   resize: vertical;
 }
 
 .input:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 1px;
 }
 
@@ -42,15 +51,19 @@
 }
 
 .error {
-  font: 500 13px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
   color: var(--tone-danger-fg);
 }
 
 .alert {
-  padding: 12px 14px;
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--tone-danger-border);
   border-radius: var(--radius-sm);
-  font: 600 14px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
   color: var(--color-navy-dark);
   background: var(--tone-danger-bg);
 }
@@ -68,7 +81,9 @@
   flex: 1;
   min-height: 52px;
   border-radius: var(--radius-pill);
-  font: 800 15px var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-extrabold);
   color: var(--color-white);
   background: var(--color-navy);
   cursor: pointer;
@@ -84,6 +99,12 @@
 }
 
 .submit:focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-dark);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .submit {
+    transition: background-color 0.15s ease;
+  }
 }

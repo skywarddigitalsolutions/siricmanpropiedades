@@ -200,20 +200,22 @@ export default function ConsortiumPage() {
 
       <div className={`${styles.band} ${styles.bandAlt}`}>
         <section aria-labelledby="consortium-process" className={`${styles.inner} ${styles.block}`}>
-          <h2 id="consortium-process" className={styles.heading}>
-            Cómo trabajamos
-          </h2>
-          <ol className={styles.steps}>
-            {STEPS.map((step, index) => (
-              <li key={step.title} className={styles.step}>
-                <span className={styles.stepNumber} aria-hidden="true">
-                  {index + 1}
-                </span>
-                <span className={styles.stepTitle}>{step.title}</span>
-                <span className={styles.stepText}>{step.text}</span>
-              </li>
-            ))}
-          </ol>
+          <div className={`${styles.navy} ${styles.block}`}>
+            <h2 id="consortium-process" className={styles.heading}>
+              Cómo trabajamos
+            </h2>
+            <ol className={styles.steps}>
+              {STEPS.map((step, index) => (
+                <li key={step.title} className={styles.step}>
+                  <span className={styles.stepNumber} aria-hidden="true">
+                    {index + 1}
+                  </span>
+                  <span className={styles.stepTitle}>{step.title}</span>
+                  <span className={styles.stepText}>{step.text}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
         </section>
       </div>
 
@@ -246,9 +248,9 @@ export default function ConsortiumPage() {
           aria-labelledby="consortium-proposal"
           className={`${styles.inner} ${styles.proposalWrap}`}
         >
-          <div className={styles.proposal}>
+          <div className={`${styles.navy} ${styles.proposal}`}>
             <div className={styles.proposalText}>
-              <span className={styles.eyebrowLight}>PROPUESTA</span>
+              <span className={styles.eyebrow}>PROPUESTA</span>
               <h2 id="consortium-proposal" className={styles.proposalTitle}>
                 Contanos de tu edificio y armamos tu propuesta
               </h2>

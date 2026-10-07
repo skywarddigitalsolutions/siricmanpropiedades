@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 
 vi.mock("./actions", () => ({ sendContactAction: vi.fn() }));
 
@@ -34,8 +34,34 @@ describe("ContactPage", () => {
       "https://www.instagram.com/gabrielsiricman/",
     );
     expect(screen.getByRole("link", { name: /@gabrielsiricman/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Teléfono/ })).toHaveAttribute(
+      "href",
+      "tel:+5491138967363",
+    );
     expect(screen.getByText("Horario (con cita previa)")).toBeInTheDocument();
     expect(screen.getByText("10:30 a 18:00")).toBeInTheDocument();
+  });
+
+  it("keeps the intro and the contact options in a side column, then the form", () => {
+    const { container } = render(<ContactPage />);
+
+    const side = container.querySelector("[data-side-column]") as HTMLElement;
+    expect(side).not.toBeNull();
+    expect(within(side).getByRole("heading", { level: 1 })).toBeInTheDocument();
+    const options = within(side).getByRole("list", { name: "Contacto directo" });
+    expect(within(options).getAllByRole("listitem")).toHaveLength(5);
+    const form = screen.getByRole("heading", { name: "Envianos un mensaje" });
+    expect(side.contains(form)).toBe(false);
+    expect(side.compareDocumentPosition(form) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("shows the office address and hours next to the map", () => {
+    render(<ContactPage />);
+
+    const office = screen.getByRole("region", { name: "Las Casas 4054, 1° B" });
+    expect(within(office).getByText("Oficina")).toBeInTheDocument();
+    expect(within(office).getByText("Boedo, CABA")).toBeInTheDocument();
+    expect(within(office).getByText("10:30 a 18:00 · con cita previa")).toBeInTheDocument();
   });
 
   it("offers the contact form and the office map", () => {
