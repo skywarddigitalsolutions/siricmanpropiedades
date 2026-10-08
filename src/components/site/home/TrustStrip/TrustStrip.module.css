@@ -1,7 +1,8 @@
 /*
  * Trust strip under the hero. Mobile-first: a 2-column grid of short items,
- * each a small gold-tinted icon box and a line of text. From 960px the four
- * items sit in one row.
+ * each a small gold-tinted icon box above a title and a one-line detail (so
+ * the text gets the full column width). From 960px the four items sit in one
+ * row with the icon beside the text.
  */
 .strip {
   padding: var(--space-8) var(--page-gutter) 0;
@@ -14,30 +15,47 @@
   list-style: none;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-4);
+  gap: var(--space-6) var(--space-4);
 }
 
 .item {
   display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-family: var(--font-body), sans-serif;
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-  line-height: var(--leading-snug);
-  color: var(--color-navy);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
 .icon {
   flex: none;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
   color: var(--color-gold-dark);
   background: var(--color-gold-tint-16);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-family: var(--font-body), sans-serif;
+  line-height: var(--leading-snug);
+}
+
+.title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-navy);
+}
+
+.detail {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted-2);
 }
 
 @media (min-width: 960px) {
@@ -47,6 +65,16 @@
   }
 
   .item {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .title {
     font-size: var(--text-base);
+  }
+
+  .detail {
+    font-size: var(--text-sm);
   }
 }
