@@ -2,11 +2,12 @@
  * Why sell with us. Muted background to alternate with the white sections
  * around it.
  *
- * Mobile-first: intro, four reason cards stacked, then Gabriel's unboxed
- * signature row (round photo, name, role, license and a text link).
+ * Mobile-first: title, Gabriel's compact profile row (round photo + text),
+ * then four reason cards stacked.
  *
- * From 640px the reasons form a 2x2 grid. From 960px they take the full width
- * (4 columns) and the signature sits below, left-aligned, over a hairline.
+ * From 640px the reasons form a 2x2 grid. From 960px the header is two columns
+ * (title left, profile right, vertically aligned) and the reasons take the
+ * full width in 4 columns.
  */
 .section {
   padding: var(--section-gap) var(--page-gutter);
@@ -19,6 +20,13 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
+}
+
+/* Phones: title, then the profile row. From 960px: two columns. */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
 }
 
 /* Eyebrow with a short gold hairline (same look as the owner sections). */
@@ -95,21 +103,17 @@
   color: var(--color-text-muted);
 }
 
-/* Signature row: no border, background, radius or shadow; just a round photo
-   beside the text. */
-.person {
+/* Gabriel's profile: no border, background or hairline; a round photo with a
+   thin gold ring beside the text. Phones: photo left (64px), text right. */
+.profile {
   display: grid;
   grid-template-columns: 64px minmax(0, 1fr);
   column-gap: var(--space-4);
   align-items: center;
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--color-border);
 }
 
-/* Thin gold ring. */
 .photo {
   display: block;
-  grid-row: span 2;
   width: 64px;
   height: auto;
   aspect-ratio: 1 / 1;
@@ -118,9 +122,10 @@
   border-radius: 50%;
 }
 
-.signature {
+.profileBody {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-1);
   font-family: var(--font-body), sans-serif;
 }
@@ -132,18 +137,9 @@
   color: var(--color-navy);
 }
 
-.role,
-.license {
-  font-size: var(--text-sm);
-  line-height: var(--leading-snug);
-  color: var(--color-text-muted);
-}
-
 /* Text link with an arrow: deliberately not a pill. */
 .link {
-  grid-column: 2;
-  justify-self: start;
-  margin-top: var(--space-2);
+  margin-top: var(--space-1);
   min-height: 44px;
   display: inline-flex;
   align-items: center;
@@ -205,12 +201,20 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .person {
-    grid-template-columns: 72px minmax(0, 1fr);
-    padding-top: var(--space-8);
+  /* Title left, profile right, vertically aligned with it. */
+  .header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    column-gap: var(--space-12);
+    align-items: center;
+  }
+
+  .profile {
+    grid-template-columns: 80px minmax(0, 1fr);
+    column-gap: var(--space-6);
   }
 
   .photo {
-    width: 72px;
+    width: 80px;
   }
 }

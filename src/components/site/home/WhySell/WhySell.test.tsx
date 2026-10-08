@@ -48,10 +48,28 @@ describe("WhySell", () => {
     expect(within(section).getByText(FOUNDER.name)).toBeInTheDocument();
     expect(within(section).getByText(FOUNDER.role)).toBeInTheDocument();
     expect(within(section).getByText(FOUNDER.license)).toBeInTheDocument();
+    expect(within(section).getByText("Docente en UTN")).toBeInTheDocument();
+    expect(within(section).getByText("+11 años de experiencia")).toBeInTheDocument();
     expect(within(section).getByRole("link", { name: "Conocé más sobre nosotros" })).toHaveAttribute(
       "href",
       "/nosotros",
     );
+  });
+
+  it("puts Gabriel's profile in the section header, before the reasons", () => {
+    render(<WhySell />);
+
+    const section = screen.getByRole("region", { name: TITLE });
+    const header = within(section).getByRole("heading", { level: 2 }).closest("header")!;
+    expect(header).not.toBeNull();
+    expect(within(header).getByRole("img", { name: FOUNDER.name })).toBeInTheDocument();
+    expect(within(header).getByText("Docente en UTN")).toBeInTheDocument();
+    expect(within(header).getByRole("link", { name: "Conocé más sobre nosotros" })).toBeInTheDocument();
+    const list = within(section).getByRole("list", { name: TITLE });
+    expect(header).not.toContainElement(list);
+    expect(header.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // Nothing is left hanging under the cards.
+    expect(list.nextElementSibling).toBeNull();
   });
 
   it("keeps the consortium administrator and invented claims out of the selling pitch", () => {
