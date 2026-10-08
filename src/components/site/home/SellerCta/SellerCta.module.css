@@ -1,0 +1,118 @@
+/*
+ * Final call to action. Navy band (same look as the closing band of
+ * /nosotros): white title, gold primary pill and an outlined secondary pill.
+ *
+ * Mobile-first: text then full-width buttons stacked. From 768px the text sits
+ * on the left and the buttons on the right.
+ */
+.section {
+  padding: 0 var(--page-gutter) var(--section-gap);
+  background: var(--color-surface);
+}
+
+.band {
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  border-radius: var(--radius-2xl);
+  color: var(--color-text-on-dark-soft);
+  background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-dark) 70%);
+}
+
+.text {
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.title {
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-h2);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-white);
+  text-wrap: balance;
+}
+
+.body {
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.primary,
+.secondary {
+  min-height: 52px;
+  padding: 0 var(--space-6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  color: var(--color-white);
+}
+
+.primary {
+  background: var(--color-gold);
+}
+
+.primary:hover {
+  color: var(--color-white);
+  background: var(--color-gold-hover);
+}
+
+.secondary {
+  border: 1px solid var(--color-on-dark-40);
+}
+
+.secondary:hover {
+  color: var(--color-white);
+  border-color: var(--color-white);
+}
+
+/* On navy the darker gold would vanish: the lighter one keeps the ring visible. */
+.primary:focus-visible,
+.secondary:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .primary,
+  .secondary {
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+}
+
+@media (min-width: 768px) {
+  .band {
+    padding: var(--space-12);
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
+  }
+
+  .actions {
+    flex: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}

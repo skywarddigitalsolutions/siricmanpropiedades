@@ -4,7 +4,7 @@ import BuyerSearch from "./BuyerSearch";
 
 afterEach(() => cleanup());
 
-const TITLE = "Encontrá tu próximo hogar";
+const TITLE = "¿Buscás comprar o alquilar?";
 // Title and subtitle joined by a visually hidden comma (engines differ on the
 // whitespace around it).
 const BUY_NAME = /^Comprar,\s*Propiedades en venta$/;

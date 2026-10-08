@@ -1,0 +1,230 @@
+/*
+ * Why sell with us. Muted background to alternate with the white sections
+ * around it.
+ *
+ * Mobile-first: intro, four reason cards stacked, then the broker card (photo,
+ * name, role, license and a text link).
+ *
+ * From 640px the reasons form a 2x2 grid. From 960px the reasons sit on the
+ * left and the broker card in a fixed column on the right.
+ */
+.section {
+  padding: var(--section-gap) var(--page-gutter);
+  background: var(--color-surface-muted);
+}
+
+.inner {
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* Eyebrow with a short gold hairline (same look as the owner sections). */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-gold-dark);
+}
+
+/* Decorative, no contrast floor. */
+.eyebrow::before {
+  content: "";
+  width: var(--space-6);
+  height: 1px;
+  background: var(--color-gold);
+}
+
+.title {
+  margin-top: var(--space-4);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-h1);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-navy);
+  text-wrap: balance;
+}
+
+.reasons {
+  list-style: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.reason {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.reasonIcon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-gold-dark);
+  background: var(--color-gold-tint-16);
+}
+
+.reasonTitle {
+  margin-top: var(--space-4);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  color: var(--color-ink);
+}
+
+.reasonText {
+  margin-top: var(--space-1);
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.9375rem; /* 15 */
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
+}
+
+/* Broker card: photo on the left, signature beside it, link below. */
+.person {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+/* Thin gold border as the only accent; rounded square, never a circle. */
+.photo {
+  display: block;
+  width: 96px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-md);
+}
+
+.signature {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-family: var(--font-body), sans-serif;
+}
+
+.name {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  color: var(--color-navy);
+}
+
+.role,
+.license {
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--color-text-muted);
+}
+
+/* Text link with an arrow: deliberately not a pill. */
+.link {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+}
+
+.link:hover {
+  color: var(--color-navy);
+  text-decoration-color: var(--color-gold-dark);
+}
+
+.link:hover .arrow,
+.link:focus-visible .arrow {
+  color: var(--color-gold-dark);
+  transform: translateX(3px);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}
+
+.arrow {
+  flex: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .link {
+    transition: text-decoration-color 0.15s ease;
+  }
+
+  .arrow {
+    transition:
+      color 0.15s ease,
+      transform 0.15s ease;
+  }
+}
+
+@media (min-width: 640px) {
+  .reasons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+}
+
+@media (min-width: 960px) {
+  .inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    grid-template-areas:
+      "intro intro"
+      "reasons person";
+    column-gap: var(--space-8);
+    row-gap: var(--space-12);
+    align-items: start;
+  }
+
+  .intro {
+    grid-area: intro;
+  }
+
+  .title {
+    max-width: 24ch;
+  }
+
+  .reasons {
+    grid-area: reasons;
+  }
+
+  .person {
+    grid-area: person;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    gap: var(--space-4);
+  }
+
+  .photo {
+    width: 160px;
+  }
+}

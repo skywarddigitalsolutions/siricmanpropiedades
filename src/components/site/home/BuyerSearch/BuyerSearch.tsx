@@ -17,7 +17,7 @@ import styles from "./BuyerSearch.module.css";
 
 // Provisional copy: edit here.
 const EYEBROW = "PARA QUIENES BUSCAN";
-const TITLE = "Encontrá tu próximo hogar";
+const TITLE = "¿Buscás comprar o alquilar?";
 const TYPES_TITLE = "¿Qué tipo de propiedad?";
 const ALL_LABEL = "Ver todas las propiedades";
 

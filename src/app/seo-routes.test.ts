@@ -72,9 +72,12 @@ describe("root metadata", () => {
 
     expect(metadata.metadataBase?.toString()).toBe("https://siricman.com.ar/");
     expect(metadata.title).toEqual({
-      default: "Siricman Propiedades | Venta y alquiler en CABA",
+      default: "Vendé tu propiedad en CABA | Siricman Propiedades",
       template: "%s | Siricman Propiedades",
     });
+    expect(metadata.description).toBe(
+      "Vendé tu propiedad en CABA con asesoramiento profesional: tasación, plan de venta y acompañamiento hasta la escritura, con trato directo con un corredor matriculado.",
+    );
     expect(metadata.openGraph).toMatchObject({ siteName: "Siricman Propiedades", locale: "es_AR" });
   });
 });

@@ -55,6 +55,22 @@ describe("FeaturedSection", () => {
     );
   });
 
+  it("links 'Ver todas' to every listing when no operation is given", () => {
+    render(
+      <FeaturedSection
+        eyebrow="Para quienes buscan"
+        title="Propiedades destacadas"
+        subtitle="s"
+        properties={properties}
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: /Ver todas/ })).toHaveAttribute("href", "/propiedades");
+    expect(
+      screen.getByRole("region", { name: "Propiedades destacadas" }),
+    ).toBeInTheDocument();
+  });
+
   it("is named by its level-2 heading", () => {
     render(<FeaturedSection {...sale} properties={properties} />);
 
