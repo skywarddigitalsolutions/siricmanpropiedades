@@ -210,9 +210,6 @@ export default function ConsortiumPage() {
             <div className={styles.whoBody}>
               <h2 className={styles.whoName}>{FOUNDER.name}</h2>
               <p className={styles.whoRpa}>Administrador de consorcios · {CONSORTIUM_LICENSE}</p>
-              <p className={styles.whoRole}>
-                {FOUNDER.role} · <span className={styles.whoLicense}>{FOUNDER.license}</span>
-              </p>
               <p className={styles.whoText}>
                 Te atiende personalmente, desde la propuesta hasta la gestión de cada mes.
               </p>

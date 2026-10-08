@@ -396,18 +396,6 @@
   color: var(--color-gold-dark);
 }
 
-.whoRole {
-  margin-top: var(--space-1);
-  font-size: var(--text-sm);
-  line-height: var(--leading-snug);
-  color: var(--color-text-muted);
-}
-
-.whoLicense {
-  font-weight: var(--weight-semibold);
-  color: var(--color-gold-dark);
-}
-
 .whoText {
   margin-top: var(--space-3);
   max-width: 52ch;

@@ -61,9 +61,9 @@ describe("ConsortiumPage", () => {
     ).toBeTruthy();
     expect(within(who).getByRole("img", { name: "Gabriel Siricman" })).toBeInTheDocument();
     expect(within(who).getByText("Gabriel Siricman")).toBeInTheDocument();
-    expect(within(who).getByText(/Martillero Público y Corredor Inmobiliario/)).toBeInTheDocument();
-    expect(within(who).getByText("Matrícula N° 10024")).toBeInTheDocument();
-    // Here the consortium registration leads: it's the one that matters for this service.
+    // Only the consortium registration: the broker license is not relevant to this service.
+    expect(within(who).queryByText(/Martillero Público y Corredor Inmobiliario/)).not.toBeInTheDocument();
+    expect(within(who).queryByText("Matrícula N° 10024")).not.toBeInTheDocument();
     expect(
       within(who).getByText("Administrador de consorcios · Matrícula RPA N° 12221"),
     ).toBeInTheDocument();
