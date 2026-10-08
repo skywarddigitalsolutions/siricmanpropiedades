@@ -17,7 +17,7 @@ export const TEAM: readonly TeamMember[] = [
     name: "Gabriel Siricman",
     role: "Martillero Público y Corredor Inmobiliario",
     license: BROKER_LICENSE,
-    credentials: [`Administrador de consorcios · ${CONSORTIUM_LICENSE}`, "Docente en la UBA"],
+    credentials: [`Administrador de consorcios · ${CONSORTIUM_LICENSE}`, "Docente en UTN"],
     photo: "/team/gabriel.jpg",
     bio: "Más de 11 años administrando consorcios en la Ciudad de Buenos Aires. Hoy acompaña operaciones de compra, venta y alquiler con la misma cercanía.",
   },

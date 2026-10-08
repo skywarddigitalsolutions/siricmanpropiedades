@@ -20,7 +20,8 @@
   }
 }
 
-/* Home only, below 960px, while at the top: frosted glass over the hero
+/* Home only, below 960px (where the hero slides under it), while at the
+   top: frosted glass over the hero
    photo, which extends under the header. */
 @media (max-width: 959.98px) {
   .header[data-variant="glass"] {
@@ -64,7 +65,7 @@
 
 /* Transparent emblem: sits directly on the header, no tile behind it. */
 .logoImg {
-  width: var(--space-12);
+  width: 56px;
   height: auto;
   flex: none;
   display: block;
@@ -77,28 +78,28 @@
 }
 
 .brandName {
-  font: var(--weight-medium) var(--text-base) / 1 var(--font-display), serif;
+  font: var(--weight-medium) 1.125rem / 1 var(--font-display), serif;
   letter-spacing: var(--tracking-eyebrow);
   color: var(--color-navy);
 }
 
 .brandSub {
-  font: var(--weight-semibold) var(--text-xs) / 1 var(--font-body), sans-serif;
+  font: var(--weight-semibold) 0.8125rem / 1 var(--font-body), sans-serif;
   letter-spacing: var(--tracking-eyebrow);
   color: var(--color-gold-dark);
 }
 
 .nav {
   display: none;
-  gap: 2px;
+  gap: 0;
   align-items: center;
 }
 
 .navLink {
   background: transparent;
   border-radius: var(--radius-pill);
-  padding: 9px 14px;
-  font: var(--weight-semibold) var(--text-sm) var(--font-body), sans-serif;
+  padding: 11px 12px;
+  font: var(--weight-semibold) 0.9375rem var(--font-body), sans-serif;
   color: var(--color-text-muted-2);
   white-space: nowrap;
 }
@@ -147,7 +148,7 @@
   background: var(--color-surface-hover);
 }
 
-@media (min-width: 960px) {
+@media (min-width: 1100px) {
   .nav {
     display: flex;
   }

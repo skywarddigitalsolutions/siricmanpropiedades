@@ -29,18 +29,21 @@ describe("Header", () => {
   it("renders the desktop navigation links with the correct hrefs", () => {
     render(<Header />);
 
-    expect(screen.getByRole("link", { name: "Comprar" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute(
       "href",
-      "/propiedades?operacion=venta",
+      "/",
     );
-    expect(screen.getByRole("link", { name: "Alquilar" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Vender" })).toHaveAttribute(
       "href",
-      "/propiedades?operacion=alquiler",
+      "/vender",
     );
-    expect(screen.getByRole("link", { name: "Tasaciones" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Propiedades" })).toHaveAttribute(
       "href",
-      "/tasaciones",
+      "/propiedades",
     );
+    const rentals = screen.getByRole("link", { name: "Alquileres" });
+    expect(rentals).toHaveAttribute("href", "/administracion-de-alquileres");
+    expect(rentals).toHaveAttribute("title", "Administración de alquileres");
     expect(screen.getByRole("link", { name: "Consorcios" })).toHaveAttribute(
       "href",
       "/administracion-de-consorcios",
@@ -102,35 +105,47 @@ describe("Header actions", () => {
       .map((link) => link.textContent?.trim());
     expect(names).toEqual([
       expect.stringContaining("SIRICMAN"),
-      "Comprar",
-      "Alquilar",
-      "Tasaciones",
+      "Inicio",
+      "Vender",
+      "Propiedades",
+      "Alquileres",
       "Consorcios",
       "Nosotros",
       "Contacto",
       "Tasá tu propiedad",
     ]);
+    expect(screen.getByRole("link", { name: "Tasá tu propiedad" })).toHaveAttribute("href", "/vender");
     expect(screen.getByRole("button", { name: "Menú" })).toBeInTheDocument();
   });
 });
 
 describe("Header accessibility", () => {
   it("marks the current section with aria-current in the desktop nav", () => {
-    nav.pathname = "/tasaciones";
+    nav.pathname = "/";
     nav.search = new URLSearchParams();
     render(<Header />);
 
-    expect(screen.getByRole("link", { name: "Tasaciones" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("link", { name: "Contacto" })).not.toHaveAttribute("aria-current");
   });
 
-  it("tells Comprar and Alquilar apart by the operation in the URL", () => {
+  it("marks Propiedades as current on any property search path", () => {
     nav.pathname = "/propiedades";
     nav.search = new URLSearchParams("operacion=alquiler");
     render(<Header />);
 
-    expect(screen.getByRole("link", { name: "Alquilar" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("link", { name: "Comprar" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("link", { name: "Propiedades" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Vender" })).not.toHaveAttribute("aria-current");
+  });
+
+  it("marks Vender as current on /vender and on the legacy /tasaciones path", () => {
+    for (const pathname of ["/vender", "/tasaciones"]) {
+      nav.pathname = pathname;
+      nav.search = new URLSearchParams();
+      render(<Header />);
+      expect(screen.getByRole("link", { name: "Vender" })).toHaveAttribute("aria-current", "page");
+      cleanup();
+    }
   });
 
   it("opens the mobile menu as a modal dialog and returns focus to the menu button", async () => {
@@ -195,7 +210,7 @@ describe("Header mobile menu content", () => {
     expect(within(dialog).getByRole("button", { name: "Cerrar" })).toBeInTheDocument();
   });
 
-  it("keeps the six sections and the appraisal CTA in order", async () => {
+  it("keeps the seven sections and the appraisal CTA in order", async () => {
     const { dialog } = await openMenu();
 
     const names = within(dialog)
@@ -203,9 +218,10 @@ describe("Header mobile menu content", () => {
       .map((link) => link.textContent?.trim());
     expect(names).toEqual([
       expect.stringContaining("SIRICMAN"),
-      "Comprar",
-      "Alquilar",
-      "Tasaciones",
+      "Inicio",
+      "Vender",
+      "Propiedades",
+      "Administración de alquileres",
       "Consorcios",
       "Nosotros",
       "Contacto",
@@ -395,7 +411,7 @@ describe("Header hide on scroll", () => {
     expect(banner).toHaveAttribute("data-hidden");
 
     act(() => {
-      screen.getByRole("link", { name: "Comprar" }).focus();
+      screen.getByRole("link", { name: "Propiedades" }).focus();
     });
     expect(banner).not.toHaveAttribute("data-hidden");
 

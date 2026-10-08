@@ -194,7 +194,7 @@
   /* Layout */
   --content-max-width: 1240px;
   /* Height of the sticky public header; sticky bars below it offset by this. */
-  --site-header-height: 65px;
+  --site-header-height: 76px;
   /* Where sticky bars below the header stick: under it while it is shown,
      at the very top while it is slid away (html[data-header-hidden], set by
      the Header on scroll down). */
