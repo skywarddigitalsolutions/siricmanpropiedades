@@ -34,9 +34,9 @@
 
 | ID | Task | Repo | Route | Status | Commit |
 |----|------|------|-------|--------|--------|
-| B2 | `category` filter on admin leads + dashboard `newByCategory` + `topic` in latest leads | back | delegated | ⬜ | |
-| B3 | `demo:leads` CLI (seed/remove): leads of every category, a lead whose property was deleted, a client with no property inquiries | back | delegated | ⬜ | |
-| B4 | Clients CSV export: Spanish headers, `;`, BOM, formatted dates (if the export is built in the back) | back | delegated | ⬜ | |
+| B2 | `category` filter on admin leads + dashboard `newByCategory` + `topic` in latest leads | back | delegated | ✅ | 9842794 (back #35) |
+| B3 | `demo:leads` CLI (seed/remove): leads of every category, a lead whose property was deleted, a client with no property inquiries | back | delegated | ✅ | 41a2d3f (back #35) |
+| B4 | Clients CSV export: Spanish headers, `;`, BOM, formatted dates (if the export is built in the back) | back | delegated | ✅ | 0ad25d1 (back #35) |
 | T13 | Dashboard: KPI cards per category + category badge in "Últimas consultas" | front | delegated | ✅ | 6ff2543 |
 | T14 | Inbox: category chips filter + category icon/label/left border on each card | front | delegated | ✅ | e376a58 |
 | T15 | Lead detail: colored status control, delete with trash icon + confirm dialog | front | delegated | ✅ | 70771a5 |
@@ -56,3 +56,4 @@
 
 - 2026-10-08: mapped; doc created.
 - 2026-10-08: T13–T16 done on `feat/admin-leads-categories` (lint, 1392 tests, build green; no authenticated screenshots, admin needs login+MFA).
+- 2026-10-08: back #35 merged (categories, demo:leads, Spanish CSV; 605 tests). Local dev DB seeded with demo leads (remove with `npm run demo:leads -- remove` in the back). Front T13–T16 verified by tests only (admin needs login + MFA); owner to review visually.
