@@ -52,19 +52,23 @@
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  padding: 6px var(--space-4);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: var(--radius-pill);
+  gap: var(--space-3);
   font-family: var(--font-body), sans-serif;
-  font-size: var(--text-xs);
-  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  /* Dark frosted pill so the label never gets lost in the photo. */
-  color: var(--color-gold-hover);
-  background: rgba(12, 16, 32, 0.55);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  /* White reads over any part of the photo; the gold lives in the hairlines. */
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(12, 16, 32, 0.75);
+}
+
+/* Short gold hairline before the eyebrow (decorative). */
+.eyebrow::before {
+  content: "";
+  width: var(--space-6);
+  height: 2px;
+  background: var(--color-gold);
 }
 
 .title {
@@ -219,6 +223,14 @@
   .content {
     align-items: center;
     text-align: center;
+  }
+
+  /* Centered eyebrow: a hairline on each side keeps it balanced. */
+  .eyebrow::after {
+    content: "";
+    width: var(--space-6);
+    height: 2px;
+    background: var(--color-gold);
   }
 
   /* Wide enough for two balanced lines at 1280 and 1440. */
