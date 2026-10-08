@@ -57,7 +57,7 @@ describe("Footer", () => {
 
     expect(
       screen.getByText(
-        "Venta, alquiler, tasaciones y administración de consorcios en CABA, con trato personal de principio a fin.",
+        "Vendé tu propiedad en CABA con trato directo y profesional. También administramos alquileres y consorcios.",
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Tasá tu propiedad" })).toHaveAttribute(
@@ -77,10 +77,10 @@ describe("Footer", () => {
 
     const nav = screen.getByRole("navigation", { name: "Navegación del sitio" });
     expect(within(nav).getAllByRole("link").map((l) => l.getAttribute("href"))).toEqual([
-      "/propiedades?operacion=venta",
-      "/propiedades?operacion=alquiler",
       "/vender",
       "/administracion-de-alquileres",
+      "/propiedades?operacion=venta",
+      "/propiedades?operacion=alquiler",
       "/administracion-de-consorcios",
       "/nosotros",
       "/contacto",
