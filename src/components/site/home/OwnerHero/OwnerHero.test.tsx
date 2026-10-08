@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE, buildWhatsAppLink } from "@/lib/whatsapp";
@@ -117,5 +119,27 @@ describe("OwnerHero", () => {
 
     expect(screen.queryByText("Siricman Propiedades")).not.toBeInTheDocument();
     expect(container.querySelector('img[src*="logo-emblem"]')).toBeNull();
+  });
+
+  describe("styles", () => {
+    const css = readFileSync(join(__dirname, "OwnerHero.module.css"), "utf8");
+    const desktop = css.slice(css.indexOf("@media (min-width: 960px)"));
+
+    it("centers the whole content on desktop", () => {
+      expect(desktop).toMatch(/\.content\s*{[^}]*align-items:\s*center/);
+      expect(desktop).toMatch(/\.content\s*{[^}]*text-align:\s*center/);
+      expect(desktop).toMatch(/\.actions\s*{[^}]*justify-content:\s*center/);
+    });
+
+    it("lets the title break into two balanced lines on desktop", () => {
+      expect(desktop).toMatch(/\.title\s*{[^}]*max-width:\s*2[2-6]ch/);
+      expect(css).toMatch(/\.title\s*{[^}]*text-wrap:\s*balance/);
+    });
+
+    it("uses a neutral dark overlay instead of the saturated navy scrim", () => {
+      const overlay = css.match(/\.overlay\s*{[^}]*}/)![0];
+      expect(overlay).toContain("rgba(12, 16, 32");
+      expect(overlay).not.toContain("navy-scrim");
+    });
   });
 });
