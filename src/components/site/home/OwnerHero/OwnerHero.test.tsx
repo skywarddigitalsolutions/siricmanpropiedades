@@ -136,10 +136,16 @@ describe("OwnerHero", () => {
       expect(css).toMatch(/\.title\s*{[^}]*text-wrap:\s*balance/);
     });
 
-    it("makes the primary call to action stand out in brand gold with navy text", () => {
+    it("makes the primary call to action stand out in navy with white text", () => {
       const primary = css.match(/\.primary\s*{[^}]*}/)![0];
-      expect(primary).toContain("background: var(--color-gold)");
-      expect(primary).toContain("color: var(--color-navy)");
+      expect(primary).toContain("background: var(--color-navy)");
+      expect(primary).toContain("color: var(--color-white)");
+    });
+
+    it("keeps hover states navy and white, never the global gold link color", () => {
+      expect(css).toMatch(/\.primary:hover\s*{[^}]*color:\s*var\(--color-white\)/);
+      expect(css).toMatch(/\.secondary:hover\s*{[^}]*background:\s*var\(--color-navy\)/);
+      expect(css).toMatch(/\.secondary:hover\s*{[^}]*color:\s*var\(--color-white\)/);
     });
 
     it("uses a neutral dark overlay instead of the saturated navy scrim", () => {
