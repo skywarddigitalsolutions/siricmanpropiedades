@@ -6,19 +6,21 @@ import TrustStrip from "./TrustStrip";
 afterEach(() => cleanup());
 
 describe("TrustStrip", () => {
-  it("is a labelled list of four trust signals", () => {
+  it("is a labelled list of four trust signals, each a title and a short detail", () => {
     render(<TrustStrip />);
 
     const list = screen.getByRole("list", { name: "Por qué confiar en nosotros" });
+    const items = within(list).getAllByRole("listitem");
     expect(
-      within(list)
-        .getAllByRole("listitem")
-        .map((item) => item.textContent),
+      items.map((item) => [
+        item.querySelector("strong")?.textContent,
+        item.querySelector("strong + span")?.textContent,
+      ]),
     ).toEqual([
-      `Corredor matriculado · ${BROKER_LICENSE}`,
-      "Trato directo, sin intermediarios",
-      "Acompañamiento hasta la escritura",
-      "Oficina en Boedo, CABA",
+      ["Corredor matriculado", BROKER_LICENSE],
+      ["Trato directo", "Sin intermediarios"],
+      ["Hasta la escritura", "Con vos en cada paso"],
+      ["Oficina en Boedo", "CABA · con cita previa"],
     ]);
     expect(BROKER_LICENSE).toBe("Matrícula N° 10024");
   });
