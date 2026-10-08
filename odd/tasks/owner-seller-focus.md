@@ -49,8 +49,8 @@
 | T2 | Home rewrite for sellers (sections + copy) + root SEO | front | delegated | ✅ | 1ccd958 |
 | T3 | `/vender` landing (move `/tasaciones`, redirect, copy, FAQ) | front | delegated | ✅ | ef80212 |
 | T4 | `/administracion-de-alquileres` page + form + topic labels | front | delegated | ✅ | ecae7e8 + e3c0a41 |
-| T5 | Ana María in Nosotros (top) and Consorcios; team data | front | delegated | ⬜ | |
-| T6 | Footer, contact page, WhatsApp messages, sitemap, metadata sweep | front | delegated | ⬜ | |
+| T5 | Ana María in Nosotros (top) and Consorcios; team data | front | delegated | ✅ | 0db8ba2 |
+| T6 | Footer, contact page, WhatsApp messages, sitemap, metadata sweep | front | delegated | ✅ | 35ebca9 |
 
 ## Acceptance criteria
 
@@ -67,3 +67,5 @@
 - T2 done: home rewritten for sellers (hero with WhatsApp, trust strip, 5-step process, why sell + Gabriel card, seller FAQ, rental management, compact consortium band, buyers + one featured carousel, final CTA); HomeSections/AboutTeaser removed; root SEO title/description seller-focused. Links to `/vender` and `/administracion-de-alquileres` 404 until T3/T4.
 - T3 done: `/tasaciones` moved to `/vender` (git mv) with a permanent redirect in next.config.ts (tested in src/next-config.test.ts); seller copy, "Cómo sigue" 3 steps, seller FAQ, seller WhatsApp message; footer "Vender" link, sitemap, JSON-LD and nosotros CTA point to `/vender`. Form already preselected "Vender"; success copy now "Gabriel te contacta...". Verified: lint (0 errors; known MfaEnrollment warning), `npm test` 1307 passed, build OK.
 - T4 done: lead topic `rental_management` in labels and contact form (before consorcios); `/administracion-de-alquileres` page with RentalManagementForm (address, rented radio, optional message, honeypot; fields serialized into message), sitemap and footer link. Verified: lint (0 errors; known MfaEnrollment warning), `npm test` 1335 passed, build OK, screenshots at 390 and 1440 reviewed. Needs back B1 deployed before the form goes live.
+- T5 done: Ana María added to team data (optional photo/license, initials avatar via TeamAvatar); /nosotros opens with her administration card, new hero/mission/CTA copy and metadata; /administracion-de-consorcios shows her first, stat 15, WhatsApp message and copy addressed to both. Verified: lint (known warning), tests, build, screenshots at 390 and 1440.
+- T6 done: footer tagline and nav order seller-first, /contacto H1/lead, topic options with "Quiero vender o tasar" first (default). Privacy/terms/structured data needed no change.
