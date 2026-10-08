@@ -35,11 +35,10 @@ const TITLE_ID = "why-sell-title";
 
 /**
  * Home section that answers "why sell with you": four reasons plus a compact
- * card presenting the broker who handles every sale (photo, role and license
- * from the shared team data). Server component.
+ * unboxed signature of the broker who handles every sale (photo, role and
+ * license from the shared team data). Server component.
  *
- * DOM order (intro, reasons, broker card) is the mobile reading order; from
- * 960px the reasons form a 2x2 grid beside the card.
+ * DOM order (intro, reasons, signature) is the reading order at every width.
  */
 export default function WhySell() {
   return (
@@ -70,7 +69,7 @@ export default function WhySell() {
             alt={FOUNDER.name}
             width={200}
             height={200}
-            sizes="(min-width: 960px) 160px, 96px"
+            sizes="(min-width: 960px) 72px, 64px"
             className={styles.photo}
           />
           <p className={styles.signature}>
