@@ -19,6 +19,7 @@ const TOPIC_OPTIONS = {
   buy: "Quiero comprar",
   rent: "Quiero alquilar",
   sell: "Quiero vender o tasar",
+  rental_management: LEAD_TOPIC_LABELS.rental_management,
   consortium: LEAD_TOPIC_LABELS.consortium,
   other: LEAD_TOPIC_LABELS.other,
 } as const;

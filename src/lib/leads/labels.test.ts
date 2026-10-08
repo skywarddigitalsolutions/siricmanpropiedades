@@ -6,6 +6,7 @@ describe("lead labels", () => {
     expect(LEAD_STATUS_LABELS).toEqual({ new: "Nueva", contacted: "Contactada", closed: "Cerrada" });
     expect(LEAD_TYPE_LABELS.property_inquiry).toBe("Consulta por propiedad");
     expect(LEAD_TOPIC_LABELS.sell).toBe("Quiere vender o tasar");
+    expect(LEAD_TOPIC_LABELS.rental_management).toBe("Administración de alquileres");
   });
 });
 
