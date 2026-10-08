@@ -119,18 +119,19 @@
   text-decoration: none;
 }
 
-/* White with navy text: AA contrast on the overlay. */
+/* Brand gold with navy text (AA, ~5.5:1): the one accent among the white copy. */
 .primary {
   min-height: 52px;
   padding: 0 var(--space-6);
   border-radius: var(--radius-pill);
   font-size: var(--text-base);
   color: var(--color-navy);
-  background: var(--color-white);
+  background: var(--color-gold);
+  box-shadow: 0 6px 20px rgba(12, 16, 32, 0.35);
 }
 
 .primary:hover {
-  background: var(--color-gold-soft);
+  background: var(--color-gold-hover);
 }
 
 /* Phones: a light text link under the main button. */
@@ -154,10 +155,15 @@
   white-space: pre;
 }
 
-.primary:focus-visible,
 .secondary:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
+}
+
+/* A gold ring would vanish on the gold button. */
+.primary:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: no-preference) {

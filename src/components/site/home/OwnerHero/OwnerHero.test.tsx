@@ -136,6 +136,12 @@ describe("OwnerHero", () => {
       expect(css).toMatch(/\.title\s*{[^}]*text-wrap:\s*balance/);
     });
 
+    it("makes the primary call to action stand out in brand gold with navy text", () => {
+      const primary = css.match(/\.primary\s*{[^}]*}/)![0];
+      expect(primary).toContain("background: var(--color-gold)");
+      expect(primary).toContain("color: var(--color-navy)");
+    });
+
     it("uses a neutral dark overlay instead of the saturated navy scrim", () => {
       const overlay = css.match(/\.overlay\s*{[^}]*}/)![0];
       expect(overlay).toContain("rgba(12, 16, 32");
