@@ -1,50 +1,68 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, isInaccessible, render, screen } from "@testing-library/react";
+import { WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE, buildWhatsAppLink } from "@/lib/whatsapp";
 import OwnerHero from "./OwnerHero";
 
 afterEach(() => cleanup());
 
+const TITLE = "Vendé tu propiedad con alguien que la cuide como propia.";
+const SUBTITLE =
+  "Tasación profesional, un plan de venta a medida y acompañamiento hasta la escritura. Te atiende Gabriel Siricman, corredor inmobiliario matriculado.";
+
 describe("OwnerHero", () => {
-  it("is a section named by its owner-focused heading", () => {
+  it("is a section named by its seller-focused heading", () => {
     render(<OwnerHero />);
 
-    const heading = screen.getByRole("heading", {
-      level: 1,
-      name: "Tu propiedad, en manos profesionales.",
-    });
-    expect(screen.getByRole("region", { name: "Tu propiedad, en manos profesionales." })).toContainElement(
-      heading,
-    );
+    const heading = screen.getByRole("heading", { level: 1, name: TITLE });
+    expect(screen.getByRole("region", { name: TITLE })).toContainElement(heading);
   });
 
-  it("shows the eyebrow and subtitle, without a question hook", () => {
+  it("shows the eyebrow and the subtitle that names Gabriel", () => {
     render(<OwnerHero />);
 
     expect(screen.getByText("PROPIETARIOS · CABA")).toBeInTheDocument();
-    expect(
-      screen.getByText("Asesoramiento integral para vender o alquilar, con un corredor matriculado."),
-    ).toBeInTheDocument();
-    expect(screen.queryByText("¿Cuánto vale tu propiedad hoy?")).not.toBeInTheDocument();
+    expect(screen.getByText(SUBTITLE)).toBeInTheDocument();
   });
 
-  it("links the primary call to action to the appraisal page", () => {
+  it("never speaks of renting in the hero", () => {
     render(<OwnerHero />);
 
-    expect(screen.getByRole("link", { name: "Pedí tu tasación" })).toHaveAttribute("href", "/tasaciones");
+    const section = screen.getByRole("region", { name: TITLE });
+    expect(section.textContent).not.toMatch(/alquil/i);
   });
 
-  it("offers buyers a secondary call to action to the listings", () => {
+  it("leads with a primary call to action to the selling page", () => {
     render(<OwnerHero />);
 
-    const links = screen.getAllByRole("link");
-    expect(links.map((link) => link.textContent)).toEqual(["Pedí tu tasación", "Ver propiedades"]);
-    expect(screen.getByRole("link", { name: "Ver propiedades" })).toHaveAttribute("href", "/propiedades");
+    expect(screen.getByRole("link", { name: "Quiero vender mi propiedad" })).toHaveAttribute(
+      "href",
+      "/vender",
+    );
   });
 
-  it("leaves WhatsApp to the site-wide floating button", () => {
+  it("offers WhatsApp as the secondary call to action with the seller message", () => {
     render(<OwnerHero />);
 
-    expect(screen.queryByRole("link", { name: /WhatsApp/ })).not.toBeInTheDocument();
+    const whatsapp = screen.getByRole("link", { name: "Hablar por WhatsApp" });
+    expect(whatsapp).toHaveAttribute(
+      "href",
+      buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE),
+    );
+    expect(whatsapp).toHaveAttribute("target", "_blank");
+    expect(whatsapp).toHaveAttribute("rel", "noopener noreferrer");
+    expect(WHATSAPP_SELLER_MESSAGE).toBe(
+      "Hola Gabriel, quiero vender mi propiedad y me gustaría asesorarme.",
+    );
+  });
+
+  it("no longer sends owners to the listings", () => {
+    render(<OwnerHero />);
+
+    expect(screen.queryByRole("link", { name: "Ver propiedades" })).not.toBeInTheDocument();
+    expect(screen.getAllByRole("link").map((link) => link.textContent)).toEqual([
+      "Quiero vender mi propiedad",
+      "Hablar por WhatsApp",
+    ]);
   });
 
   it("shows the owner photo as a decorative backdrop", () => {
@@ -57,18 +75,18 @@ describe("OwnerHero", () => {
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 
-  it("keeps the copy and both calls to action together in the hero section", () => {
+  it("keeps the copy and both calls to action together in the hero card", () => {
     render(<OwnerHero />);
 
-    const section = screen.getByRole("region", { name: "Tu propiedad, en manos profesionales." });
+    const section = screen.getByRole("region", { name: TITLE });
     const heading = screen.getByRole("heading", { level: 1 });
     const card = heading.parentElement!;
     expect(section).toContainElement(card);
     for (const element of [
       screen.getByText("PROPIETARIOS · CABA"),
-      screen.getByText("Asesoramiento integral para vender o alquilar, con un corredor matriculado."),
-      screen.getByRole("link", { name: "Pedí tu tasación" }),
-      screen.getByRole("link", { name: "Ver propiedades" }),
+      screen.getByText(SUBTITLE),
+      screen.getByRole("link", { name: "Quiero vender mi propiedad" }),
+      screen.getByRole("link", { name: "Hablar por WhatsApp" }),
     ]) {
       expect(card).toContainElement(element);
     }

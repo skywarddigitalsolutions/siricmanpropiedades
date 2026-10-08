@@ -1,0 +1,52 @@
+/*
+ * Trust strip under the hero. Mobile-first: a 2-column grid of short items,
+ * each a small gold-tinted icon box and a line of text. From 960px the four
+ * items sit in one row.
+ */
+.strip {
+  padding: var(--space-8) var(--page-gutter) 0;
+  background: var(--color-surface);
+}
+
+.list {
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--color-navy);
+}
+
+.icon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-gold-dark);
+  background: var(--color-gold-tint-16);
+}
+
+@media (min-width: 960px) {
+  .list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+
+  .item {
+    font-size: var(--text-base);
+  }
+}

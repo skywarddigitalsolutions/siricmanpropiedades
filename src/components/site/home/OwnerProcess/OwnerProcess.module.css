@@ -3,7 +3,7 @@
  * full-width CTA, stacked in DOM order.
  *
  * From 960px a grid lays out a header row (copy on the left, CTA on the right,
- * aligned to the bottom) and the steps as a 3-column row below, joined by a
+ * aligned to the bottom) and the five steps as a row below, joined by a
  * single horizontal gold line through the circles' centers.
  */
 .section {
@@ -175,7 +175,7 @@
   }
 
   .title {
-    max-width: 16ch;
+    max-width: 24ch;
   }
 
   .cta {
@@ -186,12 +186,14 @@
 
   /* Steps: three columns, circle on top. */
   .steps {
+    --step-count: 5;
+
     grid-area: steps;
     position: relative;
     margin-top: var(--space-18);
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-8);
+    grid-template-columns: repeat(var(--step-count), minmax(0, 1fr));
+    gap: var(--space-6);
   }
 
   /* One horizontal line from the first circle's center to the last one's:
@@ -202,7 +204,7 @@
     position: absolute;
     top: 22px;
     left: 22px;
-    right: calc((100% - 2 * var(--space-8)) / 3 - 22px);
+    right: calc((100% - (var(--step-count) - 1) * var(--space-6)) / var(--step-count) - 22px);
     height: 1px;
     background: var(--color-gold);
   }
@@ -223,6 +225,6 @@
   }
 
   .stepTitle {
-    font-size: var(--text-xl);
+    font-size: var(--text-lg);
   }
 }

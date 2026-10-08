@@ -1,23 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin } from "lucide-react";
+import { WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE, buildWhatsAppLink } from "@/lib/whatsapp";
+import WhatsAppIcon from "../../WhatsAppIcon/WhatsAppIcon";
 import styles from "./OwnerHero.module.css";
 
 // Provisional copy: edit here.
 const EYEBROW = "PROPIETARIOS · CABA";
-const TITLE = "Tu propiedad, en manos profesionales.";
-const SUBTITLE = "Asesoramiento integral para vender o alquilar, con un corredor matriculado.";
-// The site does not state the appraisal is free, so no "sin cargo" claim.
-const PRIMARY_LABEL = "Pedí tu tasación";
-const BUYER_LABEL = "Ver propiedades";
+const TITLE = "Vendé tu propiedad con alguien que la cuide como propia.";
+const SUBTITLE =
+  "Tasación profesional, un plan de venta a medida y acompañamiento hasta la escritura. Te atiende Gabriel Siricman, corredor inmobiliario matriculado.";
+const PRIMARY_LABEL = "Quiero vender mi propiedad";
+const WHATSAPP_LABEL = "Hablar por WhatsApp";
 const PILL_TEXT = "Oficina en Boedo · CABA";
 
 const TITLE_ID = "owner-hero-title";
 
 /**
- * Home hero aimed at property owners: leads to an appraisal request, with a
- * secondary path for buyers to the listings. WhatsApp is left to the
- * site-wide floating button.
+ * Home hero aimed at owners who want to sell: the primary call leads to the
+ * selling page and the secondary one opens WhatsApp with a seller message.
  */
 // Provisional photo: https://unsplash.com/photos/ZcUTLou4jVQ by Alex Tyson,
 // Unsplash License (free, not Unsplash+), downloaded 2026-10-05. Replace with
@@ -43,13 +44,19 @@ export default function OwnerHero() {
           <p className={styles.subtitle}>{SUBTITLE}</p>
 
           <div className={styles.actions}>
-            <Link href="/tasaciones" className={styles.primary}>
+            <Link href="/vender" className={styles.primary}>
               {PRIMARY_LABEL}
               <ArrowRight size={18} aria-hidden />
             </Link>
-            <Link href="/propiedades" className={styles.secondary}>
-              {BUYER_LABEL}
-            </Link>
+            <a
+              href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.secondary}
+            >
+              <WhatsAppIcon size={18} />
+              {WHATSAPP_LABEL}
+            </a>
           </div>
         </div>
 

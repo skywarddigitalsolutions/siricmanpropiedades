@@ -7,7 +7,8 @@ import FeaturedTrack from "./FeaturedTrack";
 import styles from "./FeaturedSection.module.css";
 
 type FeaturedSectionProps = {
-  operation: Operation;
+  /** Omit to feature properties of any operation ("Ver todas" then lists everything). */
+  operation?: Operation;
   /** Small gold label above the title. */
   eyebrow: string;
   title: string;
@@ -24,7 +25,7 @@ export default function FeaturedSection({
   properties,
 }: FeaturedSectionProps) {
   if (properties.length === 0) return null;
-  const titleId = `featured-${operation}-title`;
+  const titleId = `featured-${operation ?? "all"}-title`;
 
   return (
     <section aria-labelledby={titleId} className={styles.section}>

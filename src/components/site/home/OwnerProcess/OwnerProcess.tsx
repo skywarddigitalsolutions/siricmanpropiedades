@@ -3,20 +3,28 @@ import { ArrowRight } from "lucide-react";
 import styles from "./OwnerProcess.module.css";
 
 // Provisional copy: edit here.
-const EYEBROW = "PARA PROPIETARIOS";
-const TITLE = "Vendé o alquilá sin complicarte";
+const EYEBROW = "CÓMO VENDEMOS TU PROPIEDAD";
+const TITLE = "Un proceso claro, de la tasación a la escritura";
 const STEPS = [
   {
-    title: "Sabé cuánto vale tu propiedad",
-    text: "Visitamos y comparamos con operaciones reales de la zona.",
+    title: "Tasación profesional",
+    text: "Visitamos tu propiedad y la comparamos con operaciones reales de la zona.",
   },
   {
-    title: "Mostrala como se merece",
-    text: "Fotos, valor sugerido y un plan de difusión pensado para tu propiedad.",
+    title: "Plan de venta",
+    text: "Definimos juntos el precio de publicación y cómo vamos a mostrarla.",
   },
   {
-    title: "Nosotros nos ocupamos de todo",
-    text: "Visitas, negociación y acompañamiento hasta la firma.",
+    title: "Fotos y difusión",
+    text: "La presentamos como se merece en los portales y en nuestros canales.",
+  },
+  {
+    title: "Visitas y negociación",
+    text: "Coordinamos las visitas, filtramos interesados y negociamos por vos.",
+  },
+  {
+    title: "Firma y escritura",
+    text: "Te acompañamos con la documentación hasta el día de la escritura.",
   },
 ] as const;
 const CTA_LABEL = "Pedí tu tasación";
@@ -24,11 +32,11 @@ const CTA_LABEL = "Pedí tu tasación";
 const TITLE_ID = "owner-process-title";
 
 /**
- * Home section for property owners: three benefit-led steps from appraisal to
- * signing and an appraisal call to action. Server component.
+ * Home section for owners who want to sell: five steps from the appraisal to
+ * the deed and an appraisal call to action. Server component.
  *
  * DOM order (copy, steps, CTA) is the mobile reading order; from 960px a grid
- * puts the CTA to the right of the copy and the steps in a row below.
+ * puts the CTA to the right of the copy and the steps in a single row below.
  */
 export default function OwnerProcess() {
   return (
@@ -56,7 +64,7 @@ export default function OwnerProcess() {
           ))}
         </ol>
 
-        <Link href="/tasaciones" className={styles.cta}>
+        <Link href="/vender" className={styles.cta}>
           {CTA_LABEL}
           <ArrowRight size={18} aria-hidden />
         </Link>

@@ -92,12 +92,12 @@
 }
 
 .title {
-  max-width: 16ch;
+  max-width: 20ch;
   margin-top: var(--space-6);
   font-family: var(--font-body), sans-serif;
-  /* At least 36px on phones (the card is the whole first screen there),
-     growing with --text-h1 up to 44px. */
-  font-size: max(2.25rem, var(--text-h1));
+  /* At least 32px on phones (the card is the whole first screen there; the
+     headline is a full sentence), growing with --text-h1 up to 44px. */
+  font-size: max(2rem, var(--text-h1));
   font-weight: var(--weight-extrabold);
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-heading);
@@ -106,17 +106,17 @@
 }
 
 .subtitle {
-  max-width: 36ch;
-  margin-top: var(--space-6);
+  max-width: 40ch;
+  margin-top: var(--space-4);
   font-family: var(--font-body), sans-serif;
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   line-height: var(--leading-normal);
   color: var(--color-text-muted-2);
 }
 
 .actions {
   width: 100%;
-  margin-top: var(--space-12);
+  margin-top: var(--space-8);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -236,19 +236,20 @@
     position: absolute;
     left: 76px;
     bottom: 56px;
-    width: min(600px, 100% - 380px);
+    width: min(640px, 100% - 380px);
     padding: 44px;
     border-radius: var(--radius-2xl);
   }
 
+  /* Smaller than --text-hero: the headline is a full sentence. */
   .title {
     max-width: none;
-    font-size: var(--text-hero);
+    font-size: clamp(2.25rem, 1.2rem + 1.8vw, 2.75rem);
   }
 
   .subtitle {
-    max-width: 40ch;
-    font-size: 1.125rem; /* 18 */
+    max-width: 48ch;
+    font-size: var(--text-lg);
   }
 
   .actions {
