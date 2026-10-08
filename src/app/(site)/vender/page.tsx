@@ -101,12 +101,7 @@ function ContactOptions({ placement }: { placement: "side" | "below" }) {
             <span className={styles.contactIcon} aria-hidden="true">
               <WhatsAppIcon size={18} />
             </span>
-            <span className={styles.contactLabel}>
-              Escribinos por WhatsApp
-              <span className={styles.contactHint}>
-                Con un mensaje listo para completar con los datos de tu propiedad.
-              </span>
-            </span>
+            Escribinos por WhatsApp
           </a>
         </li>
         <li>
