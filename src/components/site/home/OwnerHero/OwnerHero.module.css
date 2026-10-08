@@ -119,19 +119,22 @@
   text-decoration: none;
 }
 
-/* Brand gold with navy text (AA, ~5.5:1): the one accent among the white copy. */
+/* Solid brand navy with white text, like the header CTA; a light hairline
+   and a shadow lift it off the dark photo. */
 .primary {
   min-height: 52px;
   padding: 0 var(--space-6);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: var(--radius-pill);
   font-size: var(--text-base);
-  color: var(--color-navy);
-  background: var(--color-gold);
-  box-shadow: 0 6px 20px rgba(12, 16, 32, 0.35);
+  color: var(--color-white);
+  background: var(--color-navy);
+  box-shadow: 0 6px 20px rgba(12, 16, 32, 0.45);
 }
 
 .primary:hover {
-  background: var(--color-gold-hover);
+  color: var(--color-white);
+  background: var(--color-navy-dark);
 }
 
 /* Phones: a light text link under the main button. */
@@ -143,6 +146,7 @@
 
 .secondary:hover,
 .secondary:focus-visible {
+  color: var(--color-white);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -160,7 +164,7 @@
   outline-offset: 2px;
 }
 
-/* A gold ring would vanish on the gold button. */
+/* White ring: visible on both the navy button and the photo. */
 .primary:focus-visible {
   outline: 2px solid var(--color-white);
   outline-offset: 3px;
@@ -200,9 +204,11 @@
     text-decoration: none;
   }
 
+  /* Navy fill on hover, never the global gold link color. */
   .secondary:hover {
-    border-color: var(--color-white);
-    background: var(--color-on-dark-10);
+    border-color: var(--color-navy);
+    color: var(--color-white);
+    background: var(--color-navy);
     text-decoration: none;
   }
 
