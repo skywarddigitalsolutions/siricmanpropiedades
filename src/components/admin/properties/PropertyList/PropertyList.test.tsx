@@ -171,6 +171,21 @@ describe("PropertyList", () => {
     }
   });
 
+  it("shows the site link as an icon with a tooltip, not as a text pill", () => {
+    render(
+      <PropertyList
+        properties={[makeProperty({ id: "1", title: "Uno", publicationStatus: "published" })]}
+        hasActiveFilters={false}
+        publicationAction={vi.fn()}
+      />,
+    );
+
+    const link = screen.getAllByRole("link", { name: "Ver en el sitio: Uno" })[0];
+    expect(link).toHaveAttribute("data-tooltip", "Ver en el sitio");
+    expect(link.querySelector("svg")).not.toBeNull();
+    expect(link).toHaveTextContent("");
+  });
+
   it("offers Retirar for published and Publicar for drafts via the lifecycle action", () => {
     render(
       <PropertyList

@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Building2, Plus, SearchX, X } from "lucide-react";
+import { Building2, ExternalLink, Plus, SearchX, X } from "lucide-react";
 import type { PropertyListItem } from "@/lib/api/properties";
 import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import { OPERATION_LABELS, PROPERTY_TYPE_LABELS, formatPrice } from "@/lib/properties/labels";
 import { publicSiteHref } from "@/lib/site-url";
 import EmptyState from "@/components/admin/ui/EmptyState/EmptyState";
 import { ButtonLink } from "@/components/admin/ui/Button/Button";
+import { IconLink } from "@/components/admin/ui/IconButton/IconButton";
 import PublicationStatusBadge from "@/components/admin/properties/PublicationStatusBadge/PublicationStatusBadge";
 import DealStatusBadge from "@/components/admin/properties/DealStatusBadge/DealStatusBadge";
 import PropertyQuickActions from "@/components/admin/properties/PropertyQuickActions/PropertyQuickActions";
@@ -68,15 +69,13 @@ function RowActions({
   return (
     <div className={styles.rowActions}>
       {property.publicationStatus === "published" && (
-        <a
+        <IconLink
           href={publicSiteHref(`/propiedades/${property.slug}`)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.siteLink}
-          aria-label={`Ver en el sitio: ${property.title}`}
-        >
-          Ver en el sitio
-        </a>
+          external
+          icon={ExternalLink}
+          label={`Ver en el sitio: ${property.title}`}
+          tooltip="Ver en el sitio"
+        />
       )}
       <PropertyQuickActions
         id={property.id}
