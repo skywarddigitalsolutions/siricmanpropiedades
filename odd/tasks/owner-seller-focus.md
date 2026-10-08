@@ -54,6 +54,9 @@
 | T7 | Home hero: aerial CABA photo under navy overlay, short mobile copy, one primary CTA (`hero-owner.jpg` removed) | front | delegated | ✅ | 2d86403 |
 | T8 | Seller WhatsApp template (multi-line) on every seller CTA + hint on /vender | front | delegated | ✅ | 93170df |
 | T9 | Appraisal / rental-management leads verified in the admin inbox (tests only, no code gap) | front | delegated | ✅ | 937d4a5 |
+| T10 | Home hero: centered on desktop (two balanced title lines), softer neutral overlay | front | delegated | ✅ | 0999dca |
+| T11 | Gabriel's credentials in one component (`FounderCredentials`) on /nosotros and /administracion-de-consorcios; `highlights` + `FOUNDER_YEARS` in team data | front | delegated | ✅ | feb216c |
+| T12 | WhySell: Gabriel's profile moved into the section header (two columns on desktop) | front | delegated | ✅ | 89b0255 |
 
 ## Acceptance criteria
 
@@ -75,3 +78,4 @@
 - 2026-10-08: feature closed. Front PRs #58 (T1), #59 (T2), #60 (T3), #61 (T4), T5+T6 merged; back #34 (B1). Parent re-ran the full suite on T5/T6: 178 files / 1338 tests passed; screenshots reviewed. Pending for the owner: deploy back then front; send a photo of Ana María (initials avatar meanwhile); confirm years of experience (Ana María 15; Gabriel/company still "11 años").
 - 2026-10-08 follow-ups: T7 hero back on `/hero.jpg` (navy gradient overlay, white copy, content anchored low on phones, short subtitle under 640px, white primary + text-link WhatsApp). T8 `WHATSAPP_SELLER_MESSAGE` is now a "
 " template (encoded %0A); `/vender` WhatsApp row carries a one-line hint. T9: detail page (`consultas/[id]/page.tsx:52-67,126,132-141`), labels (`lib/leads/labels.ts:14,25-28`), inbox summary (`lib/leads/inbox-params.ts:107-112`) and the "Tasaciones" chip (`InboxFilters.tsx:21`) already covered appraisal and rental_management leads; added tests. Also: spacing fixes (FAQ, consortium band, rental radios, 3b4cb9e/8a1df27) and an unboxed Gabriel signature in WhySell (6df0ad1).
+- 2026-10-08 (owner feedback): T10 hero centered on desktop with a 24ch balanced title and a lighter rgba(12,16,32) overlay (0.42 to 0.68); T11 Gabriel shows role, license (broker) or consortium registration, "Docente en UTN" and "+11 años de experiencia" (years in the single constant `FOUNDER_YEARS`); /nosotros no longer lists the consortium registration for Gabriel; T12 profile in the WhySell header. Branch `feat/hero-tone-gabriel-profile`, not pushed.

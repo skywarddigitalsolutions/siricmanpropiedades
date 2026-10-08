@@ -80,11 +80,9 @@ describe("AboutPage", () => {
     expect(within(team).getByText("Gabriel Siricman")).toBeInTheDocument();
     expect(within(team).getByText("Martillero Público y Corredor Inmobiliario")).toBeInTheDocument();
     expect(within(team).getByText("Matrícula N° 10024")).toBeInTheDocument();
-    // Data from the client: consortium administrator registration and UTN teaching.
-    expect(
-      within(team).getByText("Administrador de consorcios · Matrícula RPA N° 12221"),
-    ).toBeInTheDocument();
+    // Same short credentials wherever Gabriel is presented.
     expect(within(team).getByText("Docente en UTN")).toBeInTheDocument();
+    expect(within(team).getByText("+11 años de experiencia")).toBeInTheDocument();
     const photo = within(team).getByRole("img", { name: "Gabriel Siricman" });
     expect(decodeURIComponent(photo.getAttribute("src")!)).toContain("/team/gabriel.jpg");
     expect(within(team).queryByText("GS")).not.toBeInTheDocument();
@@ -96,7 +94,7 @@ describe("AboutPage", () => {
     // No photo for Ana María: an initials avatar, and no invented license.
     expect(within(team).getByRole("img", { name: "Ana María Fierro Pedrayes" })).toHaveTextContent("AF");
     expect(within(team).getAllByRole("img")).toHaveLength(2);
-    expect(within(team).getAllByText(/Matrícula/)).toHaveLength(2);
+    expect(within(team).getAllByText(/Matrícula/)).toHaveLength(1);
     expect(container.textContent).not.toContain("[Nombre]");
   });
 

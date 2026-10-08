@@ -67,6 +67,8 @@ describe("ConsortiumPage", () => {
     expect(
       within(who).getByText("Administrador de consorcios · Matrícula RPA N° 12221"),
     ).toBeInTheDocument();
+    expect(within(who).getByText("Docente en UTN")).toBeInTheDocument();
+    expect(within(who).getByText("+11 años de experiencia")).toBeInTheDocument();
     expect(within(who).getByRole("link", { name: /Escribinos/ })).toHaveAttribute(
       "href",
       expect.stringContaining("wa.me"),
@@ -118,7 +120,8 @@ describe("ConsortiumPage", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "Por qué elegirnos" })).toBeNull();
-    expect(screen.queryByText(/11 años|\+11/)).toBeNull();
+    // Experience is only stated in the "Quién te administra" credentials.
+    expect(screen.getAllByText(/11 años|\+11/)).toHaveLength(1);
     expect(
       screen.getByText(
         "Dejanos los datos básicos y nos comunicamos con vos para conocer el consorcio y cotizar la administración.",

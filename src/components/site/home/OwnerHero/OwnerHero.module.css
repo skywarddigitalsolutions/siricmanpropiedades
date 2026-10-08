@@ -1,6 +1,7 @@
 /*
- * Full-bleed aerial photo of CABA under a navy wash, with the copy straight on
- * it (no card). Below 960px the hero slides up under the sticky header (glass
+ * Full-bleed aerial photo of CABA under a soft, neutral dark wash with only a
+ * hint of navy, with the copy straight on it (no card). Phones anchor the copy
+ * low; from 960px everything is centered. Below 960px the hero slides up under the sticky header (glass
  * while at the top): the dark photo plus the white header text stays readable
  * because the header glass is translucent navy-tinted over the scrim (see
  * Header.module.css). From 640px the buttons sit side by side.
@@ -29,12 +30,13 @@
   object-position: center 40%;
 }
 
-/* Navy wash keeps the white copy AA-contrast over any part of the photo. */
+/* Neutral dark wash (hint of navy) so the city shows through; the copy keeps
+   AA contrast thanks to the bottom weight plus a soft text shadow. */
 .overlay {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(180deg, var(--color-navy-scrim-55) 0%, var(--color-navy-scrim-75) 45%, var(--color-navy-scrim-85) 100%);
+  background: linear-gradient(180deg, rgba(12, 16, 32, 0.42) 0%, rgba(12, 16, 32, 0.68) 100%);
 }
 
 .content {
@@ -56,7 +58,9 @@
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  color: var(--color-gold);
+  /* Lighter gold plus a shadow: readable over the brighter photo. */
+  color: var(--color-gold-hover);
+  text-shadow: 0 1px 8px rgba(12, 16, 32, 0.6);
 }
 
 /* Short gold hairline before the eyebrow (decorative). */
@@ -76,6 +80,7 @@
   line-height: 1.05;
   letter-spacing: -0.02em;
   color: var(--color-white);
+  text-shadow: 0 1px 14px rgba(12, 16, 32, 0.45);
   text-wrap: balance;
 }
 
@@ -86,6 +91,7 @@
   font-size: clamp(1rem, 0.9rem + 0.5vw, 1.1875rem);
   line-height: 1.5;
   color: var(--color-text-on-dark);
+  text-shadow: 0 1px 10px rgba(12, 16, 32, 0.5);
 }
 
 /* Phones show the short line; 640px and up the full one. */
@@ -211,5 +217,25 @@
     padding: var(--space-16) var(--space-6);
     min-height: clamp(560px, calc(100vh - var(--site-header-height)), 760px);
     min-height: clamp(560px, calc(100svh - var(--site-header-height)), 760px);
+  }
+
+  /* Everything centered, like the original search hero. */
+  .content {
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Wide enough for two balanced lines at 1280 and 1440. */
+  .title {
+    max-width: 24ch;
+    font-size: clamp(2.75rem, 1.5rem + 2.2vw, 3.5rem);
+  }
+
+  .subtitle {
+    max-width: 60ch;
+  }
+
+  .actions {
+    justify-content: center;
   }
 }

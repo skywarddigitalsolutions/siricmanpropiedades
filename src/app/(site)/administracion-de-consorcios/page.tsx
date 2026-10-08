@@ -9,8 +9,8 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
-import { CONSORTIUM_LICENSE } from "@/lib/contact";
 import { CONSORTIUM_ADMIN, FOUNDER } from "@/lib/public/team";
+import FounderCredentials from "@/components/site/team/FounderCredentials/FounderCredentials";
 import TeamAvatar from "@/components/site/TeamAvatar/TeamAvatar";
 import ConsortiumForm from "@/components/site/consortium/ConsortiumForm/ConsortiumForm";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
@@ -209,7 +209,7 @@ export default function ConsortiumPage() {
             </span>
             <div className={styles.whoBody}>
               <h2 className={styles.whoName}>{FOUNDER.name}</h2>
-              <p className={styles.whoRpa}>Administrador de consorcios · {CONSORTIUM_LICENSE}</p>
+              <FounderCredentials variant="consortium" />
               <p className={styles.whoText}>
                 Te atiende personalmente, desde la propuesta hasta la gestión de cada mes.
               </p>
