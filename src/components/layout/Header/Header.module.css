@@ -20,9 +20,10 @@
   }
 }
 
-/* Home only, below 1100px, while at the top: frosted glass over the hero
+/* Home only, below 960px (where the hero slides under it), while at the
+   top: frosted glass over the hero
    photo, which extends under the header. */
-@media (max-width: 1099.98px) {
+@media (max-width: 959.98px) {
   .header[data-variant="glass"] {
     background: var(--color-surface-glass);
     -webkit-backdrop-filter: blur(18px);
