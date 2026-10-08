@@ -196,7 +196,7 @@ export default function AboutPage() {
             </p>
           </div>
           <div className={styles.ctaActions}>
-            <Link href="/tasaciones" className={styles.ctaButton}>
+            <Link href="/vender" className={styles.ctaButton}>
               Solicitar tasación
             </Link>
             <Link href="/contacto" className={styles.ctaLink}>

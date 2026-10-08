@@ -27,6 +27,8 @@ const nextConfig: NextConfig = {
     return [
       // The favorites page was removed; old bookmarks land on the listings.
       { source: "/favoritos", destination: "/propiedades", permanent: true },
+      // The appraisal page became the seller landing.
+      { source: "/tasaciones", destination: "/vender", permanent: true },
     ];
   },
   experimental: {

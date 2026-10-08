@@ -91,7 +91,7 @@ describe("AboutPage", () => {
   it("closes with links to the appraisal and contact pages", () => {
     render(<AboutPage />);
 
-    expect(screen.getByRole("link", { name: "Solicitar tasación" })).toHaveAttribute("href", "/tasaciones");
+    expect(screen.getByRole("link", { name: "Solicitar tasación" })).toHaveAttribute("href", "/vender");
     expect(screen.getByRole("link", { name: "Contactanos" })).toHaveAttribute("href", "/contacto");
   });
 

@@ -62,7 +62,7 @@ describe("Footer", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Tasá tu propiedad" })).toHaveAttribute(
       "href",
-      "/tasaciones",
+      "/vender",
     );
   });
 
@@ -79,12 +79,13 @@ describe("Footer", () => {
     expect(within(nav).getAllByRole("link").map((l) => l.getAttribute("href"))).toEqual([
       "/propiedades?operacion=venta",
       "/propiedades?operacion=alquiler",
-      "/tasaciones",
+      "/vender",
       "/administracion-de-consorcios",
       "/nosotros",
       "/contacto",
     ]);
     expect(within(nav).getByRole("link", { name: "Comprar" })).toBeInTheDocument();
+    expect(within(nav).getByRole("link", { name: "Vender" })).toHaveAttribute("href", "/vender");
   });
 
   it("links the legal pages and shows no placeholder registration", () => {

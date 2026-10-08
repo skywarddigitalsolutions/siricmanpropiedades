@@ -65,8 +65,8 @@ export function appraisalServiceJsonLd(siteUrl: string) {
     "@context": "https://schema.org",
     "@type": "Service",
     serviceType: "Tasación de propiedades",
-    name: "Tasación de propiedades para venta y alquiler",
-    url: `${siteUrl}/tasaciones`,
+    name: "Tasación y venta de propiedades en CABA",
+    url: `${siteUrl}/vender`,
     areaServed: "Ciudad Autónoma de Buenos Aires",
     provider: agency(siteUrl),
   };

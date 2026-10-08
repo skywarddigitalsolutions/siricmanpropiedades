@@ -47,7 +47,7 @@
 | B1 | Lead topic `rental_management` (enum + migration + tests) | back | delegated | ✅ | 7ea7a0d (back #34) |
 | T1 | Header: larger bar/logo/text, seller-first nav, CTA | front | delegated | ✅ | 34ff2c1 + glass fix |
 | T2 | Home rewrite for sellers (sections + copy) + root SEO | front | delegated | ✅ | 1ccd958 |
-| T3 | `/vender` landing (move `/tasaciones`, redirect, copy, FAQ) | front | delegated | ⬜ | |
+| T3 | `/vender` landing (move `/tasaciones`, redirect, copy, FAQ) | front | delegated | ✅ | ef80212 |
 | T4 | `/administracion-de-alquileres` page + form + topic labels | front | delegated | ⬜ | |
 | T5 | Ana María in Nosotros (top) and Consorcios; team data | front | delegated | ⬜ | |
 | T6 | Footer, contact page, WhatsApp messages, sitemap, metadata sweep | front | delegated | ⬜ | |
@@ -65,3 +65,4 @@
 - B1 done: back #34 merged (enum value + migration, runs on startup). Verified: back `npm test` 573 passed, build OK, eslint clean on changed files. Owner must deploy the back before the rental form goes live.
 - T1 done: header 76px, logo 56px, wordmark 18px, links 15px; nav Inicio · Vender · Propiedades · Alquileres · Consorcios · Nosotros · Contacto; desktop nav from 1100px (burger below). Glass header kept below 960px to match the hero. Verified: lint (0 errors; 1 pre-existing admin warning), `npm test` 1303 passed, build OK. `/vender` and `/administracion-de-alquileres` links 404 until T3/T4 merge.
 - T2 done: home rewritten for sellers (hero with WhatsApp, trust strip, 5-step process, why sell + Gabriel card, seller FAQ, rental management, compact consortium band, buyers + one featured carousel, final CTA); HomeSections/AboutTeaser removed; root SEO title/description seller-focused. Links to `/vender` and `/administracion-de-alquileres` 404 until T3/T4.
+- T3 done: `/tasaciones` moved to `/vender` (git mv) with a permanent redirect in next.config.ts (tested in src/next-config.test.ts); seller copy, "Cómo sigue" 3 steps, seller FAQ, seller WhatsApp message; footer "Vender" link, sitemap, JSON-LD and nosotros CTA point to `/vender`. Form already preselected "Vender"; success copy now "Gabriel te contacta...". Verified: lint (0 errors; known MfaEnrollment warning), `npm test` 1307 passed, build OK.

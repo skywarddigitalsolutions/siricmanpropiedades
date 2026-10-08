@@ -20,7 +20,7 @@ import styles from "./Footer.module.css";
 const NAV_LINKS = [
   { label: "Comprar", href: "/propiedades?operacion=venta" },
   { label: "Alquilar", href: "/propiedades?operacion=alquiler" },
-  { label: "Tasaciones", href: "/tasaciones" },
+  { label: "Vender", href: "/vender" },
   { label: "Consorcios", href: "/administracion-de-consorcios" },
   { label: "Nosotros", href: "/nosotros" },
   { label: "Contacto", href: "/contacto" },
@@ -77,7 +77,7 @@ export default function Footer() {
             Gabriel Siricman · Martillero Público y Corredor Inmobiliario
             <span className={styles.license}>{BROKER_LICENSE}</span>
           </p>
-          <Link href="/tasaciones" className={styles.cta}>
+          <Link href="/vender" className={styles.cta}>
             Tasá tu propiedad
           </Link>
         </div>
