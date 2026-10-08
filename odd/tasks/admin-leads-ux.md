@@ -37,10 +37,10 @@
 | B2 | `category` filter on admin leads + dashboard `newByCategory` + `topic` in latest leads | back | delegated | ⬜ | |
 | B3 | `demo:leads` CLI (seed/remove): leads of every category, a lead whose property was deleted, a client with no property inquiries | back | delegated | ⬜ | |
 | B4 | Clients CSV export: Spanish headers, `;`, BOM, formatted dates (if the export is built in the back) | back | delegated | ⬜ | |
-| T13 | Dashboard: KPI cards per category + category badge in "Últimas consultas" | front | delegated | ⬜ | |
-| T14 | Inbox: category chips filter + category icon/label/left border on each card | front | delegated | ⬜ | |
-| T15 | Lead detail: colored status control, delete with trash icon + confirm dialog | front | delegated | ⬜ | |
-| T16 | Properties list: icon actions with tooltips/aria-labels | front | delegated | ⬜ | |
+| T13 | Dashboard: KPI cards per category + category badge in "Últimas consultas" | front | delegated | ✅ | 6ff2543 |
+| T14 | Inbox: category chips filter + category icon/label/left border on each card | front | delegated | ✅ | e376a58 |
+| T15 | Lead detail: colored status control, delete with trash icon + confirm dialog | front | delegated | ✅ | 70771a5 |
+| T16 | Properties list: icon actions with tooltips/aria-labels | front | delegated | ✅ | 8bc6623 |
 | T17 | Clients CSV export in Spanish (front route only proxies the back CSV → covered by B4) | front | — | n/a | |
 
 ## Acceptance criteria
@@ -55,3 +55,4 @@
 ## Progress
 
 - 2026-10-08: mapped; doc created.
+- 2026-10-08: T13–T16 done on `feat/admin-leads-categories` (lint, 1392 tests, build green; no authenticated screenshots, admin needs login+MFA).
