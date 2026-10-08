@@ -51,6 +51,9 @@
 | T4 | `/administracion-de-alquileres` page + form + topic labels | front | delegated | ✅ | ecae7e8 + e3c0a41 |
 | T5 | Ana María in Nosotros (top) and Consorcios; team data | front | delegated | ✅ | 0db8ba2 |
 | T6 | Footer, contact page, WhatsApp messages, sitemap, metadata sweep | front | delegated | ✅ | 35ebca9 |
+| T7 | Home hero: aerial CABA photo under navy overlay, short mobile copy, one primary CTA (`hero-owner.jpg` removed) | front | delegated | ✅ | 2d86403 |
+| T8 | Seller WhatsApp template (multi-line) on every seller CTA + hint on /vender | front | delegated | ✅ | 93170df |
+| T9 | Appraisal / rental-management leads verified in the admin inbox (tests only, no code gap) | front | delegated | ✅ | 937d4a5 |
 
 ## Acceptance criteria
 
@@ -70,3 +73,5 @@
 - T5 done: Ana María added to team data (optional photo/license, initials avatar via TeamAvatar); /nosotros opens with her administration card, new hero/mission/CTA copy and metadata; /administracion-de-consorcios shows her first, stat 15, WhatsApp message and copy addressed to both. Verified: lint (known warning), tests, build, screenshots at 390 and 1440.
 - T6 done: footer tagline and nav order seller-first, /contacto H1/lead, topic options with "Quiero vender o tasar" first (default). Privacy/terms/structured data needed no change.
 - 2026-10-08: feature closed. Front PRs #58 (T1), #59 (T2), #60 (T3), #61 (T4), T5+T6 merged; back #34 (B1). Parent re-ran the full suite on T5/T6: 178 files / 1338 tests passed; screenshots reviewed. Pending for the owner: deploy back then front; send a photo of Ana María (initials avatar meanwhile); confirm years of experience (Ana María 15; Gabriel/company still "11 años").
+- 2026-10-08 follow-ups: T7 hero back on `/hero.jpg` (navy gradient overlay, white copy, content anchored low on phones, short subtitle under 640px, white primary + text-link WhatsApp). T8 `WHATSAPP_SELLER_MESSAGE` is now a "
+" template (encoded %0A); `/vender` WhatsApp row carries a one-line hint. T9: detail page (`consultas/[id]/page.tsx:52-67,126,132-141`), labels (`lib/leads/labels.ts:14,25-28`), inbox summary (`lib/leads/inbox-params.ts:107-112`) and the "Tasaciones" chip (`InboxFilters.tsx:21`) already covered appraisal and rental_management leads; added tests. Also: spacing fixes (FAQ, consortium band, rental radios, 3b4cb9e/8a1df27) and an unboxed Gabriel signature in WhySell (6df0ad1).
