@@ -46,7 +46,7 @@
 |----|------|------|-------|--------|--------|
 | B1 | Lead topic `rental_management` (enum + migration + tests) | back | delegated | ✅ | 7ea7a0d (back #34) |
 | T1 | Header: larger bar/logo/text, seller-first nav, CTA | front | delegated | ✅ | 34ff2c1 + glass fix |
-| T2 | Home rewrite for sellers (sections + copy) + root SEO | front | delegated | ✅ | feat/seller-home |
+| T2 | Home rewrite for sellers (sections + copy) + root SEO | front | delegated | ✅ | 1ccd958 |
 | T3 | `/vender` landing (move `/tasaciones`, redirect, copy, FAQ) | front | delegated | ⬜ | |
 | T4 | `/administracion-de-alquileres` page + form + topic labels | front | delegated | ⬜ | |
 | T5 | Ana María in Nosotros (top) and Consorcios; team data | front | delegated | ⬜ | |
