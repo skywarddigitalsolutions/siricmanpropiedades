@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Inbox } from "lucide-react";
 import type { DashboardSummary } from "@/lib/api/dashboard";
 import { buildInboxHref, formatLeadDate } from "@/lib/leads/inbox-params";
-import { LEAD_TYPE_LABELS } from "@/lib/leads/labels";
+import { leadCategory } from "@/lib/leads/category";
+import LeadCategoryTag from "@/components/admin/leads/LeadCategoryTag/LeadCategoryTag";
 import LeadStatusBadge from "@/components/admin/leads/LeadStatusBadge/LeadStatusBadge";
 import EmptyState from "@/components/admin/ui/EmptyState/EmptyState";
 import styles from "./LatestLeads.module.css";
@@ -11,7 +12,7 @@ type LatestLeadsProps = {
   leads: DashboardSummary["latestLeads"];
 };
 
-/** "Últimas consultas": the newest leads with status, property code chip and a link to each detail. */
+/** "Últimas consultas": the newest leads with category tag, status, property code chip and a link to each detail. */
 export default function LatestLeads({ leads }: LatestLeadsProps) {
   return (
     <section aria-labelledby="latest-leads-title" className={styles.section}>
@@ -44,12 +45,11 @@ export default function LatestLeads({ leads }: LatestLeadsProps) {
                   {lead.name}
                 </Link>
                 <span className={styles.meta}>
-                  {lead.property ? (
+                  <LeadCategoryTag category={leadCategory(lead)} />
+                  {lead.property && (
                     <span className={styles.chip} title={lead.property.title}>
                       {lead.property.code}
                     </span>
-                  ) : (
-                    <span>{LEAD_TYPE_LABELS[lead.type]}</span>
                   )}
                   <time dateTime={lead.createdAt}>{formatLeadDate(lead.createdAt)}</time>
                 </span>

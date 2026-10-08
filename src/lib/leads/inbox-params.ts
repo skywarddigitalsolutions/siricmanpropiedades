@@ -3,14 +3,14 @@ import {
   LEAD_TOPIC_LABELS,
   LEAD_TYPE_LABELS,
   type LeadStatus,
-  type LeadType,
 } from "./labels";
+import type { LeadCategory } from "./category";
 
-/** Inbox URL state: `/admin/consultas?estado=…&tipo=…&pagina=…` (Spanish, shareable). */
+/** Inbox URL state: `/admin/consultas?estado=…&categoria=…&pagina=…` (Spanish, shareable). */
 export type InboxStatus = LeadStatus | "all";
 export type InboxState = {
   status: InboxStatus;
-  type?: LeadType;
+  category?: LeadCategory;
   /** Free-text search over name, email, phone and message. */
   q?: string;
   /** Only leads about this property (UUID). */
@@ -27,10 +27,17 @@ export const STATUS_SLUGS: Record<InboxStatus, string> = {
   all: "todas",
 };
 
-export const TYPE_SLUGS: Record<LeadType, string> = {
-  property_inquiry: "propiedad",
+export const CATEGORY_SLUGS: Record<LeadCategory, string> = {
   appraisal: "tasacion",
-  contact: "contacto",
+  search: "busqueda",
+  management: "administracion",
+  other: "otras",
+};
+
+/** Old `?tipo=` links keep working: the lead type maps onto a category (contact spans several, so it maps to none). */
+const LEGACY_TYPE_SLUGS: Record<string, LeadCategory> = {
+  tasacion: "appraisal",
+  propiedad: "search",
 };
 
 type RawParams = Record<string, string | string[] | undefined>;
@@ -48,12 +55,14 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function parseInboxParams(raw: RawParams): InboxState {
   const page = Number(first(raw, "pagina"));
-  const type = fromSlug(TYPE_SLUGS, first(raw, "tipo"));
+  const legacySlug = first(raw, "tipo") ?? "";
+  const legacy = Object.hasOwn(LEGACY_TYPE_SLUGS, legacySlug) ? LEGACY_TYPE_SLUGS[legacySlug] : undefined;
+  const category = fromSlug(CATEGORY_SLUGS, first(raw, "categoria")) ?? legacy;
   const q = (first(raw, "q") ?? "").trim();
   const propertyId = first(raw, "propiedad");
   return {
     status: fromSlug(STATUS_SLUGS, first(raw, "estado")) ?? "new",
-    ...(type ? { type } : {}),
+    ...(category ? { category } : {}),
     ...(q ? { q } : {}),
     // The API validates UUIDs and answers 400 otherwise: ignore a malformed one.
     ...(propertyId && UUID.test(propertyId) ? { propertyId } : {}),
@@ -64,7 +73,7 @@ export function parseInboxParams(raw: RawParams): InboxState {
 export function toLeadFilters(state: InboxState, pageSize: number): LeadFilters {
   return {
     ...(state.status !== "all" ? { status: state.status } : {}),
-    ...(state.type ? { type: state.type } : {}),
+    ...(state.category ? { category: state.category } : {}),
     ...(state.q ? { q: state.q } : {}),
     ...(state.propertyId ? { propertyId: state.propertyId } : {}),
     limit: pageSize,
@@ -77,7 +86,7 @@ export function buildInboxHref(state: InboxState, patch: Partial<InboxState> = {
   const next = { ...state, page: 1, ...patch };
   const params = new URLSearchParams();
   if (next.status !== "new") params.set("estado", STATUS_SLUGS[next.status]);
-  if (next.type) params.set("tipo", TYPE_SLUGS[next.type]);
+  if (next.category) params.set("categoria", CATEGORY_SLUGS[next.category]);
   if (next.q) params.set("q", next.q);
   if (next.propertyId) params.set("propiedad", next.propertyId);
   if (next.page > 1) params.set("pagina", String(next.page));

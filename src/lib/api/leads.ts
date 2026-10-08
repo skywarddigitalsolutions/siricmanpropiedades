@@ -2,6 +2,7 @@ import "server-only";
 import { apiFetch } from "./client";
 import type { Paginated } from "./properties";
 import { buildQuery } from "./query-string";
+import type { LeadCategory } from "@/lib/leads/category";
 import type { LeadStatus, LeadTopic, LeadType } from "@/lib/leads/labels";
 
 /** Body of `POST /api/leads` (public; the API also requires phone or email). */
@@ -47,6 +48,8 @@ export type LeadsPage = Paginated<Lead> & { counts?: LeadCounts };
 export type LeadFilters = {
   status?: LeadStatus;
   type?: LeadType;
+  /** Derived category (see `leadCategory`). */
+  category?: LeadCategory;
   /** Search over name, email, phone and message. */
   q?: string;
   propertyId?: string;

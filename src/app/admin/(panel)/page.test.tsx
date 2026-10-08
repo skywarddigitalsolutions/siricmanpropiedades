@@ -23,13 +23,18 @@ import AdminPanelPage from "./page";
 
 function makeSummary(overrides: Partial<DashboardSummary> = {}): DashboardSummary {
   return {
-    leads: { new: 3, total: 12 },
+    leads: {
+      new: 9,
+      total: 12,
+      newByCategory: { appraisal: 3, search: 4, management: 1, other: 1 },
+    },
     properties: { draft: 4, published: 9, archived: 1, publishedWithoutImages: 2 },
     latestLeads: [
       {
         id: "l1",
         name: "Ana García",
         type: "property_inquiry",
+        topic: null,
         status: "new",
         createdAt: "2026-09-30T15:05:00.000Z",
         property: { id: "p1", code: "SP-0007", title: "Casa en Palermo" },
@@ -38,6 +43,7 @@ function makeSummary(overrides: Partial<DashboardSummary> = {}): DashboardSummar
         id: "l2",
         name: "Luis Pérez",
         type: "appraisal",
+        topic: "sell",
         status: "contacted",
         createdAt: "2026-09-29T10:00:00.000Z",
         property: null,
@@ -72,9 +78,18 @@ describe("AdminPanelPage (home dashboard)", () => {
   it("shows the KPI cards as links to the filtered lists", async () => {
     render(await AdminPanelPage());
 
-    const news = screen.getByRole("link", { name: /Consultas nuevas/ });
-    expect(news).toHaveTextContent("3");
-    expect(news).toHaveAttribute("href", "/admin/consultas");
+    const appraisals = screen.getByRole("link", { name: /Tasaciones nuevas/ });
+    expect(appraisals).toHaveTextContent("3");
+    expect(appraisals).toHaveAttribute("href", "/admin/consultas?categoria=tasacion");
+
+    const search = screen.getByRole("link", { name: /Compra y alquiler nuevas/ });
+    expect(search).toHaveTextContent("4");
+    expect(search).toHaveAttribute("href", "/admin/consultas?categoria=busqueda");
+
+    const others = screen.getByRole("link", { name: /Otras consultas nuevas/ });
+    expect(others).toHaveTextContent("2");
+    expect(others).toHaveAttribute("href", "/admin/consultas");
+    expect(screen.queryByRole("link", { name: /^Consultas nuevas/ })).not.toBeInTheDocument();
 
     const drafts = screen.getByRole("link", { name: /Borradores/ });
     expect(drafts).toHaveTextContent("4");
@@ -90,6 +105,28 @@ describe("AdminPanelPage (home dashboard)", () => {
     const published = screen.getByRole("link", { name: /^Publicadas\b(?! sin)/ });
     expect(published).toHaveTextContent("9");
     expect(published).toHaveAttribute("href", "/admin/propiedades?publicationStatus=published");
+  });
+
+  it("falls back to a single new-leads card when the API has no per-category counts", async () => {
+    getDashboard.mockResolvedValue(makeSummary({ leads: { new: 5, total: 12 } }));
+
+    render(await AdminPanelPage());
+
+    const news = screen.getByRole("link", { name: /Consultas nuevas/ });
+    expect(news).toHaveTextContent("5");
+    expect(news).toHaveAttribute("href", "/admin/consultas");
+    expect(screen.queryByRole("link", { name: /Tasaciones nuevas/ })).not.toBeInTheDocument();
+  });
+
+  it("tags each latest lead with its category", async () => {
+    render(await AdminPanelPage());
+
+    const section = screen.getByRole("region", { name: "Últimas consultas" });
+    expect(within(section).getByText("Compra y alquiler")).toHaveAttribute(
+      "data-category",
+      "search",
+    );
+    expect(within(section).getByText("Tasaciones")).toHaveAttribute("data-category", "appraisal");
   });
 
   it("lists the latest leads with status badge, property chip and a link to the detail", async () => {
@@ -125,7 +162,7 @@ describe("AdminPanelPage (home dashboard)", () => {
   });
 
   it("shows an empty state when there are no leads yet", async () => {
-    getDashboard.mockResolvedValue(makeSummary({ latestLeads: [], leads: { new: 0, total: 0 } }));
+    getDashboard.mockResolvedValue(makeSummary({ latestLeads: [], leads: { new: 0, total: 0, newByCategory: { appraisal: 0, search: 0, management: 0, other: 0 } } }));
 
     render(await AdminPanelPage());
 
@@ -140,7 +177,7 @@ describe("AdminPanelPage (home dashboard)", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Hola, gabriel" })).toBeInTheDocument();
     expect(screen.getByRole("alert")).toHaveTextContent("No pudimos cargar el resumen");
     expect(screen.getByRole("link", { name: "Nueva propiedad" })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /Consultas nuevas/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /nuevas/ })).not.toBeInTheDocument();
   });
 
   it("redirects to login on a 401", async () => {

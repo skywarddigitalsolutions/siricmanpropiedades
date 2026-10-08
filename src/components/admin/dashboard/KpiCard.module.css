@@ -72,3 +72,36 @@
   line-height: 1;
   color: var(--color-navy);
 }
+
+/* Headline numbers: bigger value, taller card. */
+.card[data-size="large"] {
+  min-height: 120px;
+}
+
+.card[data-size="large"] .value {
+  font-size: 42px;
+}
+
+/* Slim row: icon and label on the left, the count on the right. */
+.card[data-size="compact"] {
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 0;
+  padding: 10px 16px;
+  box-shadow: none;
+}
+
+.card[data-size="compact"] .value {
+  font-size: 22px;
+}
+
+.card[data-size="compact"] .top {
+  align-items: center;
+}
+
+.card[data-size="compact"] .icon {
+  order: -1;
+  width: 32px;
+  height: 32px;
+}

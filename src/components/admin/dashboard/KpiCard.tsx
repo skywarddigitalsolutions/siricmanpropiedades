@@ -9,12 +9,14 @@ type KpiCardProps = {
   value: number;
   icon: LucideIcon;
   tone: Tone;
+  /** `large` stands out for the headline numbers; `compact` is a slim one-line card. */
+  size?: "default" | "large" | "compact";
 };
 
 /** One dashboard number: label with a tinted icon, the count, and a link to the matching list. */
-export default function KpiCard({ href, label, value, icon: Icon, tone }: KpiCardProps) {
+export default function KpiCard({ href, label, value, icon: Icon, tone, size = "default" }: KpiCardProps) {
   return (
-    <Link href={href} className={styles.card}>
+    <Link href={href} className={styles.card} data-size={size}>
       <span className={styles.top}>
         <span className={styles.label}>{label}</span>
         <span className={styles.icon} data-tone={tone}>

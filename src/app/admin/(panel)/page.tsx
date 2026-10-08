@@ -1,4 +1,6 @@
 import { CircleCheck, ImageOff, Inbox, PencilLine } from "lucide-react";
+import { LEAD_CATEGORY_LABELS } from "@/lib/leads/category";
+import { LEAD_CATEGORY_ICONS } from "@/components/admin/leads/LeadCategoryTag/LeadCategoryTag";
 import { getDashboard, type DashboardSummary } from "@/lib/api/dashboard";
 import { buildInboxHref } from "@/lib/leads/inbox-params";
 import { buildPropertyListHref } from "@/lib/properties/list-params";
@@ -28,6 +30,8 @@ export default async function AdminPanelPage() {
     handleUnlessUnavailable(error);
   }
 
+  const byCategory = summary?.leads.newByCategory;
+
   return (
     <div className={styles.page}>
       <PageHeader
@@ -37,14 +41,48 @@ export default async function AdminPanelPage() {
 
       {summary ? (
         <>
+          {byCategory ? (
+            <div className={styles.leadKpis}>
+              <KpiCard
+                href={buildInboxHref({ status: "new", category: "appraisal", page: 1 })}
+                label={`${LEAD_CATEGORY_LABELS.appraisal} nuevas`}
+                value={byCategory.appraisal}
+                icon={LEAD_CATEGORY_ICONS.appraisal}
+                tone="info"
+                size="large"
+              />
+              <KpiCard
+                href={buildInboxHref({ status: "new", category: "search", page: 1 })}
+                label={`${LEAD_CATEGORY_LABELS.search} nuevas`}
+                value={byCategory.search}
+                icon={LEAD_CATEGORY_ICONS.search}
+                tone="info"
+                size="large"
+              />
+              <div className={styles.leadKpiMore}>
+                <KpiCard
+                  href={buildInboxHref({ status: "new", page: 1 })}
+                  label="Otras consultas nuevas"
+                  value={byCategory.management + byCategory.other}
+                  icon={Inbox}
+                  tone="neutral"
+                  size="compact"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className={styles.leadKpis}>
+              <KpiCard
+                href={buildInboxHref({ status: "new", page: 1 })}
+                label="Consultas nuevas"
+                value={summary.leads.new}
+                icon={Inbox}
+                tone="info"
+                size="large"
+              />
+            </div>
+          )}
           <div className={styles.kpis}>
-            <KpiCard
-              href={buildInboxHref({ status: "new", page: 1 })}
-              label="Consultas nuevas"
-              value={summary.leads.new}
-              icon={Inbox}
-              tone="info"
-            />
             <KpiCard
               href={buildPropertyListHref({ publicationStatus: "draft" }, 1)}
               label="Borradores"

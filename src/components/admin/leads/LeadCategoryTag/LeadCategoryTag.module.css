@@ -1,0 +1,19 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 700 12px var(--font-body), sans-serif;
+  color: var(--tone-neutral-fg);
+}
+
+.tag[data-category="appraisal"] {
+  color: var(--color-navy);
+}
+
+.tag[data-category="search"] {
+  color: var(--tone-info-fg);
+}
+
+.tag[data-category="management"] {
+  color: var(--tone-success-fg);
+}
