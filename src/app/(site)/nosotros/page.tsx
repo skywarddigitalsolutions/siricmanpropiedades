@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  ArrowRight,
   Award,
   Compass,
   Eye,
@@ -12,14 +13,15 @@ import {
   Target,
   type LucideIcon,
 } from "lucide-react";
+import TeamAvatar from "@/components/site/TeamAvatar/TeamAvatar";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
 import { INSTAGRAM_URL } from "@/lib/contact";
-import { TEAM } from "@/lib/public/team";
+import { CONSORTIUM_ADMIN, FOUNDER, TEAM } from "@/lib/public/team";
 import { WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 import styles from "./page.module.css";
 
 const DESCRIPTION =
-  "Más de una década administrando consorcios en CABA y hoy acompañando operaciones de compra, venta y alquiler con servicio cercano, transparente y personalizado.";
+  "Conocé a quienes te atienden en Siricman Propiedades: Gabriel Siricman, corredor inmobiliario matriculado, te acompaña en la venta de tu propiedad, y Ana María Fierro Pedrayes administra consorcios con 15 años de trayectoria.";
 
 export const metadata: Metadata = {
   title: "Nosotros",
@@ -63,6 +65,24 @@ const WHATSAPP_MESSAGE = "Hola Gabriel, te escribo desde la web.";
 export default function AboutPage() {
   return (
     <main className={styles.main}>
+      <section aria-label="Administración de consorcios" className={`${styles.inner} ${styles.admin}`}>
+        <div className={`${styles.navy} ${styles.adminCard}`}>
+          <div className={styles.adminAvatar}>
+            <TeamAvatar member={CONSORTIUM_ADMIN} sizes="72px" />
+          </div>
+          <div className={styles.adminBody}>
+            <span className={styles.eyebrow}>ADMINISTRACIÓN</span>
+            <p className={styles.adminName}>{CONSORTIUM_ADMIN.name}</p>
+            <p className={styles.adminRole}>Administración de consorcios · 15 años de trayectoria</p>
+            <p className={styles.adminText}>Trato directo con cada propietario del edificio.</p>
+          </div>
+          <Link href="/administracion-de-consorcios" className={styles.adminLink}>
+            Conocé la administración de consorcios
+            <ArrowRight aria-hidden size={18} />
+          </Link>
+        </div>
+      </section>
+
       <div className={styles.heroBand}>
         <Image
           src="/brand/logo-emblem.png"
@@ -74,12 +94,11 @@ export default function AboutPage() {
         />
         <section className={`${styles.inner} ${styles.hero}`}>
           <span className={styles.eyebrow}>NOSOTROS</span>
-          <h1 className={styles.title}>
-            Once años cuidando propiedades y a las personas que viven en ellas
-          </h1>
+          <h1 className={styles.title}>Una inmobiliaria con nombre y apellido</h1>
           <p className={styles.lead}>
-            Siricman Propiedades nace de la administración de consorcios en la Ciudad de Buenos
-            Aires. Hoy acompañamos operaciones de compra, venta y alquiler con la misma cercanía.
+            En Siricman Propiedades te atienden las mismas personas de principio a fin: Gabriel
+            Siricman te acompaña en la venta de tu propiedad y en cada operación, y Ana María
+            Fierro Pedrayes está a cargo de la administración de consorcios.
           </p>
         </section>
       </div>
@@ -92,19 +111,16 @@ export default function AboutPage() {
           {TEAM.map((member) => (
             <li key={member.name} className={styles.member}>
               <span className={styles.avatar}>
-                <Image
-                  src={member.photo}
-                  alt={member.name}
-                  width={200}
-                  height={200}
+                <TeamAvatar
+                  member={member}
                   sizes="(min-width: 960px) 200px, 132px"
-                  className={styles.avatarPhoto}
+                  imageClassName={styles.avatarPhoto}
                 />
               </span>
               <div className={styles.memberBody}>
                 <span className={styles.memberName}>{member.name}</span>
                 <span className={styles.memberRole}>{member.role}</span>
-                <span className={styles.memberLicense}>{member.license}</span>
+                {member.license && <span className={styles.memberLicense}>{member.license}</span>}
                 {member.credentials.length > 0 && (
                   <ul className={styles.memberCredentials}>
                     {member.credentials.map((credential) => (
@@ -113,28 +129,30 @@ export default function AboutPage() {
                   </ul>
                 )}
                 <p className={styles.memberBio}>{member.bio}</p>
-                <div className={styles.memberActions}>
-                  <a
-                    href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_MESSAGE)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.memberPrimary}
-                  >
-                    <WhatsAppIcon size={18} />
-                    WhatsApp
-                  </a>
-                  <Link href="/contacto" className={styles.memberSecondary}>
-                    Escribinos
-                  </Link>
-                  <a
-                    href={INSTAGRAM_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.memberSecondary}
-                  >
-                    Instagram
-                  </a>
-                </div>
+                {member === FOUNDER && (
+                  <div className={styles.memberActions}>
+                    <a
+                      href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_MESSAGE)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.memberPrimary}
+                    >
+                      <WhatsAppIcon size={18} />
+                      WhatsApp
+                    </a>
+                    <Link href="/contacto" className={styles.memberSecondary}>
+                      Escribinos
+                    </Link>
+                    <a
+                      href={INSTAGRAM_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.memberSecondary}
+                    >
+                      Instagram
+                    </a>
+                  </div>
+                )}
               </div>
             </li>
           ))}
@@ -148,9 +166,9 @@ export default function AboutPage() {
           </span>
           <span className={styles.eyebrow}>MISIÓN</span>
           <p className={styles.pillarText}>
-            Brindar soluciones inmobiliarias y de administración de consorcios con un servicio
-            cercano, transparente y personalizado, acompañando a cada cliente con la experiencia y
-            la confianza de más de 11 años.
+            Acompañar a cada propietario en la venta de su propiedad con un servicio cercano,
+            transparente y profesional, y brindar una administración de alquileres y de consorcios
+            ordenada y confiable.
           </p>
         </div>
         <div className={`${styles.pillar} ${styles.pillarLight}`}>
@@ -190,14 +208,14 @@ export default function AboutPage() {
       <div className={`${styles.inner} ${styles.ctaWrap}`}>
         <div className={`${styles.navy} ${styles.cta}`}>
           <div className={styles.ctaText}>
-            <h2 className={styles.ctaTitle}>¿Querés vender, alquilar o consultarnos algo?</h2>
+            <h2 className={styles.ctaTitle}>¿Pensás vender tu propiedad?</h2>
             <p className={styles.ctaBody}>
               Pedí una tasación o escribinos, te respondemos a la brevedad.
             </p>
           </div>
           <div className={styles.ctaActions}>
             <Link href="/vender" className={styles.ctaButton}>
-              Solicitar tasación
+              Pedí tu tasación
             </Link>
             <Link href="/contacto" className={styles.ctaLink}>
               Contactanos

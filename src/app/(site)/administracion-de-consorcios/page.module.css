@@ -340,6 +340,12 @@
 }
 
 /* Who runs it: Gabriel's photo and data, backing the "trato directo" promise. */
+.whoList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 .who {
   display: flex;
   flex-direction: column;

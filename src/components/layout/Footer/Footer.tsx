@@ -18,10 +18,10 @@ import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
 import styles from "./Footer.module.css";
 
 const NAV_LINKS = [
-  { label: "Comprar", href: "/propiedades?operacion=venta" },
-  { label: "Alquilar", href: "/propiedades?operacion=alquiler" },
   { label: "Vender", href: "/vender" },
   { label: "Administración de alquileres", href: "/administracion-de-alquileres" },
+  { label: "Comprar", href: "/propiedades?operacion=venta" },
+  { label: "Alquilar", href: "/propiedades?operacion=alquiler" },
   { label: "Consorcios", href: "/administracion-de-consorcios" },
   { label: "Nosotros", href: "/nosotros" },
   { label: "Contacto", href: "/contacto" },
@@ -71,8 +71,8 @@ export default function Footer() {
             </span>
           </div>
           <p className={styles.tagline}>
-            Venta, alquiler, tasaciones y administración de consorcios en CABA, con trato personal
-            de principio a fin.
+            Vendé tu propiedad en CABA con trato directo y profesional. También administramos
+            alquileres y consorcios.
           </p>
           <p className={styles.professional}>
             Gabriel Siricman · Martillero Público y Corredor Inmobiliario

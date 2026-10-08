@@ -30,6 +30,7 @@ Legend: SDD = spec-driven (hard-to-reverse decisions), ODD = organic (clear path
 | 22 | UX corrections: styled dropdowns everywhere, account from the user card, roomier admin lists, aligned filters, landscape hero photo (`odd/tasks/ux-corrections.md`) | front | ODD | ✅ Done |
 | 23 | Demo properties CLI for client presentations: seed/remove (back `odd/tasks/demo-properties.md`, back #32); broker license in footer and Nosotros (front #52) | both | ODD | ✅ Done |
 | 24 | Mobile results bar + multi-barrio filter (back #33), wrapped chips, aligned appraisal form, developer credit, richer Consorcios and Nosotros (`odd/tasks/mobile-ux-content.md`) | both | ODD | ✅ Done |
+| 25 | Owner/seller focus: larger header + seller-first nav, home rewritten for sellers, `/vender` (redirect from `/tasaciones`), `/administracion-de-alquileres` + `rental_management` lead topic (back #34), Ana María Fierro Pedrayes (consortium, 15 años) in Nosotros and Consorcios (`odd/tasks/owner-seller-focus.md`) | both | ODD | ✅ Done |
 
 ## Pending product decisions
 

@@ -28,10 +28,10 @@ describe("ContactForm", () => {
     expect(screen.getByRole("link", { name: "Privacidad" })).toHaveAttribute("href", "/privacidad");
     const options = await openLabels(user, screen.getByLabelText("Motivo de consulta"));
     expect(options).toEqual([
-      "Quiero comprar",
-      "Quiero alquilar",
       "Quiero vender o tasar",
       "Administración de alquileres",
+      "Quiero comprar",
+      "Quiero alquilar",
       "Administración de consorcios",
       "Otro",
     ]);

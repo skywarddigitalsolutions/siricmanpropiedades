@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState, useRef, useState, type InputHTMLAttributes } from "react";
 import type { ContactField, ContactState } from "@/lib/leads/contact-form";
-import { LEAD_TOPICS, LEAD_TOPIC_LABELS } from "@/lib/leads/labels";
+import { LEAD_TOPIC_LABELS, type LeadTopic } from "@/lib/leads/labels";
 import Select from "../../Select/Select";
 import { FormHint, FormLiveRegion } from "../../forms/FormParts";
 import FormSuccess from "../../forms/FormSuccess";
@@ -16,13 +16,16 @@ type ContactFormProps = {
 
 /** Topic wording of the public form (the admin labels are third person). */
 const TOPIC_OPTIONS = {
-  buy: "Quiero comprar",
-  rent: "Quiero alquilar",
   sell: "Quiero vender o tasar",
   rental_management: LEAD_TOPIC_LABELS.rental_management,
+  buy: "Quiero comprar",
+  rent: "Quiero alquilar",
   consortium: LEAD_TOPIC_LABELS.consortium,
   other: LEAD_TOPIC_LABELS.other,
 } as const;
+
+/** Display order of the topic list: selling first. */
+const TOPIC_ORDER = Object.keys(TOPIC_OPTIONS) as LeadTopic[];
 
 function FieldError({ id, error }: { id: string; error?: string }) {
   if (!error) return null;
@@ -126,11 +129,11 @@ export default function ContactForm({ action }: ContactFormProps) {
           <Select
             id="contact-topic"
             name="topic"
-            defaultValue={values.topic ?? LEAD_TOPICS[0]}
+            defaultValue={values.topic ?? TOPIC_ORDER[0]}
             aria-invalid={errors.topic ? true : undefined}
             aria-describedby={errors.topic ? "contact-topic-error" : undefined}
           >
-            {LEAD_TOPICS.map((topic) => (
+            {TOPIC_ORDER.map((topic) => (
               <option key={topic} value={topic}>
                 {TOPIC_OPTIONS[topic]}
               </option>

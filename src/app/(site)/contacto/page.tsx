@@ -85,9 +85,9 @@ export default function ContactPage() {
           <div className={styles.side} data-side-column>
             <div className={styles.intro}>
               <span className={styles.eyebrow}>CONTACTO</span>
-              <h1 className={styles.title}>Hablemos de tu próxima operación</h1>
+              <h1 className={styles.title}>Hablemos de tu propiedad</h1>
               <p className={styles.lead}>
-                Escribinos por el medio que prefieras y te responde Gabriel.
+                Escribinos por el medio que prefieras y te respondemos personalmente.
               </p>
             </div>
 

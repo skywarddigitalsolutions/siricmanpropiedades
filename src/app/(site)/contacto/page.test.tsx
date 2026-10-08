@@ -14,7 +14,7 @@ describe("ContactPage", () => {
 
     expect(screen.getByText("CONTACTO")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 1, name: "Hablemos de tu próxima operación" }),
+      screen.getByRole("heading", { level: 1, name: "Hablemos de tu propiedad" }),
     ).toBeInTheDocument();
   });
 
@@ -51,7 +51,7 @@ describe("ContactPage", () => {
     expect(side).not.toBeNull();
     expect(within(side).getByRole("heading", { level: 1 })).toBeInTheDocument();
     expect(
-      within(side).getByText("Escribinos por el medio que prefieras y te responde Gabriel."),
+      within(side).getByText("Escribinos por el medio que prefieras y te respondemos personalmente."),
     ).toBeInTheDocument();
     const options = within(side).getByRole("list", { name: "Contacto directo" });
     expect(within(options).getAllByRole("listitem")).toHaveLength(4);
