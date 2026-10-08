@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useOptimistic, useState, useTransition } from "react";
+import { useActionState, useOptimistic, useRef, useState, useTransition } from "react";
+import { Trash2 } from "lucide-react";
 import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import { LEAD_STATUSES, LEAD_STATUS_LABELS, type LeadStatus } from "@/lib/leads/labels";
 import FormAlert from "@/components/admin/forms/FormAlert/FormAlert";
@@ -25,7 +26,7 @@ function Feedback({ state }: { state: ActionFeedback }) {
 /**
  * Follow-up block of a lead: the status as a 3-option segmented control that
  * saves on change (optimistic, rolled back on error), internal notes, and the
- * admin-only delete behind a confirmation step.
+ * admin-only delete behind a confirmation dialog.
  */
 export default function LeadManagePanel({
   status,
@@ -41,6 +42,7 @@ export default function LeadManagePanel({
   const [, startTransition] = useTransition();
   const [notesState, submitNotes, notesPending] = useActionState(updateAction, {});
   const [deleteState, submitDelete, deletePending] = useActionState(deleteAction, {});
+  const confirmRef = useRef<HTMLDialogElement>(null);
 
   function changeStatus(next: LeadStatus) {
     const formData = new FormData();
@@ -65,6 +67,7 @@ export default function LeadManagePanel({
                 type="radio"
                 name="status"
                 value={value}
+                data-status={value}
                 checked={shownStatus === value}
                 onChange={() => changeStatus(value)}
                 className={styles.radio}
@@ -100,18 +103,42 @@ export default function LeadManagePanel({
       </form>
 
       {canDelete && (
-        <form action={submitDelete} className={`${styles.card} ${styles.danger}`}>
-          <details>
-            <summary className={styles.summary}>Eliminar consulta</summary>
-            <p className={styles.hint}>
-              Se borra definitivamente. Usalo para spam o mensajes de prueba.
-            </p>
-            <button type="submit" className={styles.destructive} disabled={deletePending}>
-              Sí, eliminar definitivamente
-            </button>
-          </details>
-          <Feedback state={deleteState} />
-        </form>
+        <section className={`${styles.card} ${styles.danger}`}>
+          <button
+            type="button"
+            className={styles.dangerOutline}
+            onClick={() => confirmRef.current?.showModal()}
+          >
+            <Trash2 aria-hidden size={18} />
+            Eliminar consulta
+          </button>
+          <dialog
+            ref={confirmRef}
+            aria-labelledby="lead-delete-title"
+            className={styles.dialog}
+          >
+            <form action={submitDelete} className={styles.dialogBody}>
+              <h2 id="lead-delete-title" className={styles.dialogTitle}>
+                ¿Eliminar esta consulta?
+              </h2>
+              <p className={styles.hint}>Se borra definitivamente y no se puede recuperar.</p>
+              <Feedback state={deleteState} />
+              <div className={styles.dialogActions}>
+                <button
+                  type="button"
+                  className={styles.secondary}
+                  onClick={() => confirmRef.current?.close()}
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className={styles.destructive} disabled={deletePending}>
+                  <Trash2 aria-hidden size={18} />
+                  Eliminar
+                </button>
+              </div>
+            </form>
+          </dialog>
+        </section>
       )}
     </div>
   );
