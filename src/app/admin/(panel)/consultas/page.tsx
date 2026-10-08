@@ -5,8 +5,8 @@ import {
   buildInboxHref,
   INBOX_PATH,
   parseInboxParams,
+  CATEGORY_SLUGS,
   STATUS_SLUGS,
-  TYPE_SLUGS,
   toLeadFilters,
   type InboxStatus,
 } from "@/lib/leads/inbox-params";
@@ -58,7 +58,7 @@ export default async function LeadsInboxPage({ searchParams }: LeadsInboxPagePro
   // Searching keeps the other filters: they travel as hidden inputs of the GET form.
   const kept: Record<string, string> = {
     ...(state.status !== "new" ? { estado: STATUS_SLUGS[state.status] } : {}),
-    ...(state.type ? { tipo: TYPE_SLUGS[state.type] } : {}),
+    ...(state.category ? { categoria: CATEGORY_SLUGS[state.category] } : {}),
     ...(state.propertyId ? { propiedad: state.propertyId } : {}),
   };
 
@@ -66,7 +66,7 @@ export default async function LeadsInboxPage({ searchParams }: LeadsInboxPagePro
     <div className={styles.page}>
       <PageHeader
         title="Consultas"
-        description="Mensajes del sitio: consultas por propiedades, tasaciones y contacto."
+        description="Mensajes del sitio: tasaciones, compra y alquiler, administración y otras."
       />
       {query.eliminada === "1" && <FormNotice>Consulta eliminada.</FormNotice>}
       <SearchForm

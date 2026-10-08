@@ -12,24 +12,39 @@ describe("parseInboxParams", () => {
     expect(parseInboxParams({})).toEqual({ status: "new", page: 1 });
   });
 
-  it("reads status, type and page, ignoring invalid values", () => {
-    expect(parseInboxParams({ estado: "todas", tipo: "tasacion", pagina: "3" })).toEqual({
+  it("reads status, category and page, ignoring invalid values", () => {
+    expect(parseInboxParams({ estado: "todas", categoria: "tasacion", pagina: "3" })).toEqual({
       status: "all",
-      type: "appraisal",
+      category: "appraisal",
       page: 3,
     });
-    expect(parseInboxParams({ estado: "x", tipo: "y", pagina: "0" })).toEqual({
+    expect(parseInboxParams({ categoria: "busqueda" }).category).toBe("search");
+    expect(parseInboxParams({ categoria: "administracion" }).category).toBe("management");
+    expect(parseInboxParams({ categoria: "otras" }).category).toBe("other");
+    expect(parseInboxParams({ estado: "x", categoria: "y", pagina: "0" })).toEqual({
       status: "new",
       page: 1,
     });
   });
 });
 
+describe("legacy tipo links", () => {
+  it("maps old type links to their category", () => {
+    expect(parseInboxParams({ tipo: "tasacion" }).category).toBe("appraisal");
+    expect(parseInboxParams({ tipo: "propiedad" }).category).toBe("search");
+    expect(parseInboxParams({ tipo: "contacto" }).category).toBeUndefined();
+  });
+
+  it("prefers the category param over tipo", () => {
+    expect(parseInboxParams({ tipo: "tasacion", categoria: "otras" }).category).toBe("other");
+  });
+});
+
 describe("toLeadFilters", () => {
   it("maps to the API query with pagination", () => {
-    expect(toLeadFilters({ status: "contacted", type: "contact", page: 2 }, 20)).toEqual({
+    expect(toLeadFilters({ status: "contacted", category: "search", page: 2 }, 20)).toEqual({
       status: "contacted",
-      type: "contact",
+      category: "search",
       limit: 20,
       offset: 20,
     });
@@ -40,8 +55,8 @@ describe("toLeadFilters", () => {
 describe("buildInboxHref", () => {
   it("omits defaults and resets the page on filter changes", () => {
     expect(buildInboxHref({ status: "new", page: 1 })).toBe("/admin/consultas");
-    expect(buildInboxHref({ status: "new", type: "appraisal", page: 3 }, { status: "closed" })).toBe(
-      "/admin/consultas?estado=cerradas&tipo=tasacion",
+    expect(buildInboxHref({ status: "new", category: "appraisal", page: 3 }, { status: "closed" })).toBe(
+      "/admin/consultas?estado=cerradas&categoria=tasacion",
     );
     expect(buildInboxHref({ status: "all", page: 1 }, { page: 2 })).toBe(
       "/admin/consultas?estado=todas&pagina=2",

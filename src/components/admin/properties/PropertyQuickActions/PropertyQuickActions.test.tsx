@@ -26,6 +26,39 @@ describe("PropertyQuickActions", () => {
     expect(formData.get("transition")).toBe("publish");
   });
 
+  it("renders icon-only buttons with a tooltip", () => {
+    const { rerender } = render(
+      <PropertyQuickActions id="p1" title="Casa" publicationStatus="draft" action={vi.fn()} />,
+    );
+    const publish = screen.getByRole("button", { name: "Publicar Casa" });
+    expect(publish).toHaveAttribute("data-tooltip", "Publicar");
+    expect(publish.querySelector("svg")).not.toBeNull();
+    expect(publish).toHaveTextContent("");
+
+    rerender(
+      <PropertyQuickActions id="p1" title="Casa" publicationStatus="published" action={vi.fn()} />,
+    );
+    const withdraw = screen.getByRole("button", { name: "Retirar Casa" });
+    expect(withdraw).toHaveAttribute("data-tooltip", "Retirar");
+    expect(withdraw.querySelector("svg")).not.toBeNull();
+  });
+
+  it("explains in the tooltip why Publicar is blocked", () => {
+    render(
+      <PropertyQuickActions
+        id="p1"
+        title="Casa"
+        publicationStatus="draft"
+        action={vi.fn()}
+        publishBlockedReason="Agregá al menos una foto para publicar."
+      />,
+    );
+
+    const publish = screen.getByRole("button", { name: "Publicar Casa" });
+    expect(publish).toBeDisabled();
+    expect(publish).toHaveAttribute("data-tooltip", "Agregá al menos una foto para publicar.");
+  });
+
   it("withdraws a published property with the unpublish transition", async () => {
     const action = vi.fn().mockResolvedValue({ message: "ok" });
     render(

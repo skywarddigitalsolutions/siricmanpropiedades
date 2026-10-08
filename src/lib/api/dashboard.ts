@@ -1,10 +1,16 @@
 import "server-only";
 import { apiFetch } from "./client";
-import type { LeadStatus, LeadType } from "@/lib/leads/labels";
+import type { LeadCategory } from "@/lib/leads/category";
+import type { LeadStatus, LeadTopic, LeadType } from "@/lib/leads/labels";
 
 /** `GET /api/admin/dashboard` (admin + manager): the numbers behind the panel home. */
 export type DashboardSummary = {
-  leads: { new: number; total: number };
+  leads: {
+    new: number;
+    total: number;
+    /** New leads per category; absent on an older API. */
+    newByCategory?: Record<LeadCategory, number>;
+  };
   properties: {
     draft: number;
     published: number;
@@ -16,6 +22,8 @@ export type DashboardSummary = {
     id: string;
     name: string;
     type: LeadType;
+    /** Absent on an older API; without it contacts fall under "other". */
+    topic?: LeadTopic | null;
     status: LeadStatus;
     createdAt: string;
     property: { id: string; code: string; title: string } | null;

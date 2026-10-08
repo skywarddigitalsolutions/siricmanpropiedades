@@ -9,6 +9,28 @@
   margin-bottom: -8px;
 }
 
+/* Lead numbers: two headline cards side by side, the slim "otras" row under them. */
+.leadKpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* A lone fallback card (older API) takes the whole row. */
+.leadKpis > :only-child {
+  grid-column: 1 / -1;
+}
+
+.leadKpiMore {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+}
+
+.leadKpiMore > * {
+  flex: 1;
+}
+
 /* 2 x 2 on phones (390px: two 175px cards), one row of four from 960px. */
 .kpis {
   display: grid;
@@ -23,6 +45,15 @@
 }
 
 @media (min-width: 960px) {
+  .leadKpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 0.8fr);
+    gap: 16px;
+  }
+
+  .leadKpiMore {
+    grid-column: auto;
+  }
+
   .kpis {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 16px;

@@ -4,7 +4,7 @@ import StatusBadge, { type Tone } from "@/components/admin/ui/StatusBadge/Status
 const TONE_BY_STATUS: Record<LeadStatus, Tone> = {
   new: "info",
   contacted: "warning",
-  closed: "neutral",
+  closed: "success",
 };
 
 /** Lead status pill; the text carries the meaning, color only reinforces it. */

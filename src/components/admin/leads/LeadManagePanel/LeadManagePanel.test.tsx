@@ -1,11 +1,21 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ActionFeedback } from "@/lib/forms/action-feedback";
 import LeadManagePanel from "./LeadManagePanel";
 
 type UpdateAction = (prev: ActionFeedback, formData: FormData) => Promise<ActionFeedback>;
 type DeleteAction = () => Promise<ActionFeedback>;
+
+// jsdom has no modal <dialog> API: emulate the bit the panel relies on.
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function showModal() {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function close() {
+    this.removeAttribute("open");
+  };
+});
 
 afterEach(() => cleanup());
 
@@ -123,19 +133,80 @@ describe("LeadManagePanel notes", () => {
   });
 });
 
+describe("LeadManagePanel status colors", () => {
+  it("marks each option with its status so the selected one is colored per status", () => {
+    setup({ status: "contacted" });
+
+    expect(screen.getByRole("radio", { name: "Nueva" })).toHaveAttribute("data-status", "new");
+    expect(screen.getByRole("radio", { name: "Contactada" })).toHaveAttribute(
+      "data-status",
+      "contacted",
+    );
+    expect(screen.getByRole("radio", { name: "Cerrada" })).toHaveAttribute("data-status", "closed");
+  });
+
+  it("keeps keyboard selection with the arrow keys", async () => {
+    const { user, updateAction } = setup({ status: "new" });
+
+    await user.tab();
+    expect(screen.getByRole("radio", { name: "Nueva" })).toHaveFocus();
+    await user.keyboard("{ArrowRight}");
+
+    expect(updateAction).toHaveBeenCalledTimes(1);
+    expect(updateAction.mock.calls[0][1].get("status")).toBe("contacted");
+  });
+});
+
 describe("LeadManagePanel delete", () => {
-  it("lets admins delete after confirming", async () => {
+  it("offers a danger button with the trash icon that opens a confirmation dialog", async () => {
     const { user, deleteAction } = setup({ canDelete: true });
 
-    await user.click(screen.getByText("Eliminar consulta"));
-    await user.click(screen.getByRole("button", { name: "Sí, eliminar definitivamente" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    const trigger = screen.getByRole("button", { name: "Eliminar consulta" });
+    expect(trigger.querySelector("svg")).not.toBeNull();
+    await user.click(trigger);
 
-    expect(deleteAction).toHaveBeenCalled();
+    const dialog = screen.getByRole("dialog", { name: "¿Eliminar esta consulta?" });
+    expect(dialog).toHaveTextContent("Se borra definitivamente y no se puede recuperar.");
+    expect(deleteAction).not.toHaveBeenCalled();
+  });
+
+  it("closes without deleting on Cancelar", async () => {
+    const { user, deleteAction } = setup({ canDelete: true });
+
+    await user.click(screen.getByRole("button", { name: "Eliminar consulta" }));
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", { name: "Cancelar" }),
+    );
+
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(deleteAction).not.toHaveBeenCalled();
+  });
+
+  it("deletes only from the confirmation button", async () => {
+    const { user, deleteAction } = setup({ canDelete: true });
+
+    await user.click(screen.getByRole("button", { name: "Eliminar consulta" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Eliminar" }));
+
+    expect(deleteAction).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows a delete error inside the dialog", async () => {
+    const { user } = setup({
+      canDelete: true,
+      deleteAction: vi.fn<DeleteAction>(async () => ({ error: "No se pudo eliminar." })),
+    });
+
+    await user.click(screen.getByRole("button", { name: "Eliminar consulta" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Eliminar" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("No se pudo eliminar.");
   });
 
   it("hides delete from managers", () => {
     setup({ canDelete: false });
 
-    expect(screen.queryByText("Eliminar consulta")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Eliminar consulta" })).toBeNull();
   });
 });
