@@ -1,73 +1,50 @@
 /*
- * Below 960px, "glass panel" hero: a full-bleed photo with no overlay, scrim
- * or gradient, and the copy in a light frosted-glass card floating over it.
- * The card's own near-opaque background carries the text contrast. The hero
- * slides up under the sticky header (glass on home while at the top) so the
- * photo shows through it. From 640px the buttons sit side by side.
- *
- * From 960px, "photo panel": a white section holding one rounded panel the
- * photo fills (still no overlay, and no zoom), with the same glass card
- * anchored bottom-left over it and a small glass location pill top-right.
+ * Full-bleed aerial photo of CABA under a navy wash, with the copy straight on
+ * it (no card). Below 960px the hero slides up under the sticky header (glass
+ * while at the top): the dark photo plus the white header text stays readable
+ * because the header glass is translucent navy-tinted over the scrim (see
+ * Header.module.css). From 640px the buttons sit side by side.
  */
 .hero {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  /* Pulled up under the sticky header; its height is added back to the top
-     padding so the card keeps the same place below the header. Larger
-     bottom padding lifts the card slightly above the middle. */
+  /* Phones: copy anchored to the lower part of the photo. */
+  justify-content: flex-end;
+  /* Pulled up under the sticky header below 960px; its height is added back
+     to the top padding so the copy keeps the same place below the header. */
   margin-top: calc(-1 * var(--site-header-height));
-  padding: calc(var(--space-3) + var(--site-header-height)) var(--space-3) var(--space-12);
-  /* Fill the viewport below the header (vh fallback first), never under
-     600px, plus the header height it now sits under. */
-  min-height: calc(max(600px, 100vh - var(--site-header-height)) + var(--site-header-height));
-  min-height: calc(max(600px, 100svh - var(--site-header-height)) + var(--site-header-height));
+  padding: calc(var(--space-8) + var(--site-header-height)) var(--space-4) var(--space-12);
+  min-height: min(100vh, 680px);
+  min-height: min(100svh, 680px);
   /* Fallback while the photo loads or if it fails. */
-  background: var(--color-surface-muted);
-}
-
-/* Below 960px the inner wrapper is not positioned, so the photo box fills
-   the whole section behind the card. */
-.photoBox {
-  position: absolute;
-  inset: 0;
+  background: var(--color-navy-dark);
 }
 
 .photo {
+  z-index: -2;
   object-fit: cover;
-  /* Portrait crop: French windows and armchair in view. */
-  object-position: 30% 50%;
-  transform-origin: center;
+  object-position: center 40%;
 }
 
-.inner {
+/* Navy wash keeps the white copy AA-contrast over any part of the photo. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, var(--color-navy-scrim-55) 0%, var(--color-navy-scrim-75) 45%, var(--color-navy-scrim-85) 100%);
+}
+
+.content {
   width: 100%;
-}
-
-/* Positioned above the absolutely positioned photo box. */
-.card {
-  position: relative;
-  z-index: 1;
-  padding: var(--space-12) var(--space-6);
+  max-width: 1080px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-xl);
-  background: var(--color-surface-glass);
-  box-shadow: var(--shadow-glass);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
-}
-
-/* Without backdrop blur the card turns solid so the text stays legible. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .card {
-    background: var(--color-surface-translucent);
-  }
 }
 
 .eyebrow {
@@ -79,11 +56,10 @@
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  /* Deeper than gold-dark so it stays >= 4.5:1 over the translucent glass. */
-  color: var(--color-gold-deep);
+  color: var(--color-gold);
 }
 
-/* Short gold hairline before the eyebrow (decorative, no contrast floor). */
+/* Short gold hairline before the eyebrow (decorative). */
 .eyebrow::before {
   content: "";
   width: var(--space-6);
@@ -92,26 +68,29 @@
 }
 
 .title {
-  max-width: 20ch;
-  margin-top: var(--space-6);
+  max-width: 18ch;
+  margin-top: var(--space-4);
   font-family: var(--font-body), sans-serif;
-  /* At least 32px on phones (the card is the whole first screen there; the
-     headline is a full sentence), growing with --text-h1 up to 44px. */
-  font-size: max(2rem, var(--text-h1));
+  font-size: clamp(2.5rem, 10vw, 2.875rem);
   font-weight: var(--weight-extrabold);
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-heading);
-  color: var(--color-navy);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--color-white);
   text-wrap: balance;
 }
 
 .subtitle {
-  max-width: 40ch;
+  max-width: 52ch;
   margin-top: var(--space-4);
   font-family: var(--font-body), sans-serif;
-  font-size: var(--text-base);
-  line-height: var(--leading-normal);
-  color: var(--color-text-muted-2);
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.1875rem);
+  line-height: 1.5;
+  color: var(--color-text-on-dark);
+}
+
+/* Phones show the short line; 640px and up the full one. */
+.subtitleFull {
+  display: none;
 }
 
 .actions {
@@ -119,45 +98,59 @@
   margin-top: var(--space-8);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  align-items: stretch;
+  gap: var(--space-2);
 }
 
 .primary,
 .secondary {
-  min-height: 52px;
-  padding: 0 var(--space-6);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  border-radius: var(--radius-pill);
-  font-size: var(--text-base);
+  font-family: var(--font-body), sans-serif;
   font-weight: var(--weight-bold);
   text-decoration: none;
 }
 
+/* White with navy text: AA contrast on the overlay. */
 .primary {
-  color: var(--color-white);
-  background: var(--color-navy);
+  min-height: 52px;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-base);
+  color: var(--color-navy);
+  background: var(--color-white);
 }
 
 .primary:hover {
-  background: var(--color-navy-dark);
+  background: var(--color-gold-soft);
 }
 
+/* Phones: a light text link under the main button. */
 .secondary {
-  border: 1px solid var(--color-navy);
-  color: var(--color-navy);
-  background: transparent;
+  min-height: 44px;
+  font-size: var(--text-sm);
+  color: var(--color-white);
 }
 
-.secondary:hover {
-  background: var(--color-surface-hover);
+.secondary:hover,
+.secondary:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.waText {
+  display: inline-block;
+}
+
+.waPrefix {
+  white-space: pre;
 }
 
 .primary:focus-visible,
 .secondary:focus-visible {
-  outline: 2px solid var(--color-gold-dark);
+  outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
 
@@ -166,140 +159,57 @@
   .secondary {
     transition: background-color 0.15s ease;
   }
-
-  /* Slow "Ken Burns" zoom on the backdrop. */
-  .photo {
-    animation: owner-hero-zoom 22s ease-in-out infinite alternate;
-  }
-}
-
-@keyframes owner-hero-zoom {
-  from {
-    transform: scale(1);
-  }
-
-  to {
-    transform: scale(1.07);
-  }
 }
 
 @media (min-width: 640px) {
+  .subtitleShort {
+    display: none;
+  }
+
+  .subtitleFull {
+    display: inline;
+  }
+
   .actions {
     width: auto;
     flex-direction: row;
     flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  /* Side by side as buttons again. */
+  .secondary {
+    min-height: 52px;
+    padding: 0 var(--space-6);
+    border: 1px solid var(--color-on-dark-40);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-base);
+    text-decoration: none;
+  }
+
+  .secondary:hover {
+    border-color: var(--color-white);
+    background: var(--color-on-dark-10);
+    text-decoration: none;
+  }
+
+  .waPrefix {
+    display: none;
+  }
+
+  .waText::first-letter {
+    text-transform: uppercase;
   }
 }
 
-/* Location pill: desktop only. */
-.pill {
-  display: none;
-}
-
-/* Desktop: photo panel. */
 @media (min-width: 960px) {
   /* The desktop header is not glass, so the hero no longer slides under it. */
   .hero {
-    display: block;
     margin-top: 0;
-    padding: var(--space-2) var(--space-6) var(--space-6);
-    min-height: 0;
-    background: var(--color-surface);
-  }
-
-  .inner {
-    position: relative;
-    overflow: hidden;
-    /* Fill the viewport below the header minus the section padding
-       (vh fallback first), between 600px and 860px. */
-    height: clamp(600px, calc(100vh - var(--site-header-height) - 32px), 860px);
-    height: clamp(600px, calc(100svh - var(--site-header-height) - 32px), 860px);
-    border-radius: var(--radius-4xl);
-    /* Fallback while the photo loads or if it fails. */
-    background: var(--color-surface-muted);
-  }
-
-  .photo {
-    object-position: 50% 42%;
-    animation: none;
-  }
-
-  /*
-   * Anchored bottom-left. Below ~1030px viewports the card narrows to keep
-   * clear of the pill column (pill ~250px wide + 28px inset + ~26px gap +
-   * 76px left offset = 380px), so the two never collide, even at the 600px
-   * minimum panel height. Worst case at 960px: 532px wide and about 485px
-   * tall (44px padding top and bottom, 3-line title at 44px, up to a 3-line
-   * subtitle, one row of 56px buttons), leaving ~59px above it.
-   */
-  .card {
-    position: absolute;
-    left: 76px;
-    bottom: 56px;
-    width: min(640px, 100% - 380px);
-    padding: 44px;
-    border-radius: var(--radius-2xl);
-  }
-
-  /* Smaller than --text-hero: the headline is a full sentence. */
-  .title {
-    max-width: none;
-    font-size: clamp(2.25rem, 1.2rem + 1.8vw, 2.75rem);
-  }
-
-  .subtitle {
-    max-width: 48ch;
-    font-size: var(--text-lg);
-  }
-
-  .actions {
-    margin-top: var(--space-8);
-  }
-
-  .primary,
-  .secondary {
-    min-height: 56px;
-  }
-
-  /* Over the glass worst case navy text is 8.62:1. */
-  .pill {
-    position: absolute;
-    z-index: 1;
-    top: 28px;
-    right: 28px;
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: 10px 18px 10px 10px;
-    border: 1px solid var(--color-glass-border);
-    border-radius: var(--radius-pill);
-    background: var(--color-surface-glass);
-    box-shadow: var(--shadow-glass);
-    -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px);
-    font-family: var(--font-body), sans-serif;
-    font-size: var(--text-sm);
-    font-weight: var(--weight-semibold);
-    line-height: var(--leading-snug);
-    color: var(--color-navy);
-    white-space: nowrap;
-  }
-
-  .pillIcon {
-    width: var(--space-8);
-    height: var(--space-8);
-    flex: none;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    border-radius: var(--radius-pill);
-    color: var(--color-gold);
-    background: var(--color-navy);
-  }
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .pill {
-    background: var(--color-surface-translucent);
+    padding: var(--space-16) var(--space-6);
+    min-height: clamp(560px, calc(100vh - var(--site-header-height)), 760px);
+    min-height: clamp(560px, calc(100svh - var(--site-header-height)), 760px);
   }
 }
