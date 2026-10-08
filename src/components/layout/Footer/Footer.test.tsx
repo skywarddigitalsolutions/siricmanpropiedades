@@ -80,12 +80,17 @@ describe("Footer", () => {
       "/propiedades?operacion=venta",
       "/propiedades?operacion=alquiler",
       "/vender",
+      "/administracion-de-alquileres",
       "/administracion-de-consorcios",
       "/nosotros",
       "/contacto",
     ]);
     expect(within(nav).getByRole("link", { name: "Comprar" })).toBeInTheDocument();
     expect(within(nav).getByRole("link", { name: "Vender" })).toHaveAttribute("href", "/vender");
+    expect(within(nav).getByRole("link", { name: "Administración de alquileres" })).toHaveAttribute(
+      "href",
+      "/administracion-de-alquileres",
+    );
   });
 
   it("links the legal pages and shows no placeholder registration", () => {
