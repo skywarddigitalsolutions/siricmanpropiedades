@@ -5,7 +5,8 @@ import {
   type InboxState,
   type InboxStatus,
 } from "@/lib/leads/inbox-params";
-import type { LeadType } from "@/lib/leads/labels";
+import { LEAD_CATEGORIES, LEAD_CATEGORY_LABELS, type LeadCategory } from "@/lib/leads/category";
+import { LEAD_CATEGORY_ICONS } from "../LeadCategoryTag/LeadCategoryTag";
 import styles from "./InboxFilters.module.css";
 
 const STATUS_TABS: { label: string; status: InboxStatus }[] = [
@@ -15,19 +16,12 @@ const STATUS_TABS: { label: string; status: InboxStatus }[] = [
   { label: "Cerradas", status: "closed" },
 ];
 
-const TYPE_CHIPS: { label: string; type?: LeadType }[] = [
-  { label: "Todos los tipos" },
-  { label: "Propiedades", type: "property_inquiry" },
-  { label: "Tasaciones", type: "appraisal" },
-  { label: "Contacto", type: "contact" },
-];
-
 function tabCount(status: InboxStatus, counts: LeadCounts): number {
   return status === "all" ? counts.new + counts.contacted + counts.closed : counts[status];
 }
 
 /**
- * Status tabs (with a count pill when the API sent counts) and type chips;
+ * Status tabs (with a count pill when the API sent counts) and category chips;
  * plain links, so the URL keeps the inbox state, search included.
  */
 export default function InboxFilters({
@@ -52,17 +46,29 @@ export default function InboxFilters({
           </Link>
         ))}
       </nav>
-      <nav aria-label="Tipo" className={styles.chips}>
-        {TYPE_CHIPS.map(({ label, type }) => (
-          <Link
-            key={label}
-            href={buildInboxHref(state, { type })}
-            aria-current={state.type === type ? "page" : undefined}
-            className={styles.chip}
-          >
-            {label}
-          </Link>
-        ))}
+      <nav aria-label="Categoría" className={styles.chips}>
+        <Link
+          href={buildInboxHref(state, { category: undefined })}
+          aria-current={state.category === undefined ? "page" : undefined}
+          className={styles.chip}
+        >
+          Todas
+        </Link>
+        {LEAD_CATEGORIES.map((category: LeadCategory) => {
+          const Icon = LEAD_CATEGORY_ICONS[category];
+          return (
+            <Link
+              key={category}
+              href={buildInboxHref(state, { category })}
+              aria-current={state.category === category ? "page" : undefined}
+              className={styles.chip}
+              data-category={category}
+            >
+              <Icon aria-hidden size={15} />
+              {LEAD_CATEGORY_LABELS[category]}
+            </Link>
+          );
+        })}
       </nav>
     </div>
   );

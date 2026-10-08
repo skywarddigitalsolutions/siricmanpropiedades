@@ -19,12 +19,26 @@
 }
 
 .row:hover {
-  border-color: var(--color-gold);
+  border-top-color: var(--color-gold);
+  border-right-color: var(--color-gold);
+  border-bottom-color: var(--color-gold);
 }
 
-/* New leads: gold edge and a bolder name. */
-.row[data-new] {
-  border-left: 4px solid var(--color-gold);
+/* The left edge says the category; "new" is the status badge, a bold name and a dot. */
+.row {
+  border-left: 4px solid var(--tone-neutral-fg);
+}
+
+.row[data-category="appraisal"] {
+  border-left-color: var(--color-navy);
+}
+
+.row[data-category="search"] {
+  border-left-color: var(--tone-info-fg);
+}
+
+.row[data-category="management"] {
+  border-left-color: var(--tone-success-fg);
 }
 
 .top {
@@ -59,6 +73,16 @@
 
 .row[data-new] .name {
   font-weight: 800;
+}
+
+.row[data-new] .name::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--tone-info-fg);
 }
 
 .date {

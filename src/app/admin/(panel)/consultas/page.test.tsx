@@ -100,14 +100,71 @@ describe("LeadsInboxPage", () => {
     expect(screen.getByText(summary)).toBeInTheDocument();
   });
 
-  it("offers an appraisals chip in the type filter", async () => {
+  it("offers one chip per category in the category filter", async () => {
     render(await LeadsInboxPage(query()));
 
-    const types = screen.getByRole("navigation", { name: "Tipo" });
-    expect(within(types).getByRole("link", { name: "Tasaciones" })).toHaveAttribute(
+    const chips = screen.getByRole("navigation", { name: "Categoría" });
+    expect(within(chips).getAllByRole("link").map((link) => link.textContent)).toEqual([
+      "Todas",
+      "Tasaciones",
+      "Compra y alquiler",
+      "Administración",
+      "Otras",
+    ]);
+    expect(within(chips).getByRole("link", { name: "Todas" })).toHaveAttribute("aria-current", "page");
+    expect(within(chips).getByRole("link", { name: "Tasaciones" })).toHaveAttribute(
       "href",
-      "/admin/consultas?tipo=tasacion",
+      "/admin/consultas?categoria=tasacion",
     );
+    expect(within(chips).getByRole("link", { name: "Compra y alquiler" })).toHaveAttribute(
+      "href",
+      "/admin/consultas?categoria=busqueda",
+    );
+    expect(within(chips).getByRole("link", { name: "Administración" })).toHaveAttribute(
+      "href",
+      "/admin/consultas?categoria=administracion",
+    );
+    expect(within(chips).getByRole("link", { name: "Otras" })).toHaveAttribute(
+      "href",
+      "/admin/consultas?categoria=otras",
+    );
+  });
+
+  it("tags each card with its category and marks it for the colored edge", async () => {
+    listLeads.mockResolvedValue({
+      items: [
+        makeLead({ id: "a", name: "Ana", type: "appraisal", property: null }),
+        makeLead({ id: "b", name: "Beto" }),
+        makeLead({ id: "c", name: "Cora", type: "contact", topic: "consortium", property: null }),
+        makeLead({ id: "d", name: "Dani", type: "contact", topic: "sell", property: null }),
+      ],
+      total: 4,
+      counts: COUNTS,
+    });
+
+    render(await LeadsInboxPage(query()));
+
+    for (const [name, label, category] of [
+      ["Ana", "Tasaciones", "appraisal"],
+      ["Beto", "Compra y alquiler", "search"],
+      ["Cora", "Administración", "management"],
+      ["Dani", "Otras", "other"],
+    ]) {
+      const item = screen.getByRole("listitem", { name });
+      expect(item).toHaveAttribute("data-category", category);
+      expect(within(item).getByText(label)).toHaveAttribute("data-category", category);
+    }
+  });
+
+  it("maps an old tipo link onto its category", async () => {
+    render(await LeadsInboxPage(query({ tipo: "tasacion" })));
+
+    expect(listLeads).toHaveBeenCalledWith("jwt", {
+      status: "new",
+      category: "appraisal",
+      limit: 20,
+      offset: 0,
+    });
   });
 
   it("offers WhatsApp and one-tap contacted on new leads with a phone", async () => {
@@ -134,12 +191,12 @@ describe("LeadsInboxPage", () => {
     expect(screen.queryByRole("link", { name: /WhatsApp/ })).toBeNull();
   });
 
-  it("filters by status with tabs showing counts, and by type with chips", async () => {
-    render(await LeadsInboxPage(query({ estado: "contactadas", tipo: "tasacion" })));
+  it("filters by status with tabs showing counts, and by category with chips", async () => {
+    render(await LeadsInboxPage(query({ estado: "contactadas", categoria: "tasacion" })));
 
     expect(listLeads).toHaveBeenCalledWith("jwt", {
       status: "contacted",
-      type: "appraisal",
+      category: "appraisal",
       limit: 20,
       offset: 0,
     });
@@ -151,19 +208,19 @@ describe("LeadsInboxPage", () => {
     expect(within(tabs).getByRole("link", { name: /^Cerradas/ })).toHaveTextContent("1");
     const all = within(tabs).getByRole("link", { name: /^Todas/ });
     expect(all).toHaveTextContent("8");
-    expect(all).toHaveAttribute("href", "/admin/consultas?estado=todas&tipo=tasacion");
-    const types = screen.getByRole("navigation", { name: "Tipo" });
-    expect(within(types).getByRole("link", { name: "Todos los tipos" })).toHaveAttribute(
+    expect(all).toHaveAttribute("href", "/admin/consultas?estado=todas&categoria=tasacion");
+    const types = screen.getByRole("navigation", { name: "Categoría" });
+    expect(within(types).getByRole("link", { name: "Todas" })).toHaveAttribute(
       "href",
       "/admin/consultas?estado=contactadas",
     );
   });
 
-  it("searches with q, keeping status and type, and sends it to the API", async () => {
-    render(await LeadsInboxPage(query({ estado: "todas", tipo: "contacto", q: "ana@mail.com" })));
+  it("searches with q, keeping status and category, and sends it to the API", async () => {
+    render(await LeadsInboxPage(query({ estado: "todas", categoria: "otras", q: "ana@mail.com" })));
 
     expect(listLeads).toHaveBeenCalledWith("jwt", {
-      type: "contact",
+      category: "other",
       q: "ana@mail.com",
       limit: 20,
       offset: 0,
@@ -172,10 +229,10 @@ describe("LeadsInboxPage", () => {
     expect(search).toHaveAttribute("action", "/admin/consultas");
     expect(within(search).getByLabelText("Buscar consultas")).toHaveValue("ana@mail.com");
     expect(search.querySelector('input[name="estado"]')).toHaveAttribute("value", "todas");
-    expect(search.querySelector('input[name="tipo"]')).toHaveAttribute("value", "contacto");
+    expect(search.querySelector('input[name="categoria"]')).toHaveAttribute("value", "otras");
     expect(within(search).getByRole("link", { name: "Limpiar" })).toHaveAttribute(
       "href",
-      "/admin/consultas?estado=todas&tipo=contacto",
+      "/admin/consultas?estado=todas&categoria=otras",
     );
   });
 

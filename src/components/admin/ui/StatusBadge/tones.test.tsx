@@ -29,7 +29,7 @@ describe("status badge tones", () => {
   it.each([
     ["new", "Nueva", "info"],
     ["contacted", "Contactada", "warning"],
-    ["closed", "Cerrada", "neutral"],
+    ["closed", "Cerrada", "success"],
   ] as const)("lead %s is %s", (status, label, tone) => {
     render(<LeadStatusBadge status={status} />);
     expect(screen.getByText(label)).toHaveAttribute("data-tone", tone);
