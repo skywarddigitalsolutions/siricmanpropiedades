@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CONSORTIUM_LICENSE } from "@/lib/contact";
-import { CONSORTIUM_ADMIN, FOUNDER, TEAM } from "./team";
+import { CONSORTIUM_ADMIN, FOUNDER, FOUNDER_YEARS, TEAM, founderHighlights } from "./team";
 
 describe("TEAM", () => {
   it("keeps Gabriel as the founder for selling contexts", () => {
@@ -19,6 +18,29 @@ describe("TEAM", () => {
     expect(CONSORTIUM_ADMIN.photo).toBeUndefined();
     expect(CONSORTIUM_ADMIN.license).toBeUndefined();
     expect(CONSORTIUM_ADMIN.initials).toBe("AF");
-    expect(CONSORTIUM_ADMIN.credentials).not.toContain(CONSORTIUM_LICENSE);
+  });
+
+  it("gives Gabriel a short, ordered list of highlights", () => {
+    expect(FOUNDER.highlights).toEqual([
+      "Martillero Público y Corredor Inmobiliario",
+      "Matrícula N° 10024",
+      "Docente en UTN",
+      "+11 años de experiencia",
+    ]);
+  });
+
+  it("keeps the years of experience in one constant", () => {
+    expect(FOUNDER_YEARS).toBe(11);
+    expect(FOUNDER.highlights).toContain(`+${FOUNDER_YEARS} años de experiencia`);
+    expect(FOUNDER.bio).toContain(`${FOUNDER_YEARS} años`);
+  });
+
+  it("swaps the broker license for the consortium one in the consortium variant", () => {
+    expect(founderHighlights("consortium")).toEqual([
+      "Administrador de consorcios · Matrícula RPA N° 12221",
+      "Docente en UTN",
+      "+11 años de experiencia",
+    ]);
+    expect(founderHighlights("broker")).toEqual(FOUNDER.highlights);
   });
 });

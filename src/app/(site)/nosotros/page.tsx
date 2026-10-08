@@ -13,6 +13,7 @@ import {
   Target,
   type LucideIcon,
 } from "lucide-react";
+import FounderCredentials from "@/components/site/team/FounderCredentials/FounderCredentials";
 import TeamAvatar from "@/components/site/TeamAvatar/TeamAvatar";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
 import { INSTAGRAM_URL } from "@/lib/contact";
@@ -119,14 +120,10 @@ export default function AboutPage() {
               </span>
               <div className={styles.memberBody}>
                 <span className={styles.memberName}>{member.name}</span>
-                <span className={styles.memberRole}>{member.role}</span>
-                {member.license && <span className={styles.memberLicense}>{member.license}</span>}
-                {member.credentials.length > 0 && (
-                  <ul className={styles.memberCredentials}>
-                    {member.credentials.map((credential) => (
-                      <li key={credential}>{credential}</li>
-                    ))}
-                  </ul>
+                {member === FOUNDER ? (
+                  <FounderCredentials />
+                ) : (
+                  <span className={styles.memberRole}>{member.role}</span>
                 )}
                 <p className={styles.memberBio}>{member.bio}</p>
                 {member === FOUNDER && (
