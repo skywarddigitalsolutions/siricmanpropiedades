@@ -86,7 +86,8 @@ describe("appraisalServiceJsonLd", () => {
       "@context": "https://schema.org",
       "@type": "Service",
       serviceType: "Tasación de propiedades",
-      url: "https://siricman.com.ar/tasaciones",
+      name: "Tasación y venta de propiedades en CABA",
+      url: "https://siricman.com.ar/vender",
       areaServed: "Ciudad Autónoma de Buenos Aires",
       provider: { "@type": "RealEstateAgent", name: "Siricman Propiedades", url: SITE },
     });

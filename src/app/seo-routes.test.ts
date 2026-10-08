@@ -45,7 +45,7 @@ describe("sitemap", () => {
       "https://siricman.com.ar/propiedades",
       "https://siricman.com.ar/propiedades?operacion=venta",
       "https://siricman.com.ar/propiedades?operacion=alquiler",
-      "https://siricman.com.ar/tasaciones",
+      "https://siricman.com.ar/vender",
       "https://siricman.com.ar/administracion-de-consorcios",
       "https://siricman.com.ar/nosotros",
       "https://siricman.com.ar/contacto",

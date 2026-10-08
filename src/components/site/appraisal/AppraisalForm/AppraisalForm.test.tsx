@@ -146,7 +146,7 @@ describe("AppraisalForm", () => {
 
     const status = await screen.findByRole("status");
     expect(status).toHaveTextContent("Recibimos tu solicitud");
-    expect(status).toHaveTextContent("Te contactamos para coordinar la visita.");
+    expect(status).toHaveTextContent("Gabriel te contacta para coordinar la visita.");
     const sent = action.mock.calls[0][1];
     expect(sent.get("operation")).toBe("rent");
     expect(sent.get("propertyType")).toBe("ph");

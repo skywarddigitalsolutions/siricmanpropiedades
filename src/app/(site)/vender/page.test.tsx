@@ -8,6 +8,7 @@ vi.mock("./actions", () => ({ sendAppraisalAction: vi.fn() }));
 vi.mock("@/lib/api/public-catalog", () => ({ getPublicNeighborhoods }));
 
 import { ApiError } from "@/lib/api/client";
+import { WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE, buildWhatsAppLink } from "@/lib/whatsapp";
 import AppraisalPage, { metadata } from "./page";
 
 beforeEach(() => {
@@ -20,27 +21,33 @@ beforeEach(() => {
 afterEach(() => cleanup());
 
 describe("AppraisalPage", () => {
-  it("introduces the page and sums up what happens next in one line", async () => {
+  it("introduces the page for sellers", async () => {
     render(await AppraisalPage());
 
-    expect(screen.getByText("Vendé o alquilá con nosotros")).toBeInTheDocument();
+    expect(screen.getByText("Vendé tu propiedad", { selector: "span" })).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: "Tasamos tu propiedad y te acompañamos hasta la firma",
+        name: "Vendé tu propiedad con un corredor que te acompaña hasta la escritura",
       }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Te contactamos, visitamos la propiedad y te entregamos un informe con el valor sugerido y el plan para venderla o alquilarla.",
+        "Empezamos por una tasación profesional: visitamos tu propiedad, la comparamos con operaciones reales de la zona y te proponemos un plan de venta a medida.",
       ),
     ).toBeInTheDocument();
   });
 
-  it("has no step list: the home already explains the process", async () => {
+  it("explains the next steps in three steps near the form", async () => {
     render(await AppraisalPage());
 
-    expect(screen.queryByRole("list", { name: "Cómo funciona" })).toBeNull();
+    const steps = screen.getByRole("list", { name: "Cómo sigue" });
+    const items = within(steps).getAllByRole("listitem");
+    expect(items.map((item) => item.textContent)).toEqual([
+      "Te contactamosCoordinamos la visita y conocemos tu propiedad.",
+      "Recibís la tasaciónUn informe con el valor sugerido y sus fundamentos.",
+      "Definimos el planSi decidís avanzar, armamos juntos el plan de venta.",
+    ]);
   });
 
   it("puts the direct contact after the form on phones and in the side column on desktop", async () => {
@@ -59,17 +66,18 @@ describe("AppraisalPage", () => {
   it("answers the owner's common questions after the form, collapsed", async () => {
     render(await AppraisalPage());
 
-    const faq = screen.getByRole("region", { name: "Lo que suelen preguntarnos" });
+    const faq = screen.getByRole("region", { name: "Lo que preguntan los propietarios antes de vender" });
     expect(within(faq).getByText("Preguntas frecuentes")).toBeInTheDocument();
     const questions = within(faq).getAllByRole("group");
     expect(questions.map((question) => question.querySelector("summary")?.textContent)).toEqual([
       "¿Qué necesito tener a mano?",
-      "¿La tasación me obliga a vender o alquilar con ustedes?",
+      "¿La tasación me obliga a vender con ustedes?",
       "¿En qué se basa el valor sugerido?",
+      "¿Qué documentación necesito para vender?",
       "¿Tasan también para alquilar?",
     ]);
     expect(questions.every((question) => !question.hasAttribute("open"))).toBe(true);
-    expect(faq).toHaveTextContent("Te entregamos el informe y vos decidís si querés avanzar con nosotros.");
+    expect(faq).toHaveTextContent("No. Te entregamos el informe y vos decidís si avanzás con nosotros.");
     const form = screen.getByRole("heading", { name: "Pedí tu tasación" });
     expect(form.compareDocumentPosition(faq) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
@@ -83,7 +91,7 @@ describe("AppraisalPage", () => {
     expect(within(contact).queryByText("¿Preferís hablarlo?")).toBeNull();
     expect(within(contact).getByRole("link", { name: /WhatsApp/ })).toHaveAttribute(
       "href",
-      "https://wa.me/5491138967363?text=Hola%20Gabriel%2C%20te%20escribo%20desde%20la%20web.",
+      buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE),
     );
     expect(within(contact).getByRole("link", { name: /11 3896-7363/ })).toHaveAttribute(
       "href",
@@ -121,9 +129,11 @@ describe("AppraisalPage", () => {
   });
 
   it("sets the title, description, canonical and Open Graph", () => {
-    expect(metadata.title).toBe("Tasaciones");
-    expect(metadata.description).toEqual(expect.stringContaining("tasación"));
-    expect(metadata.alternates).toEqual({ canonical: "/tasaciones" });
-    expect(metadata.openGraph).toMatchObject({ type: "website", title: "Tasaciones", url: "/tasaciones" });
+    expect(metadata.title).toBe("Vendé tu propiedad");
+    expect(metadata.description).toBe(
+      "Vendé tu propiedad en CABA con Gabriel Siricman, corredor inmobiliario matriculado: tasación profesional, plan de venta, difusión y acompañamiento hasta la escritura.",
+    );
+    expect(metadata.alternates).toEqual({ canonical: "/vender" });
+    expect(metadata.openGraph).toMatchObject({ type: "website", title: "Vendé tu propiedad", url: "/vender" });
   });
 });

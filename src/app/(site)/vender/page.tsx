@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Clock, Minus, Phone, Plus } from "lucide-react";
 import AppraisalForm from "@/components/site/appraisal/AppraisalForm/AppraisalForm";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
@@ -7,7 +8,7 @@ import { getPublicNeighborhoods } from "@/lib/api/public-catalog";
 import { appraisalServiceJsonLd } from "@/lib/public/structured-data";
 import { getSiteUrl } from "@/lib/site-url";
 import { OFFICE_HOURS, PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
-import { WHATSAPP_DEFAULT_MESSAGE, WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
+import { WHATSAPP_SELLER_MESSAGE, WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
 import { sendAppraisalAction } from "./actions";
 import styles from "./page.module.css";
 
@@ -15,15 +16,23 @@ import styles from "./page.module.css";
 // barrio list; the list itself comes from the catalog's 1h data cache.
 export const dynamic = "force-dynamic";
 
+const TITLE = "Vendé tu propiedad";
 const DESCRIPTION =
-  "Pedí la tasación de tu propiedad en CABA: visitamos, comparamos con operaciones reales de la zona y te armamos un informe con el valor sugerido y un plan de difusión.";
+  "Vendé tu propiedad en CABA con Gabriel Siricman, corredor inmobiliario matriculado: tasación profesional, plan de venta, difusión y acompañamiento hasta la escritura.";
 
 export const metadata: Metadata = {
-  title: "Tasaciones",
+  title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: "/tasaciones" },
-  openGraph: { type: "website", title: "Tasaciones", description: DESCRIPTION, url: "/tasaciones" },
+  alternates: { canonical: "/vender" },
+  openGraph: { type: "website", title: TITLE, description: DESCRIPTION, url: "/vender" },
 };
+
+/** What happens after the request is sent. */
+const STEPS = [
+  { title: "Te contactamos", text: "Coordinamos la visita y conocemos tu propiedad." },
+  { title: "Recibís la tasación", text: "Un informe con el valor sugerido y sus fundamentos." },
+  { title: "Definimos el plan", text: "Si decidís avanzar, armamos juntos el plan de venta." },
+];
 
 /** Owner doubts answered after the form (copy confirmed by the agency). */
 const FAQ = [
@@ -33,8 +42,8 @@ const FAQ = [
       "Con la dirección y algunos datos básicos alcanza para empezar. Si tenés la escritura, los planos y los últimos recibos de expensas y ABL, nos ayudan a afinar el valor.",
   },
   {
-    question: "¿La tasación me obliga a vender o alquilar con ustedes?",
-    answer: "No. Te entregamos el informe y vos decidís si querés avanzar con nosotros.",
+    question: "¿La tasación me obliga a vender con ustedes?",
+    answer: "No. Te entregamos el informe y vos decidís si avanzás con nosotros.",
   },
   {
     question: "¿En qué se basa el valor sugerido?",
@@ -42,9 +51,19 @@ const FAQ = [
       "En la visita a la propiedad y en la comparación con operaciones reales de la zona: ubicación, metros, estado y comodidades del edificio.",
   },
   {
-    question: "¿Tasan también para alquilar?",
+    question: "¿Qué documentación necesito para vender?",
     answer:
-      "Sí. Elegí “Alquilar” en el formulario y te sugerimos un valor de alquiler según la zona y el estado de la propiedad.",
+      "Escritura, datos de los titulares, últimos impuestos y expensas pagos. Te ayudamos a reunir lo que falte.",
+  },
+  {
+    question: "¿Tasan también para alquilar?",
+    answer: (
+      <>
+        Sí. Elegí “Alquilar” en el formulario y te sugerimos un valor de alquiler según la zona y el
+        estado de la propiedad. Si preferís que nos ocupemos del alquiler, conocé la{" "}
+        <Link href="/administracion-de-alquileres">administración de alquileres</Link>.
+      </>
+    ),
   },
 ];
 
@@ -74,7 +93,7 @@ function ContactOptions({ placement }: { placement: "side" | "below" }) {
       <ul className={styles.contactList}>
         <li>
           <a
-            href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE)}
+            href={buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE)}
             target="_blank"
             rel="noopener noreferrer"
             className={styles.contactLink}
@@ -104,7 +123,7 @@ function ContactOptions({ placement }: { placement: "side" | "below" }) {
   );
 }
 
-/** `/tasaciones` — the request form, with what happens next and a direct contact. */
+/** `/vender` — the seller landing: request form, what happens next and a direct contact. */
 export default async function AppraisalPage() {
   const neighborhoods = await loadNeighborhoodNames();
 
@@ -117,11 +136,11 @@ export default async function AppraisalPage() {
           {/* Desktop: sticky side column (intro + contact). Phones: it dissolves into the flow. */}
           <div className={styles.side} data-side-column>
             <div className={styles.intro}>
-              <span className={styles.eyebrow}>Vendé o alquilá con nosotros</span>
-              <h1 className={styles.title}>Tasamos tu propiedad y te acompañamos hasta la firma</h1>
+              <span className={styles.eyebrow}>Vendé tu propiedad</span>
+              <h1 className={styles.title}>Vendé tu propiedad con un corredor que te acompaña hasta la escritura</h1>
               <p className={styles.lead}>
-                Te contactamos, visitamos la propiedad y te entregamos un informe con el valor
-                sugerido y el plan para venderla o alquilarla.
+                Empezamos por una tasación profesional: visitamos tu propiedad, la comparamos con
+                operaciones reales de la zona y te proponemos un plan de venta a medida.
               </p>
             </div>
             <ContactOptions placement="side" />
@@ -131,13 +150,22 @@ export default async function AppraisalPage() {
             <AppraisalForm action={sendAppraisalAction} neighborhoods={neighborhoods} />
           </div>
 
+          <ol aria-label="Cómo sigue" className={styles.steps}>
+            {STEPS.map(({ title, text }) => (
+              <li key={title} className={styles.step}>
+                <strong className={styles.stepTitle}>{title}</strong>
+                <span className={styles.stepText}>{text}</span>
+              </li>
+            ))}
+          </ol>
+
           <ContactOptions placement="below" />
         </div>
 
         <section aria-labelledby="appraisal-faq" className={styles.faq}>
           <span className={styles.eyebrow}>Preguntas frecuentes</span>
           <h2 id="appraisal-faq" className={styles.faqTitle}>
-            Lo que suelen preguntarnos
+            Lo que preguntan los propietarios antes de vender
           </h2>
           <div className={styles.faqList}>
             {FAQ.map(({ question, answer }) => (

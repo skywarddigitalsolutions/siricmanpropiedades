@@ -91,7 +91,7 @@ export default function AppraisalForm({ action, neighborhoods }: AppraisalFormPr
 
   if (state.status === "sent") {
     return (
-      <FormSuccess title="Recibimos tu solicitud" text="Te contactamos para coordinar la visita." />
+      <FormSuccess title="Recibimos tu solicitud" text="Gabriel te contacta para coordinar la visita." />
     );
   }
 
