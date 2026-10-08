@@ -1,0 +1,14 @@
+/* Fills its frame (the page's avatar box) with the brand colours. */
+.initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-h2);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-gold);
+  background: var(--color-navy);
+}

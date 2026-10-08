@@ -28,7 +28,9 @@ describe("ConsortiumPage", () => {
     const link = screen.getByRole("link", { name: /WhatsApp/ });
     const href = new URL(link.getAttribute("href")!);
     expect(href.pathname).toBe(`/${WHATSAPP_PHONE}`);
-    expect(href.searchParams.get("text")).toMatch(/administración de consorcios/i);
+    expect(href.searchParams.get("text")).toBe(
+      "Hola, quiero consultar por la administración de consorcios de mi edificio.",
+    );
   });
 
   it("lists what the administration includes", () => {
@@ -44,10 +46,19 @@ describe("ConsortiumPage", () => {
     expect(within(section).getByText(/Ley 941/)).toBeInTheDocument();
   });
 
-  it("shows who runs the administration: Gabriel's photo, role and license", () => {
+  it("shows who runs the administration: Ana María first, then Gabriel", () => {
     render(<ConsortiumPage />);
 
     const who = screen.getByRole("region", { name: "Quién te administra" });
+    expect(within(who).getByRole("img", { name: "Ana María Fierro Pedrayes" })).toHaveTextContent("AF");
+    expect(
+      within(who).getByText("Administración de consorcios · 15 años de trayectoria"),
+    ).toBeInTheDocument();
+    expect(
+      within(who).getByText("Ana María Fierro Pedrayes").compareDocumentPosition(
+        within(who).getByText("Gabriel Siricman"),
+      ) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(within(who).getByRole("img", { name: "Gabriel Siricman" })).toBeInTheDocument();
     expect(within(who).getByText("Gabriel Siricman")).toBeInTheDocument();
     expect(within(who).getByText(/Martillero Público y Corredor Inmobiliario/)).toBeInTheDocument();
@@ -56,7 +67,7 @@ describe("ConsortiumPage", () => {
     expect(
       within(who).getByText("Administrador de consorcios · Matrícula RPA N° 12221"),
     ).toBeInTheDocument();
-    expect(within(who).getByRole("link", { name: /Escribile a Gabriel/ })).toHaveAttribute(
+    expect(within(who).getByRole("link", { name: /Escribinos/ })).toHaveAttribute(
       "href",
       expect.stringContaining("wa.me"),
     );
@@ -80,11 +91,13 @@ describe("ConsortiumPage", () => {
     render(<ConsortiumPage />);
 
     const card = screen.getByRole("complementary", { name: "Datos de la administración" });
-    expect(within(card).getByText("+11")).toBeInTheDocument();
-    expect(within(card).getByText("años administrando edificios en CABA")).toBeInTheDocument();
+    expect(within(card).getByText("15")).toBeInTheDocument();
+    expect(
+      within(card).getByText("años de trayectoria de Ana María en administración de consorcios"),
+    ).toBeInTheDocument();
     const items = within(card).getAllByRole("listitem");
     expect(items.map((item) => item.textContent)).toEqual([
-      "Trato directo con Gabriel Siricman",
+      "Trato directo con Ana María Fierro Pedrayes y Gabriel Siricman",
       "Cuentas claras para cada propietario",
       "Atención por WhatsApp y teléfono",
     ]);
@@ -105,7 +118,12 @@ describe("ConsortiumPage", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "Por qué elegirnos" })).toBeNull();
-    expect(screen.getAllByText(/11 años|\+11/)).toHaveLength(1);
+    expect(screen.queryByText(/11 años|\+11/)).toBeNull();
+    expect(
+      screen.getByText(
+        "Dejanos los datos básicos y nos comunicamos con vos para conocer el consorcio y cotizar la administración.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("answers the frequent questions with native disclosures, as on /tasaciones", () => {
@@ -129,6 +147,10 @@ describe("ConsortiumPage", () => {
   it("sets the title, description and canonical", () => {
     expect(metadata.title).toBe("Administración de consorcios");
     expect(metadata.description).toEqual(expect.stringContaining("consorcios"));
+    expect(metadata.description).toContain(
+      "a cargo de Ana María Fierro Pedrayes, con 15 años de trayectoria",
+    );
+    expect(metadata.description).not.toContain("11 años");
     expect(metadata.alternates).toEqual({ canonical: "/administracion-de-consorcios" });
   });
 });

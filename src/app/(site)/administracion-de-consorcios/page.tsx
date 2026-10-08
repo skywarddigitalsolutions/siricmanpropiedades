@@ -9,9 +9,9 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
-import Image from "next/image";
 import { CONSORTIUM_LICENSE } from "@/lib/contact";
-import { FOUNDER } from "@/lib/public/team";
+import { CONSORTIUM_ADMIN, FOUNDER } from "@/lib/public/team";
+import TeamAvatar from "@/components/site/TeamAvatar/TeamAvatar";
 import ConsortiumForm from "@/components/site/consortium/ConsortiumForm/ConsortiumForm";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
 import { WHATSAPP_PHONE, buildWhatsAppLink } from "@/lib/whatsapp";
@@ -19,7 +19,7 @@ import { sendConsortiumAction } from "./actions";
 import styles from "./page.module.css";
 
 const DESCRIPTION =
-  "Administración de consorcios en CABA con más de 11 años de experiencia: liquidación de expensas, cobranza, proveedores, mantenimiento, asambleas y atención a propietarios. Pedí una propuesta.";
+  "Administración de consorcios en CABA a cargo de Ana María Fierro Pedrayes, con 15 años de trayectoria: liquidación de expensas, cobranza, proveedores, mantenimiento, asambleas y atención a propietarios. Pedí una propuesta.";
 
 export const metadata: Metadata = {
   title: "Administración de consorcios",
@@ -33,11 +33,10 @@ export const metadata: Metadata = {
   },
 };
 
-const WHATSAPP_MESSAGE =
-  "Hola Gabriel, quiero consultar por la administración de consorcios de mi edificio.";
+const WHATSAPP_MESSAGE = "Hola, quiero consultar por la administración de consorcios de mi edificio.";
 
 const HIGHLIGHTS = [
-  "Trato directo con Gabriel Siricman",
+  "Trato directo con Ana María Fierro Pedrayes y Gabriel Siricman",
   "Cuentas claras para cada propietario",
   "Atención por WhatsApp y teléfono",
 ];
@@ -137,8 +136,10 @@ export default function ConsortiumPage() {
 
           <aside aria-label="Datos de la administración" className={styles.panel}>
             <p className={styles.stat}>
-              <span className={styles.statNumber}>+11</span>
-              <span className={styles.statLabel}>años administrando edificios en CABA</span>
+              <span className={styles.statNumber}>15</span>
+              <span className={styles.statLabel}>
+                años de trayectoria de Ana María en administración de consorcios
+              </span>
             </p>
             <ul className={styles.highlights}>
               {HIGHLIGHTS.map((item) => (
@@ -182,23 +183,32 @@ export default function ConsortiumPage() {
       </div>
 
       <div className={styles.band}>
-        <section aria-label="Quién te administra" className={styles.inner}>
+        <section aria-label="Quién te administra" className={`${styles.inner} ${styles.whoList}`}>
           <div className={styles.who}>
             <span className={styles.whoPhoto}>
-              <Image
-                src={FOUNDER.photo}
-                alt={FOUNDER.name}
-                width={200}
-                height={200}
+              <TeamAvatar
+                member={CONSORTIUM_ADMIN}
                 sizes="(min-width: 960px) 160px, 112px"
-                className={styles.whoImage}
+                imageClassName={styles.whoImage}
               />
             </span>
             <div className={styles.whoBody}>
               <span className={styles.eyebrow}>Quién te administra</span>
-              <h2 className={styles.whoName}>
-                {FOUNDER.name}
-              </h2>
+              <h2 className={styles.whoName}>{CONSORTIUM_ADMIN.name}</h2>
+              <p className={styles.whoRpa}>Administración de consorcios · 15 años de trayectoria</p>
+              <p className={styles.whoText}>{CONSORTIUM_ADMIN.bio}</p>
+            </div>
+          </div>
+          <div className={styles.who}>
+            <span className={styles.whoPhoto}>
+              <TeamAvatar
+                member={FOUNDER}
+                sizes="(min-width: 960px) 160px, 112px"
+                imageClassName={styles.whoImage}
+              />
+            </span>
+            <div className={styles.whoBody}>
+              <h2 className={styles.whoName}>{FOUNDER.name}</h2>
               <p className={styles.whoRpa}>Administrador de consorcios · {CONSORTIUM_LICENSE}</p>
               <p className={styles.whoRole}>
                 {FOUNDER.role} · <span className={styles.whoLicense}>{FOUNDER.license}</span>
@@ -213,7 +223,7 @@ export default function ConsortiumPage() {
                 className={styles.whoLink}
               >
                 <WhatsAppIcon size={18} />
-                Escribile a Gabriel
+                Escribinos
               </a>
             </div>
           </div>
@@ -280,8 +290,8 @@ export default function ConsortiumPage() {
                 Contanos de tu edificio y armamos tu propuesta
               </h2>
               <p className={styles.proposalLead}>
-                Dejanos los datos básicos y Gabriel se comunica con vos para conocer el consorcio y
-                cotizar la administración.
+                Dejanos los datos básicos y nos comunicamos con vos para conocer el consorcio y cotizar
+                la administración.
               </p>
             </div>
             <div className={styles.card}>
