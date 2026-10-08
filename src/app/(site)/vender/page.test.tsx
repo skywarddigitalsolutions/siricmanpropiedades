@@ -101,7 +101,7 @@ describe("AppraisalPage", () => {
   });
 
   it.each(["side", "below"])(
-    "hints that the WhatsApp row opens a ready message, without a separate block (%s copy)",
+    "opens a ready seller message from a plain WhatsApp row, with no hint or extra block (%s copy)",
     async (placement) => {
       render(await AppraisalPage());
 
@@ -110,9 +110,7 @@ describe("AppraisalPage", () => {
         .find((candidate) => candidate.dataset.placement === placement)!;
       const row = within(contact).getByRole("link", { name: /Escribinos por WhatsApp/ });
       expect(row).toHaveAttribute("href", buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE));
-      expect(row).toHaveTextContent(
-        "Con un mensaje listo para completar con los datos de tu propiedad.",
-      );
+      expect(row).toHaveTextContent(/^Escribinos por WhatsApp$/);
       expect(within(contact).queryByText("¿Preferís WhatsApp?")).toBeNull();
       expect(within(contact).queryByRole("link", { name: "Completar por WhatsApp" })).toBeNull();
       expect(within(contact).queryByRole("list", { name: "Qué enviar" })).toBeNull();

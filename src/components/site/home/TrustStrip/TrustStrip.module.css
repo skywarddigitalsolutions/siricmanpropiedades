@@ -5,7 +5,7 @@
  * row with the icon beside the text.
  */
 .strip {
-  padding: var(--space-8) var(--page-gutter) 0;
+  padding: var(--space-12) var(--page-gutter) 0;
   background: var(--color-surface);
 }
 

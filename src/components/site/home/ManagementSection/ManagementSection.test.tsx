@@ -40,7 +40,7 @@ describe("ManagementSection", () => {
 
     const section = screen.getByRole("region", { name: TITLE });
     expect(
-      within(section).getByRole("link", { name: "Conocé la administración de alquileres" }),
+      within(section).getByRole("link", { name: "Conocé el servicio" }),
     ).toHaveAttribute("href", "/administracion-de-alquileres");
     expect(within(section).getAllByRole("link")).toHaveLength(1);
   });

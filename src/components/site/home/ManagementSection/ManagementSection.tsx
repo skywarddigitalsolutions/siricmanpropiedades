@@ -12,7 +12,7 @@ const BENEFITS = [
   "Ajustes de contrato y renovaciones",
   "Mantenimiento y relación con el inquilino",
 ] as const;
-const LINK_LABEL = "Conocé la administración de alquileres";
+const LINK_LABEL = "Conocé el servicio";
 const LINK_HREF = "/administracion-de-alquileres";
 
 const TITLE_ID = "management-title";
