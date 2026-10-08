@@ -23,6 +23,7 @@ type NavItem = {
 const WHATSAPP_HREF = buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE);
 
 const NAV_ITEMS: NavItem[] = [
+  { label: "Inicio", href: "/", path: "/" },
   { label: "Comprar", href: "/propiedades?operacion=venta", path: "/propiedades", operation: "venta" },
   {
     label: "Alquilar",
@@ -30,7 +31,6 @@ const NAV_ITEMS: NavItem[] = [
     path: "/propiedades",
     operation: "alquiler",
   },
-  { label: "Tasaciones", href: "/tasaciones", path: "/tasaciones" },
   {
     label: "Consorcios",
     href: "/administracion-de-consorcios",

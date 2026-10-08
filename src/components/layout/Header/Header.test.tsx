@@ -29,6 +29,10 @@ describe("Header", () => {
   it("renders the desktop navigation links with the correct hrefs", () => {
     render(<Header />);
 
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute(
+      "href",
+      "/",
+    );
     expect(screen.getByRole("link", { name: "Comprar" })).toHaveAttribute(
       "href",
       "/propiedades?operacion=venta",
@@ -36,10 +40,6 @@ describe("Header", () => {
     expect(screen.getByRole("link", { name: "Alquilar" })).toHaveAttribute(
       "href",
       "/propiedades?operacion=alquiler",
-    );
-    expect(screen.getByRole("link", { name: "Tasaciones" })).toHaveAttribute(
-      "href",
-      "/tasaciones",
     );
     expect(screen.getByRole("link", { name: "Consorcios" })).toHaveAttribute(
       "href",
@@ -102,9 +102,9 @@ describe("Header actions", () => {
       .map((link) => link.textContent?.trim());
     expect(names).toEqual([
       expect.stringContaining("SIRICMAN"),
+      "Inicio",
       "Comprar",
       "Alquilar",
-      "Tasaciones",
       "Consorcios",
       "Nosotros",
       "Contacto",
@@ -116,11 +116,11 @@ describe("Header actions", () => {
 
 describe("Header accessibility", () => {
   it("marks the current section with aria-current in the desktop nav", () => {
-    nav.pathname = "/tasaciones";
+    nav.pathname = "/";
     nav.search = new URLSearchParams();
     render(<Header />);
 
-    expect(screen.getByRole("link", { name: "Tasaciones" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("link", { name: "Contacto" })).not.toHaveAttribute("aria-current");
   });
 
@@ -203,9 +203,9 @@ describe("Header mobile menu content", () => {
       .map((link) => link.textContent?.trim());
     expect(names).toEqual([
       expect.stringContaining("SIRICMAN"),
+      "Inicio",
       "Comprar",
       "Alquilar",
-      "Tasaciones",
       "Consorcios",
       "Nosotros",
       "Contacto",
