@@ -31,6 +31,7 @@ describe("ContactForm", () => {
       "Quiero comprar",
       "Quiero alquilar",
       "Quiero vender o tasar",
+      "Administración de alquileres",
       "Administración de consorcios",
       "Otro",
     ]);
@@ -45,7 +46,7 @@ describe("ContactForm", () => {
 
     await user.type(screen.getByLabelText("Nombre y apellido"), "Ana García");
     await user.type(screen.getByLabelText("Teléfono o email"), "11 3896-7363");
-    await pick(user, screen.getByLabelText("Motivo de consulta"), /alquil/i);
+    await pick(user, screen.getByLabelText("Motivo de consulta"), "Quiero alquilar");
     await user.click(screen.getByRole("button", { name: "Enviar" }));
 
     const status = await screen.findByRole("status");

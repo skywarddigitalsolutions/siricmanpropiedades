@@ -3,7 +3,7 @@ import { buildWhatsAppLink } from "@/lib/whatsapp";
 /** Lead enums as the API defines them (client-safe). */
 export const LEAD_TYPES = ["property_inquiry", "appraisal", "contact"] as const;
 export const LEAD_STATUSES = ["new", "contacted", "closed"] as const;
-export const LEAD_TOPICS = ["buy", "rent", "sell", "consortium", "other"] as const;
+export const LEAD_TOPICS = ["buy", "rent", "sell", "rental_management", "consortium", "other"] as const;
 
 export type LeadType = (typeof LEAD_TYPES)[number];
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
@@ -25,6 +25,7 @@ export const LEAD_TOPIC_LABELS: Record<LeadTopic, string> = {
   buy: "Quiere comprar",
   rent: "Quiere alquilar",
   sell: "Quiere vender o tasar",
+  rental_management: "Administración de alquileres",
   consortium: "Administración de consorcios",
   other: "Otro",
 };

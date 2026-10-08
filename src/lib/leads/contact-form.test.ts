@@ -8,6 +8,12 @@ function form(fields: Record<string, string>): FormData {
 }
 
 describe("parseContactForm", () => {
+  it("accepts the rental management topic", () => {
+    expect(
+      parseContactForm(form({ name: "Ana", contact: "ana@correo.com", topic: "rental_management" })),
+    ).toEqual({ input: { name: "Ana", email: "ana@correo.com", topic: "rental_management" } });
+  });
+
   it("sends a phone when the contact field has no @", () => {
     expect(
       parseContactForm(
