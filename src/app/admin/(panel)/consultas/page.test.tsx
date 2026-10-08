@@ -84,6 +84,32 @@ describe("LeadsInboxPage", () => {
     expect(screen.getByText("Pedido de tasación")).toBeInTheDocument();
   });
 
+  it.each([
+    [{ type: "appraisal", topic: "sell" }, "Pedido de tasación · Quiere vender o tasar"],
+    [{ type: "appraisal", topic: "rent" }, "Pedido de tasación · Quiere alquilar"],
+    [{ type: "contact", topic: "rental_management" }, "Contacto · Administración de alquileres"],
+  ] as const)("summarizes %j as %s", async (overrides, summary) => {
+    listLeads.mockResolvedValue({
+      items: [makeLead({ ...overrides, property: null })],
+      total: 1,
+      counts: COUNTS,
+    });
+
+    render(await LeadsInboxPage(query()));
+
+    expect(screen.getByText(summary)).toBeInTheDocument();
+  });
+
+  it("offers an appraisals chip in the type filter", async () => {
+    render(await LeadsInboxPage(query()));
+
+    const types = screen.getByRole("navigation", { name: "Tipo" });
+    expect(within(types).getByRole("link", { name: "Tasaciones" })).toHaveAttribute(
+      "href",
+      "/admin/consultas?tipo=tasacion",
+    );
+  });
+
   it("offers WhatsApp and one-tap contacted on new leads with a phone", async () => {
     render(await LeadsInboxPage(query()));
 

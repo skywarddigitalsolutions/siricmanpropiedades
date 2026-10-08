@@ -9,6 +9,16 @@ export function buildWhatsAppLink(phone: string, message: string): string {
 
 export const WHATSAPP_PHONE = "5491138967363";
 export const WHATSAPP_DEFAULT_MESSAGE = "Hola Gabriel, te escribo desde la web.";
-/** Prefilled message for owners who want to sell (home hero and closing call). */
-export const WHATSAPP_SELLER_MESSAGE =
-  "Hola Gabriel, quiero vender mi propiedad y me gustaría asesorarme.";
+/**
+ * Prefilled template for owners who want to sell or get an appraisal (home
+ * hero, closing call and /vender): the user completes the details and sends it.
+ */
+export const WHATSAPP_SELLER_MESSAGE = [
+  "Hola Gabriel, quiero vender mi propiedad y me gustaría pedir una tasación. Te paso los datos:",
+  "- Tipo de propiedad (departamento, casa, PH, etc.):",
+  "- Dirección y barrio:",
+  "- Ambientes:",
+  "- Superficie aproximada (m²):",
+  "- Estado y extras (balcón, cochera, amenities):",
+  "- Mi nombre:",
+].join("\n");

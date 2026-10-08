@@ -194,6 +194,30 @@ describe("LeadDetailPage", () => {
     expect(screen.getByText("70 m²")).toBeInTheDocument();
   });
 
+  it.each([
+    ["appraisal", "sell", "Quiere vender o tasar"],
+    ["appraisal", "rent", "Quiere alquilar"],
+    ["contact", "rental_management", "Administración de alquileres"],
+  ] as const)("shows the %s lead's operation (%s) as %s", async (type, topic, label) => {
+    getLead.mockResolvedValue(
+      makeLead({
+        type,
+        topic,
+        property: null,
+        details: { propertyType: "house", address: "Gorriti 4800", neighborhood: "Palermo", rooms: 4, area: 120 },
+      }),
+    );
+
+    render(await LeadDetailPage(params()));
+
+    const message = screen.getByRole("region", { name: "Mensaje" });
+    expect(within(message).getByText(label)).toBeInTheDocument();
+    for (const row of ["Tipo", "Dirección", "Barrio", "Ambientes", "Superficie aprox."]) {
+      expect(within(message).getByText(row)).toBeInTheDocument();
+    }
+    expect(within(message).getByText("120 m²")).toBeInTheDocument();
+  });
+
   it("offers delete only to admins", async () => {
     render(await LeadDetailPage(params()));
     expect(screen.queryByText("Eliminar consulta")).toBeNull();

@@ -44,7 +44,7 @@ describe("Home page", () => {
       "href",
       "/vender",
     );
-    expect(within(hero).getByRole("link", { name: "Hablar por WhatsApp" })).toHaveAttribute(
+    expect(within(hero).getByRole("link", { name: /escribinos por WhatsApp/i })).toHaveAttribute(
       "href",
       buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE),
     );

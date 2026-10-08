@@ -89,7 +89,7 @@ describe("AppraisalPage", () => {
       .getAllByRole("complementary", { name: "Contacto directo" })
       .find((candidate) => candidate.dataset.placement === placement)!;
     expect(within(contact).queryByText("¿Preferís hablarlo?")).toBeNull();
-    expect(within(contact).getByRole("link", { name: /WhatsApp/ })).toHaveAttribute(
+    expect(within(contact).getByRole("link", { name: /Escribinos por WhatsApp/ })).toHaveAttribute(
       "href",
       buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE),
     );
@@ -99,6 +99,25 @@ describe("AppraisalPage", () => {
     );
     expect(contact).toHaveTextContent("10:30 a 18:00 · con cita previa");
   });
+
+  it.each(["side", "below"])(
+    "hints that the WhatsApp row opens a ready message, without a separate block (%s copy)",
+    async (placement) => {
+      render(await AppraisalPage());
+
+      const contact = screen
+        .getAllByRole("complementary", { name: "Contacto directo" })
+        .find((candidate) => candidate.dataset.placement === placement)!;
+      const row = within(contact).getByRole("link", { name: /Escribinos por WhatsApp/ });
+      expect(row).toHaveAttribute("href", buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE));
+      expect(row).toHaveTextContent(
+        "Con un mensaje listo para completar con los datos de tu propiedad.",
+      );
+      expect(within(contact).queryByText("¿Preferís WhatsApp?")).toBeNull();
+      expect(within(contact).queryByRole("link", { name: "Completar por WhatsApp" })).toBeNull();
+      expect(within(contact).queryByRole("list", { name: "Qué enviar" })).toBeNull();
+    },
+  );
 
   it("offers the appraisal form", async () => {
     render(await AppraisalPage());

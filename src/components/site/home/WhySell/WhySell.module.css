@@ -2,11 +2,11 @@
  * Why sell with us. Muted background to alternate with the white sections
  * around it.
  *
- * Mobile-first: intro, four reason cards stacked, then the broker card (photo,
- * name, role, license and a text link).
+ * Mobile-first: intro, four reason cards stacked, then Gabriel's unboxed
+ * signature row (round photo, name, role, license and a text link).
  *
- * From 640px the reasons form a 2x2 grid. From 960px the reasons sit on the
- * left and the broker card in a fixed column on the right.
+ * From 640px the reasons form a 2x2 grid. From 960px they take the full width
+ * (4 columns) and the signature sits below, left-aligned, over a hairline.
  */
 .section {
   padding: var(--section-gap) var(--page-gutter);
@@ -95,27 +95,27 @@
   color: var(--color-text-muted);
 }
 
-/* Broker card: photo on the left, signature beside it, link below. */
+/* Signature row: no border, background, radius or shadow; just a round photo
+   beside the text. */
 .person {
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr);
+  grid-template-columns: 64px minmax(0, 1fr);
+  column-gap: var(--space-4);
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-6);
-  border: 1px solid var(--color-gold);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
 }
 
-/* Thin gold border as the only accent; rounded square, never a circle. */
+/* Thin gold ring. */
 .photo {
   display: block;
-  width: 96px;
+  grid-row: span 2;
+  width: 64px;
   height: auto;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border: 1px solid var(--color-gold);
-  border-radius: var(--radius-md);
+  border-radius: 50%;
 }
 
 .signature {
@@ -127,7 +127,7 @@
 
 .name {
   font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   line-height: var(--leading-snug);
   color: var(--color-navy);
 }
@@ -141,7 +141,10 @@
 
 /* Text link with an arrow: deliberately not a pill. */
 .link {
-  grid-column: 1 / -1;
+  grid-column: 2;
+  justify-self: start;
+  margin-top: var(--space-2);
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -194,37 +197,20 @@
 }
 
 @media (min-width: 960px) {
-  .inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 340px;
-    grid-template-areas:
-      "intro intro"
-      "reasons person";
-    column-gap: var(--space-8);
-    row-gap: var(--space-12);
-    align-items: start;
-  }
-
-  .intro {
-    grid-area: intro;
-  }
-
   .title {
     max-width: 24ch;
   }
 
   .reasons {
-    grid-area: reasons;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .person {
-    grid-area: person;
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: start;
-    gap: var(--space-4);
+    grid-template-columns: 72px minmax(0, 1fr);
+    padding-top: var(--space-8);
   }
 
   .photo {
-    width: 160px;
+    width: 72px;
   }
 }

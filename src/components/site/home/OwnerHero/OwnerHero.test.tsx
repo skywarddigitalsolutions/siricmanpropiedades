@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, isInaccessible, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE, buildWhatsAppLink } from "@/lib/whatsapp";
 import OwnerHero from "./OwnerHero";
 
@@ -9,7 +9,18 @@ const TITLE = "Vendé tu propiedad con alguien que la cuide como propia.";
 const SUBTITLE =
   "Tasación profesional, un plan de venta a medida y acompañamiento hasta la escritura. Te atiende Gabriel Siricman, corredor inmobiliario matriculado.";
 
+const SHORT_SUBTITLE = "Tasación, plan de venta y acompañamiento hasta la escritura.";
+
 describe("OwnerHero", () => {
+  it("offers a short subtitle for phones next to the full one", () => {
+    render(<OwnerHero />);
+
+    // CSS shows one per breakpoint; both live inside the same paragraph.
+    const short = screen.getByText(SHORT_SUBTITLE);
+    expect(short.parentElement).toBe(screen.getByText(SUBTITLE).parentElement);
+    expect(short.parentElement!.tagName).toBe("P");
+  });
+
   it("is a section named by its seller-focused heading", () => {
     render(<OwnerHero />);
 
@@ -43,16 +54,13 @@ describe("OwnerHero", () => {
   it("offers WhatsApp as the secondary call to action with the seller message", () => {
     render(<OwnerHero />);
 
-    const whatsapp = screen.getByRole("link", { name: "Hablar por WhatsApp" });
+    const whatsapp = screen.getByRole("link", { name: /escribinos por WhatsApp/i });
     expect(whatsapp).toHaveAttribute(
       "href",
       buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_SELLER_MESSAGE),
     );
     expect(whatsapp).toHaveAttribute("target", "_blank");
     expect(whatsapp).toHaveAttribute("rel", "noopener noreferrer");
-    expect(WHATSAPP_SELLER_MESSAGE).toBe(
-      "Hola Gabriel, quiero vender mi propiedad y me gustaría asesorarme.",
-    );
   });
 
   it("no longer sends owners to the listings", () => {
@@ -61,21 +69,31 @@ describe("OwnerHero", () => {
     expect(screen.queryByRole("link", { name: "Ver propiedades" })).not.toBeInTheDocument();
     expect(screen.getAllByRole("link").map((link) => link.textContent)).toEqual([
       "Quiero vender mi propiedad",
-      "Hablar por WhatsApp",
+      "o escribinos por WhatsApp",
     ]);
   });
 
-  it("shows the owner photo as a decorative backdrop", () => {
+  it("shows the aerial city photo as a decorative backdrop", () => {
     const { container } = render(<OwnerHero />);
 
     const photo = container.querySelector('img[alt=""]');
     expect(photo).not.toBeNull();
-    expect(decodeURIComponent(photo!.getAttribute("src")!)).toContain("/hero-owner.jpg");
+    expect(decodeURIComponent(photo!.getAttribute("src")!)).toContain("/hero.jpg");
     // Decorative: no accessible image is exposed to assistive tech.
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 
-  it("keeps the copy and both calls to action together in the hero card", () => {
+  it("puts the copy straight on the photo, with a navy overlay and no card", () => {
+    const { container } = render(<OwnerHero />);
+
+    const heading = screen.getByRole("heading", { level: 1 });
+    expect(container.querySelector('[class*="card"]')).toBeNull();
+    expect(container.querySelector('[class*="overlay"]')).not.toBeNull();
+    expect(container.querySelector('img[src*="hero-owner"]')).toBeNull();
+    expect(heading.parentElement!.querySelector("img")).toBeNull();
+  });
+
+  it("keeps the copy and both calls to action together in one content block", () => {
     render(<OwnerHero />);
 
     const section = screen.getByRole("region", { name: TITLE });
@@ -86,21 +104,12 @@ describe("OwnerHero", () => {
       screen.getByText("PROPIETARIOS · CABA"),
       screen.getByText(SUBTITLE),
       screen.getByRole("link", { name: "Quiero vender mi propiedad" }),
-      screen.getByRole("link", { name: "Hablar por WhatsApp" }),
+      screen.getByRole("link", { name: /escribinos por WhatsApp/i }),
     ]) {
       expect(card).toContainElement(element);
     }
     // The photo sits behind the card, not inside it.
     expect(card.querySelector("img")).toBeNull();
-  });
-
-  it("shows a location pill that assistive tech does not announce twice", () => {
-    render(<OwnerHero />);
-
-    const office = screen.getByText("Oficina en Boedo · CABA");
-    // The footer and contact page already give the office address.
-    expect(isInaccessible(office)).toBe(true);
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 
   it("no longer shows the agency branding chip over the photo", () => {

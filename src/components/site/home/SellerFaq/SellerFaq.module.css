@@ -4,7 +4,7 @@
  * appraisal page FAQ). Questions are centered in a readable column from 960px.
  */
 .section {
-  padding: var(--section-gap) var(--page-gutter) 0;
+  padding: var(--section-gap) var(--page-gutter);
   background: var(--color-surface);
 }
 
