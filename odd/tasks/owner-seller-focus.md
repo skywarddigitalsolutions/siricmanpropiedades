@@ -45,7 +45,7 @@
 | ID | Task | Repo | Route | Status | Commit |
 |----|------|------|-------|--------|--------|
 | B1 | Lead topic `rental_management` (enum + migration + tests) | back | delegated | ⬜ | |
-| T1 | Header: larger bar/logo/text, seller-first nav, CTA | front | delegated | ⬜ | |
+| T1 | Header: larger bar/logo/text, seller-first nav, CTA | front | delegated | ✅ | |
 | T2 | Home rewrite for sellers (sections + copy) + root SEO | front | delegated | ⬜ | |
 | T3 | `/vender` landing (move `/tasaciones`, redirect, copy, FAQ) | front | delegated | ⬜ | |
 | T4 | `/administracion-de-alquileres` page + form + topic labels | front | delegated | ⬜ | |

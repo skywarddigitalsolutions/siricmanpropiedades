@@ -61,11 +61,11 @@ describe("AboutPage", () => {
     expect(within(team).getByText("Gabriel Siricman")).toBeInTheDocument();
     expect(within(team).getByText("Martillero Público y Corredor Inmobiliario")).toBeInTheDocument();
     expect(within(team).getByText("Matrícula N° 10024")).toBeInTheDocument();
-    // Data from the client: consortium administrator registration and UBA teaching.
+    // Data from the client: consortium administrator registration and UTN teaching.
     expect(
       within(team).getByText("Administrador de consorcios · Matrícula RPA N° 12221"),
     ).toBeInTheDocument();
-    expect(within(team).getByText("Docente en la UBA")).toBeInTheDocument();
+    expect(within(team).getByText("Docente en UTN")).toBeInTheDocument();
     const photo = within(team).getByRole("img", { name: "Gabriel Siricman" });
     expect(decodeURIComponent(photo.getAttribute("src")!)).toContain("/team/gabriel.jpg");
     expect(within(team).queryByText("GS")).not.toBeInTheDocument();

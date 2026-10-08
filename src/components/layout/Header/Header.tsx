@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useRef, useState, type FocusEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FocusEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Menu, Phone, X } from "lucide-react";
 import WhatsAppIcon from "@/components/site/WhatsAppIcon/WhatsAppIcon";
 import { PHONE_HREF } from "@/lib/contact";
@@ -14,45 +14,48 @@ import { useHideOnScroll } from "./useHideOnScroll";
 type NavItem = {
   label: string;
   href: string;
-  /** Path that makes the item current. */
-  path: string;
-  /** For search pages: the `operacion` value that makes the item current. */
-  operation?: string;
+  /** Paths that make the item current. */
+  paths: string[];
+  /** Fuller label shown in the mobile menu, where there is room. */
+  mobileLabel?: string;
+  /** Tooltip with the full name when the visible label is shortened. */
+  title?: string;
 };
 
 const WHATSAPP_HREF = buildWhatsAppLink(WHATSAPP_PHONE, WHATSAPP_DEFAULT_MESSAGE);
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Inicio", href: "/", path: "/" },
-  { label: "Comprar", href: "/propiedades?operacion=venta", path: "/propiedades", operation: "venta" },
+  { label: "Inicio", href: "/", paths: ["/"] },
+  // /tasaciones is the legacy URL of the selling page and redirects to /vender.
+  { label: "Vender", href: "/vender", paths: ["/vender", "/tasaciones"] },
+  { label: "Propiedades", href: "/propiedades", paths: ["/propiedades"] },
   {
-    label: "Alquilar",
-    href: "/propiedades?operacion=alquiler",
-    path: "/propiedades",
-    operation: "alquiler",
+    label: "Alquileres",
+    mobileLabel: "Administración de alquileres",
+    title: "Administración de alquileres",
+    href: "/administracion-de-alquileres",
+    paths: ["/administracion-de-alquileres"],
   },
   {
     label: "Consorcios",
     href: "/administracion-de-consorcios",
-    path: "/administracion-de-consorcios",
+    paths: ["/administracion-de-consorcios"],
   },
-  { label: "Nosotros", href: "/nosotros", path: "/nosotros" },
-  { label: "Contacto", href: "/contacto", path: "/contacto" },
+  { label: "Nosotros", href: "/nosotros", paths: ["/nosotros"] },
+  { label: "Contacto", href: "/contacto", paths: ["/contacto"] },
 ];
 
-function isCurrent(item: NavItem, pathname: string | null, operation: string | null) {
-  if (pathname !== item.path) return false;
-  return item.operation ? item.operation === operation : true;
+function isCurrent(item: NavItem, pathname: string | null) {
+  return pathname !== null && item.paths.includes(pathname);
 }
 
 type NavLinksProps = {
   variant: "desktop" | "mobile";
   pathname: string | null;
-  operation: string | null;
   onNavigate?: () => void;
 };
 
-function NavLinks({ variant, pathname, operation, onNavigate }: NavLinksProps) {
+function SectionLinks({ variant, pathname, onNavigate }: NavLinksProps) {
   const mobile = variant === "mobile";
   return (
     <>
@@ -60,28 +63,15 @@ function NavLinks({ variant, pathname, operation, onNavigate }: NavLinksProps) {
         <Link
           key={item.href}
           href={item.href}
+          title={mobile ? undefined : item.title}
           className={mobile ? styles.mobileNavLink : styles.navLink}
-          aria-current={isCurrent(item, pathname, operation) ? "page" : undefined}
+          aria-current={isCurrent(item, pathname) ? "page" : undefined}
           onClick={onNavigate}
         >
-          {item.label}
+          {mobile ? (item.mobileLabel ?? item.label) : item.label}
         </Link>
       ))}
     </>
-  );
-}
-
-/** Reads the search params (which needs a Suspense boundary) to tell Comprar from Alquilar. */
-function CurrentNavLinks(props: Omit<NavLinksProps, "operation">) {
-  const operation = useSearchParams()?.get("operacion") ?? null;
-  return <NavLinks {...props} operation={operation} />;
-}
-
-function SectionLinks(props: Omit<NavLinksProps, "operation">) {
-  return (
-    <Suspense fallback={<NavLinks {...props} operation={null} />}>
-      <CurrentNavLinks {...props} />
-    </Suspense>
   );
 }
 
@@ -137,7 +127,7 @@ export default function Header() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const scrolled = useScrolledPast(GLASS_SCROLL_LIMIT, isHome);
-  // Glass over the home hero while at the top; the CSS applies it below 960px only.
+  // Glass over the home hero while at the top; the CSS applies it below 1100px only.
   const glass = isHome && !scrolled;
 
   // Never slide away while the menu is open or keyboard focus is inside.
@@ -205,7 +195,7 @@ export default function Header() {
         </nav>
 
         <div className={styles.actions}>
-          <Link href="/tasaciones" className={styles.cta}>
+          <Link href="/vender" className={styles.cta}>
             Tasá tu propiedad
           </Link>
           <button
@@ -247,7 +237,7 @@ export default function Header() {
               <SectionLinks variant="mobile" pathname={pathname} onNavigate={closeMenu} />
             </nav>
 
-            <Link href="/tasaciones" className={styles.mobileCta} onClick={closeMenu}>
+            <Link href="/vender" className={styles.mobileCta} onClick={closeMenu}>
               Tasá tu propiedad
             </Link>
 
